@@ -1,4 +1,4 @@
-type PerfEntry = PerformanceEntry & { element: HTMLElement };
+type PerfEntry = PerformanceEntry & { element: any };
 type ElementNode = ChildNode & { attributes: { href: { value: string } } };
 import { defineNuxtPlugin } from "#imports";
 
