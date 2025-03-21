@@ -29,7 +29,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
         target: 'http://localhost:' + DEVTOOLS_UI_LOCAL_PORT + DEVTOOLS_UI_ROUTE,
         changeOrigin: true,
         followRedirects: true,
-        // rewrite: path => path.replace(DEVTOOLS_UI_ROUTE, ''),
+        rewrite: path => path.replace(DEVTOOLS_UI_ROUTE, ''),
       }
     })
   }
