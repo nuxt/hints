@@ -41,9 +41,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
     icon: 'carbon:apps',
     view: {
       type: 'iframe',
-      src: DEVTOOLS_UI_ROUTE,
-    },
-    // wut ?
-    path: 'http://localhost:' + DEVTOOLS_UI_LOCAL_PORT + DEVTOOLS_UI_ROUTE
+      src:'http://localhost:' + DEVTOOLS_UI_LOCAL_PORT + DEVTOOLS_UI_ROUTE,
+    }, 
   })
 }
