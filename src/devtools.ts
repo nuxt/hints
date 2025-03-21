@@ -31,7 +31,6 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
         followRedirects: true,
         // rewrite: path => path.replace(DEVTOOLS_UI_ROUTE, ''),
       }
-      console.log(config)
     })
   }
 
