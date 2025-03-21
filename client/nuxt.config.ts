@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   },
 
   app: {
-    baseURL: '/__hints_devtools',
+    baseURL: '/__nuxt-hints',
   },
 
   vite: {
@@ -23,6 +23,7 @@ export default defineNuxtConfig({
         // Instead of go through proxy, we directly connect real port of the client app
         clientPort: +(process.env.PORT || 3300),
       },
+      allowedHosts: true
     },
   },
 
