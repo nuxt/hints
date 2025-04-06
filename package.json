@@ -32,12 +32,14 @@
   "dependencies": {
     "@nuxt/devtools-kit": "^2.3.1",
     "@nuxt/kit": "^3.16.1",
-    "sirv": "^3.0.1"
+    "sirv": "^3.0.1",
+    "unstorage": "^1.15.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.3.1",
     "@nuxt/devtools-ui-kit": "^2.3.1",
     "@nuxt/eslint-config": "^0.2.0",
+    "@nuxt/icon": "^1.11.0",
     "@nuxt/module-builder": "^0.5.5",
     "@nuxt/schema": "^3.16.0",
     "@nuxt/test-utils": "^3.17.0",

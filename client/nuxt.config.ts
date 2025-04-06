@@ -3,8 +3,13 @@ import { resolve } from 'pathe'
 export default defineNuxtConfig({
   ssr: false,
 
+  future: {
+    compatibilityVersion: 4,
+  },
+
   modules: [
     '@nuxt/devtools-ui-kit',
+    '@nuxt/icon',
   ],
 
   nitro: {
