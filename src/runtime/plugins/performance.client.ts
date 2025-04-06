@@ -1,12 +1,23 @@
-type PerfEntry = PerformanceEntry & { element: any };
 type ElementNode = ChildNode & { attributes: { href: { value: string } } };
 import { defineNuxtPlugin } from "#imports";
+
+declare global {
+  interface PerformanceEntry {
+    element?: HTMLElement;
+  }
+}
+
+function isImgElement(
+  element: HTMLElement
+): element is HTMLImageElement {
+  return element.tagName === "IMG";
+}
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook("app:mounted", () => {
     new PerformanceObserver((entryList) => {
       for (const entry of entryList.getEntries()) {
-        const performanceEntry = entry as PerfEntry;
+        const performanceEntry = entry;
         // eslint-disable-next-line no-console
         console.info(
           "[@nuxt/hints:performance] Potential LCP Element: ",
@@ -14,9 +25,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         );
 
         // If element is not an image, stop execution
-        if (performanceEntry.element.tagName !== "IMG") return;
+        if (!performanceEntry.element || !isImgElement(performanceEntry.element)) return;
 
-        if (performanceEntry.element.attributes?.loading?.value === "lazy") {
+        if (performanceEntry.element.attributes?.getNamedItem('loading')?.value === "lazy") {
           // eslint-disable-next-line no-console
           console.warn(
             '[@nuxt/hints:performance] LCP Element should not have `loading="lazy"` \n\n Learn more: https://web.dev/optimize-lcp/#optimize-the-priority-the-resource-is-given'
@@ -40,8 +51,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           );
         }
         if (
-          !performanceEntry.element.attributes.width ||
-          !performanceEntry.element.attributes.height
+          !performanceEntry.element.attributes.getNamedItem('height') ||
+          !performanceEntry.element.attributes.getNamedItem('width')
         ) {
           // eslint-disable-next-line no-console
           console.warn(
