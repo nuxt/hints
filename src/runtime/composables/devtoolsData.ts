@@ -4,30 +4,32 @@ import type { ImagePerformanceIssueDetails } from '../plugins/performance/plugin
 import { createGetWithDefault, MapWithDefault } from '../utils/MapWithDefault'
 import { useNuxtApp } from '#app'
 
-declare global {
-  interface Window {
-    __NUXT_PERFORMANCE_ISSUES__: {
-      imagePerformances: { get: (key: Element) => ImagePerformanceIssueDetails[] }
-    }
-  }
-}
-
 declare module '#app' {
   interface NuxtApp {
     __hintsPerformances: {
-      imagePerformances: { get: (key: Element) => ImagePerformanceIssueDetails[] }
+      imagePerformances: { get: (key: Element) => ({
+        componentLocation: string | undefined
+        issues: ImagePerformanceIssueDetails[]
+      }) }
     }
   }
 }
 
-export function hintIssues() {
+export function useHintIssues() {
   const nuxtApp = useNuxtApp()
 
   if (nuxtApp.__hintsPerformances) {
     return nuxtApp.__hintsPerformances
   }
   nuxtApp.__hintsPerformances = {
-    imagePerformances: createGetWithDefault<Element, ImagePerformanceIssueDetails[]>(() => []),
+    imagePerformances: createGetWithDefault<Element, {
+      componentLocation: string | undefined
+      issues: ImagePerformanceIssueDetails[]
+    }>(() => ({
+      componentLocation: undefined,
+      issues: []
+    })),
   }
+
   return nuxtApp.__hintsPerformances
 }
