@@ -1,7 +1,7 @@
 import { resolve } from 'pathe'
 
 export default defineNuxtConfig({
-
+  appId: 'nuxt-hints-iframe',
   modules: [
     '@nuxt/devtools-ui-kit',
   ], ssr: false,

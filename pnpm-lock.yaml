@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@nuxt/devtools-kit':
+    hash: zpo2v7h73p6e2pmujk7bezlrwa
+    path: patches/@nuxt__devtools-kit.patch
+
 importers:
 
   .:

@@ -1,0 +1,11 @@
+diff --git a/dist/runtime/iframe-client.d.ts b/dist/runtime/iframe-client.d.ts
+index f2cbb53cd394a9772351bcf897fcd1b2b7277278..4062d369714b48b0ad6c7e929bbb3ca026aacfee 100644
+--- a/dist/runtime/iframe-client.d.ts
++++ b/dist/runtime/iframe-client.d.ts
+@@ -1,4 +1,4 @@
+-import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types';
++import type { NuxtDevtoolsIframeClient } from '../types';
+ import type { Ref } from 'vue';
+ export declare function onDevtoolsClientConnected(fn: (client: NuxtDevtoolsIframeClient) => void): (() => void) | undefined;
+-export declare function useDevtoolsClient(): Ref<any, any>;
++export declare function useDevtoolsClient(): Ref<NuxtDevtoolsIframeClient, NuxtDevtoolsIframeClient>;
