@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useDevtoolsClient, onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
-import { useHintIssues } from '../../src/runtime/composables/devtoolsData'
-import { toValue, useNuxtApp, useState } from '#imports'
+ import { useHostPerformancesData } from '../composables/host';
 
-onDevtoolsClientConnected((client) => {
-  console.log('connected to devtools client')
-})
+const { imagePerformances } = useHostPerformancesData()
 </script>
 
 <template>
-  <div class="relative p-10 n-bg-base flex flex-col h-screen">
-    Hints devtools
+  <div class="relative n-bg-base flex flex-col h-screen p-4">
+    <NButton class="text-left">
+      <span class="text-md">
+        Image Performances
+      </span>
+    </NButton>
   </div>
 </template>

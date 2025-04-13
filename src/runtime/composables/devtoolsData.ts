@@ -1,16 +1,14 @@
-import { reactive, shallowReactive } from 'vue'
-import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
-import type { ImagePerformanceIssueDetails } from '../plugins/performance/plugin.client'
-import { createGetWithDefault, MapWithDefault } from '../utils/MapWithDefault'
-import { useNuxtApp } from '#app'
+  import type { ImagePerformanceIssueDetails } from '../plugins/performance/plugin.client'
+ import { useNuxtApp } from '#app'
 
 declare module '#app' {
   interface NuxtApp {
     __hintsPerformances: {
-      imagePerformances: { get: (key: Element) => ({
+      imagePerformances:  {
         componentLocation: string | undefined
         issues: ImagePerformanceIssueDetails[]
-      }) }
+        element: HTMLElement
+      }[]
     }
   }
 }
@@ -22,13 +20,7 @@ export function useHintIssues() {
     return nuxtApp.__hintsPerformances
   }
   nuxtApp.__hintsPerformances = {
-    imagePerformances: createGetWithDefault<Element, {
-      componentLocation: string | undefined
-      issues: ImagePerformanceIssueDetails[]
-    }>(() => ({
-      componentLocation: undefined,
-      issues: []
-    })),
+    imagePerformances: []
   }
 
   return nuxtApp.__hintsPerformances
