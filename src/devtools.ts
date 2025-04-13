@@ -8,7 +8,7 @@ const DEVTOOLS_UI_LOCAL_PORT = 3300
 export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
   const clientPath = resolver.resolve('./client')
   const isProductionBuild = existsSync(clientPath)
-  
+
   // Serve production-built client (used when package is published)
   if (isProductionBuild) {
     nuxt.hook('vite:serverCreated', async (server) => {
@@ -35,13 +35,13 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
 
   nuxt.hook('devtools:customTabs', (tabs) => {
     tabs.push({
-       name: 'nuxt-hints',
-       title: '@nuxt/hints',
-       icon: 'carbon:apps',
-       view: {
+      name: 'nuxt-hints',
+      title: '@nuxt/hints',
+      icon: 'carbon:apps',
+      view: {
         type: 'iframe',
         src: DEVTOOLS_UI_ROUTE,
-      }
+      },
     })
   })
 }
