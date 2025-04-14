@@ -1,3 +1,5 @@
+import { useHintIssues, type ImagePerformanceData } from '../../composables/devtoolsData'
+import { ImagePerformanceIssueType } from './utils'
 import { defineNuxtPlugin } from '#imports'
 
 type ElementNode = ChildNode & { attributes: { href: { value: string } } }
@@ -15,6 +17,27 @@ function isImgElement(
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
+  const state = useHintIssues()
+  const issues = state.imagePerformances
+
+  function findAndPushElement(element: HTMLImageElement) {
+    const existingIssue = issues.find(issue => issue.element === element)
+
+    if (existingIssue) {
+      return existingIssue
+    }
+
+    const newIssue: ImagePerformanceData = {
+      componentLocation: undefined,
+      issues: [],
+      element,
+    }
+
+    issues.push(newIssue)
+
+    return newIssue
+  }
+
   nuxtApp.hook('app:mounted', () => {
     new PerformanceObserver((entryList) => {
       for (const entry of entryList.getEntries()) {
@@ -32,6 +55,9 @@ export default defineNuxtPlugin((nuxtApp) => {
           console.warn(
             '[@nuxt/hints:performance] LCP Element should not have `loading="lazy"` \n\n Learn more: https://web.dev/optimize-lcp/#optimize-the-priority-the-resource-is-given',
           )
+          findAndPushElement(performanceEntry.element).issues.push({
+            type: ImagePerformanceIssueType.LazyAttrOnLCPElement,
+          })
         }
         if (hasImageFormat(performanceEntry.element.src)) {
           if (
@@ -41,6 +67,9 @@ export default defineNuxtPlugin((nuxtApp) => {
             console.warn(
               '[@nuxt/hints:performance] LCP Element can be served in a next gen format like `webp` or `avif` \n\n Learn more: https://web.dev/choose-the-right-image-format/ \n\n Use: https://image.nuxt.com/usage/nuxt-img#format',
             )
+            findAndPushElement(performanceEntry.element).issues.push({
+              type: ImagePerformanceIssueType.ImgFormat,
+            })
           }
         }
         if (performanceEntry.element.fetchPriority !== 'high') {
@@ -55,11 +84,17 @@ export default defineNuxtPlugin((nuxtApp) => {
           console.warn(
             '[@nuxt/hints:performance] Images should have `width` and `height` sizes set  \n\n Learn more: https://web.dev/optimize-cls/#images-without-dimensions \n\n Use: https://image.nuxt.com/usage/nuxt-img#width-height',
           )
+          findAndPushElement(performanceEntry.element).issues.push({
+            type: ImagePerformanceIssueType.HeightWidthMissingOnLCPElement,
+          })
         }
         if (performanceEntry.startTime > 2500) {
           console.warn(
             `[@nuxt/hints:performance] LCP Element loaded in ${performanceEntry.startTime} miliseconds. Good result is below 2500 miliseconds \n\n Learn more: https://web.dev/lcp/#what-is-a-good-lcp-score`,
           )
+          findAndPushElement(performanceEntry.element).issues.push({
+            type: ImagePerformanceIssueType.LoadingTooLong,
+          })
         }
 
         if (!isElementPreloaded(performanceEntry.element.src)) {
@@ -67,6 +102,9 @@ export default defineNuxtPlugin((nuxtApp) => {
 
             '[@nuxt/hints:performance] LCP Element can be preloaded in `head` to improve load time \n\n Learn more: https://web.dev/optimize-lcp/#optimize-when-the-resource-is-discovered \n\n Use: https://image.nuxt.com/usage/nuxt-img#preload',
           )
+          findAndPushElement(performanceEntry.element).issues.push({
+            type: ImagePerformanceIssueType.PreloadMissingOnLCPElement,
+          })
         }
       }
     }).observe({ type: 'largest-contentful-paint', buffered: true })

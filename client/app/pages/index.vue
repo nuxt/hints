@@ -1,16 +1,34 @@
 <script setup lang="ts">
-import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
-
-const client = useDevtoolsClient()
+const { imagePerformances } = useHostPerformancesData()
 </script>
 
 <template>
-  <div class="relative p-10 n-bg-base flex flex-col">
-    <NButton n="xl" flex justify-between items-center to="/image-performance">
-      <span>
-        Image performances 
+  <div class="relative p-4 n-bg-base flex flex-col">
+    <NButton
+      n="xl"
+      flex
+      justify-between
+      items-center
+      to="/image-performance"
+    >
+      <span
+        flex
+        flex-col
+        gap-2
+      >
+        Image performances
+        <span
+          v-if="imagePerformances.length"
+          text-sm
+        >
+          {{ imagePerformances.length }} image have issues
+        </span>
       </span>
-      <Icon name="material-symbols:chevron-right-rounded" text-5xl />
+
+      <Icon
+        name="material-symbols:chevron-right-rounded"
+        text-xl
+      />
     </NButton>
   </div>
 </template>
