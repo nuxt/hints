@@ -36,9 +36,6 @@ const { imagePerformances } = useHostPerformancesData()
           >
             {{ image.element.src }}
           </p>
-          <button>
-            <Icon name="majesticons:open" />
-          </button>
         </div>
       </div>
       <div>
