@@ -9,9 +9,6 @@ export function useHostPerformancesData() {
   }
 
   return {
-    computedRaw: computed(() => {
-      return client.host.nuxt.__hintsPerformances
-    }),
     imagePerformances: computed(() => {
       return client.host.nuxt.__hintsPerformances.imagePerformances
     }),
