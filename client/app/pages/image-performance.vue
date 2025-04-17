@@ -45,55 +45,27 @@ const { imagePerformances } = useHostPerformancesData()
           v-for="issue in image.issues"
           flex
           gap-2
+          color="red"
+          text-sm
         >
-          <div v-if="issue.type === ImagePerformanceIssueType.FetchPriorityMissingOnLCPElement">
-            <NTag
-              color="red"
-              text-sm
-            >
-              Fetch priority missing on LCP element
-            </NTag>
-          </div>
-          <div v-if="issue.type === ImagePerformanceIssueType.HeightWidthMissingOnLCPElement">
-            <NTag
-              color="red"
-              text-sm
-            >
-              Height and width missing on LCP element
-            </NTag>
-          </div>
-          <div v-else-if="issue.type === ImagePerformanceIssueType.ImgFormat">
-            <NTag
-              color="red"
-              text-sm
-            >
-              Prefer next-gen image format like webp or avif
-            </NTag>
-          </div>
-          <div v-else-if="issue.type === ImagePerformanceIssueType.LazyAttrOnLCPElement">
-            <NTag
-              color="red"
-              text-sm
-            >
-              Lazy attribute on LCP element
-            </NTag>
-          </div>
-          <div v-else-if="issue.type === ImagePerformanceIssueType.LoadingTooLong">
-            <NTag
-              color="red"
-              text-sm
-            >
-              Loading too long
-            </NTag>
-          </div>
-          <div v-else-if="issue.type === ImagePerformanceIssueType.PreloadMissingOnLCPElement">
-            <NTag
-              color="red"
-              text-sm
-            >
-              Preload missing on LCP element
-            </NTag>
-          </div>
+          <p v-if="issue.type === ImagePerformanceIssueType.FetchPriorityMissingOnLCPElement">
+            Fetch priority missing on LCP element
+          </p>
+          <p v-if="issue.type === ImagePerformanceIssueType.HeightWidthMissingOnLCPElement">
+            Height and width missing on LCP element
+          </p>
+          <p v-else-if="issue.type === ImagePerformanceIssueType.ImgFormat">
+            Prefer next-gen image format like webp or avif
+          </p>
+          <p v-else-if="issue.type === ImagePerformanceIssueType.LazyAttrOnLCPElement">
+            Lazy attribute on LCP element
+          </p>
+          <p v-else-if="issue.type === ImagePerformanceIssueType.LoadingTooLong">
+            Loading too long
+          </p>
+          <p v-else-if="issue.type === ImagePerformanceIssueType.PreloadMissingOnLCPElement">
+            Preload missing on LCP element
+          </p>
         </div>
       </div>
     </NCard>
