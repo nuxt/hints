@@ -13,12 +13,13 @@ function mouseOverElement(el?: HTMLElement) {
   if (!el) {
     return
   }
-  console.log('state', client.value?.host.inspector)
 
-  console.log(findClosestTraceInfo((el)), el)
-  if (findClosestTraceInfo((el))) {
-    client.value.host.inspector.getInspectorState().main = findClosestTraceInfo((el))
-    client.value.host.inspector.getInspectorState().isVisible = true
+  if (findClosestTraceInfo(el)) {
+    client.value!.host.nuxt.$tracerOverlay.state.main = findClosestTraceInfo((el))
+    client.value!.host.nuxt.$tracerOverlay.state.isVisible = true
+    el.scrollIntoView({
+      behavior: 'smooth',
+    })
   }
 }
 
@@ -26,7 +27,7 @@ function mouseOutElement(el?: HTMLElement) {
   if (!el) {
     return
   } 
-  client.value.host.inspector.getInspectorState().isVisible = false
+  client.value!.host.nuxt.$tracerOverlay.state.isVisible = false
 }
 </script>
 

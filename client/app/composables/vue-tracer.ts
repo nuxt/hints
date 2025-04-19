@@ -7,7 +7,8 @@ export function findClosestTraceInfo(el: Element & { __vnode: VNode }) {
   if (!client || !client.host.inspector) {
     throw new Error('`findClosestWithTraceInfo` must be used when the devtools client is connected')
   }
-  const { findTraceFromElement } = client.host.inspector.utils
+  // @ts-ignore
+  const { findTraceFromElement } = client.host.nuxt.$tracerRecord
 
   const traceInfo = (findTraceFromElement as typeof _findTraceFromElement)(el)
   if (!traceInfo && el.parentElement) {

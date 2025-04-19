@@ -23,6 +23,7 @@ export default defineNuxtModule<ModuleOptions>({
 
       if (options.devtools) {
         setupDevToolsUI(nuxt, resolver)
+        addPlugin(resolver.resolve('./runtime/plugins/vue-tracer-state.client'))
       }
     }
   },
