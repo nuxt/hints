@@ -26,39 +26,23 @@ function mouseOverElement(el?: HTMLElement) {
 function mouseOutElement(el?: HTMLElement) {
   if (!el) {
     return
-  } 
+  }
   client.value!.host.nuxt.$tracerOverlay.state.isVisible = false
 }
 </script>
 
 <template>
   <div p-4>
-    <NCard
-      v-for="image in imagePerformances"
-      flex
-      gap-4
-      p-4
-    >
-      <div
-        class="w-1/5"
-        my-auto
-      >
-        <img
-          class="rounded bg-white"
-          :src="image.element.src"
-          alt="Image performance"
-          object-contain
-          my-auto
-          :title="image.element.src"
-          @mouseover="e => mouseOverElement(image.element as HTMLElement)"
-          @mouseout="e => mouseOutElement(image.element as HTMLElement)"
-        >
+    <NCard v-for="image in imagePerformances" flex gap-4 p-4 relative>
+      <button class="absolute top-2 right-2" title="open in editor" @click="openElementSourceComponent(image.element)">
+        <Icon name="material-symbols:file-open-outline" />
+      </button>
+      <div class="w-1/5" my-auto>
+        <img class="rounded bg-white" :src="image.element.src" alt="Image performance" object-contain my-auto
+          :title="image.element.src" @mouseover="e => mouseOverElement(image.element as HTMLElement)"
+          @mouseout="e => mouseOutElement(image.element as HTMLElement)">
         <div>
-          <p
-            style="text-overflow: ellipsis;"
-            overflow-hidden
-            text-nowrap
-          >
+          <p style="text-overflow: ellipsis;" overflow-hidden text-nowrap>
             {{ image.element.src }}
           </p>
         </div>
@@ -66,13 +50,7 @@ function mouseOutElement(el?: HTMLElement) {
       <div>
         Issues:
 
-        <div
-          v-for="issue in image.issues"
-          flex
-          gap-2
-          color="red"
-          text-sm
-        >
+        <div v-for="issue in image.issues" flex gap-2 color="red" text-sm>
           <p v-if="issue.type === ImagePerformanceIssueType.FetchPriorityMissingOnLCPElement">
             Fetch priority missing on LCP element
           </p>
