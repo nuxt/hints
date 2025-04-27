@@ -6,7 +6,8 @@ declare module '#app' {
     __hintsPerformances: {
       imagePerformances: ImagePerformanceData[]
     }
-    __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/record').default
+    __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
+    __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
   }
 }
 
