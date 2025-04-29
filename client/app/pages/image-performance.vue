@@ -8,14 +8,14 @@ definePageMeta({
 const client = useDevtoolsClient()
 const { imagePerformances } = useHostPerformancesData()
 
-function mouseOverElement(el?: HTMLElement) {
+function mouseOverElement(el?: Element) {
   if (!el) {
     return
   }
 
   if (findClosestTraceInfo(el)) {
-    client.value!.host.nuxt.$tracerOverlay.state.main = findClosestTraceInfo((el))
-    client.value!.host.nuxt.$tracerOverlay.state.isVisible = true
+    client.value!.host.nuxt.__tracerOverlay.state.main = findClosestTraceInfo((el))
+    client.value!.host.nuxt.__tracerOverlay.state.isVisible = true
     el.scrollIntoView({
       behavior: 'smooth',
     })
@@ -26,7 +26,7 @@ function mouseOutElement(el?: HTMLElement) {
   if (!el) {
     return
   }
-  client.value!.host.nuxt.$tracerOverlay.state.isVisible = false
+  client.value!.host.nuxt.__tracerOverlay.state.isVisible = false
 }
 </script>
 
