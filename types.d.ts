@@ -1,5 +1,5 @@
 import type { ImagePerformanceData } from './src/runtime/plugins/performance/utils'
-import type { VNode } from 'vue' 
+import type { ComponentInternalInstance, VNode } from "vue"
 
 declare module '#app' {
   interface NuxtApp {
@@ -8,6 +8,7 @@ declare module '#app' {
     }
     __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
+    __hintsHydration: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }[]
   }
 }
 
