@@ -131,12 +131,6 @@ export default defineNuxtPlugin((nuxtApp) => {
           sourceElement,
         )
 
-        // TODO: remove later
-        console.info(
-          '[@nuxt/hints:performance] Cumulative Layout Shift Entry: ',
-          performanceEntry,
-        )
-
         if ((performanceEntry.value ?? 0) > 0.1) {
           console.warn(
             `[@nuxt/hints:performance] CLS was ${performanceEntry.value}. Good result is below 0.1 \n\n Learn more: https://web.dev/articles/cls#what-is-a-good-cls-score`,
