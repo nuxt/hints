@@ -4,7 +4,7 @@ import { useNuxtApp } from '#app'
 export type ImagePerformanceData = {
   componentLocation: string | undefined
   issues: ImagePerformanceIssueDetails[]
-  element: HTMLImageElement
+  element: HTMLImageElement | HTMLElement
 }
 
 export function useHintIssues() {
