@@ -27,7 +27,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const issues = state.imagePerformances
 
   function findAndPushElement(element: HTMLImageElement | HTMLElement) {
-    const existingIssue = issues.find(issue => issue.element === element)
+    const existingIssue = issues.value.find(issue => issue.element === element)
 
     if (existingIssue) {
       return existingIssue
@@ -39,7 +39,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       element,
     }
 
-    issues.push(newIssue)
+    issues.value.push(newIssue)
 
     return newIssue
   }

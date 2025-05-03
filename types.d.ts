@@ -1,10 +1,10 @@
-import type { ComponentInternalInstance, VNode } from 'vue'
+import type { ComponentInternalInstance, VNode, Ref } from 'vue'
 import type { ImagePerformanceData } from './src/runtime/plugins/performance/utils'
 
 declare module '#app' {
   interface NuxtApp {
     __hintsPerformances: {
-      imagePerformances: ImagePerformanceData[]
+      imagePerformances: Ref<ImagePerformanceData[]>
     }
     __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
