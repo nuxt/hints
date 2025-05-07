@@ -1,51 +1,23 @@
 <script setup lang="ts">
-import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
 import { ImagePerformanceIssueType } from '../../../src/runtime/plugins/performance/utils'
 
 definePageMeta({
   title: 'Image Performances',
 })
-const client = useDevtoolsClient()
+
 const { imagePerformances } = useHostPerformancesData()
-
-function mouseOverElement(el?: Element) {
-  if (!el) {
-    return
-  }
-
-  if (findClosestTraceInfo(el)) {
-    client.value!.host.nuxt.__tracerOverlay.state.main = findClosestTraceInfo((el))
-    client.value!.host.nuxt.__tracerOverlay.state.isVisible = true
-    el.scrollIntoView({
-      behavior: 'smooth',
-    })
-  }
-}
-
-function mouseOutElement(el?: HTMLElement) {
-  if (!el) {
-    return
-  }
-  client.value!.host.nuxt.__tracerOverlay.state.isVisible = false
-}
 </script>
 
 <template>
   <div p-4>
-    <NCard
+    <TracerCard
       v-for="image in imagePerformances"
+      :element="image.element"
       flex
       gap-4
       p-4
       relative
     >
-      <button
-        class="absolute top-2 right-2"
-        title="open in editor"
-        @click="openElementSourceComponent(image.element)"
-      >
-        <Icon name="material-symbols:file-open-outline" />
-      </button>
       <div
         class="w-1/5"
         my-auto
@@ -57,8 +29,6 @@ function mouseOutElement(el?: HTMLElement) {
           object-contain
           my-auto
           :title="image.element.src"
-          @mouseover="e => mouseOverElement(image.element as HTMLElement)"
-          @mouseout="e => mouseOutElement(image.element as HTMLElement)"
         >
         <div>
           <p
@@ -100,6 +70,6 @@ function mouseOutElement(el?: HTMLElement) {
           </p>
         </div>
       </div>
-    </NCard>
+    </TracerCard>
   </div>
 </template>

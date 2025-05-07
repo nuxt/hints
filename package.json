@@ -10,6 +10,11 @@
       "types": "./dist/types.d.ts",
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs"
+    },
+    "./runtime/*": {
+      "types": "./dist/runtime/*",
+      "import": "./dist/runtime/*",
+      "require": "./dist/runtime/*"
     }
   },
   "main": "./dist/module.cjs",
@@ -33,6 +38,7 @@
     "@nuxt/devtools-kit": "^2.4.0",
     "@nuxt/kit": "^3.16.2",
     "magic-string": "^0.30.17",
+    "shiki": "^3.3.0",
     "sirv": "^3.0.1",
     "unplugin": "^2.3.2",
     "vite-plugin-vue-tracer": "^0.1.3"
