@@ -1,5 +1,4 @@
 import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
-import { computed } from 'vue'
 
 export function useHostPerformancesData() {
   const client = useDevtoolsClient().value
@@ -9,8 +8,7 @@ export function useHostPerformancesData() {
   }
 
   return {
-    imagePerformances: computed(() => {
-      return client.host.nuxt.__hintsPerformances.imagePerformances
-    }),
+    imagePerformances: client.host.nuxt.__hintsPerformances.imagePerformances,
+    hydration: client.host.nuxt.__hintsHydration
   }
 }

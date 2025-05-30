@@ -1,10 +1,11 @@
 import type { ImagePerformanceIssueDetails } from '../plugins/performance/utils'
 import { useNuxtApp } from '#app'
+import { ref } from 'vue'
 
 export type ImagePerformanceData = {
   componentLocation: string | undefined
   issues: ImagePerformanceIssueDetails[]
-  element: HTMLImageElement
+  element: HTMLImageElement | HTMLElement
 }
 
 export function useHintIssues() {
@@ -14,7 +15,7 @@ export function useHintIssues() {
     return nuxtApp.__hintsPerformances
   }
   nuxtApp.__hintsPerformances = {
-    imagePerformances: [],
+    imagePerformances: ref([]),
   }
 
   return nuxtApp.__hintsPerformances

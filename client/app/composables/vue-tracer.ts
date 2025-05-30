@@ -1,33 +1,30 @@
 import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
-import type { VNode } from 'vue'
-import type { findTraceFromElement as _findTraceFromElement } from 'vite-plugin-vue-tracer/client/record'
 
-export function findClosestTraceInfo(el: Element & { __vnode: VNode }) {
+export function findClosestTraceInfo(el: Element) {
   const client = useDevtoolsClient().value
   if (!client || !client.host.inspector) {
     throw new Error('`findClosestWithTraceInfo` must be used when the devtools client is connected')
   }
-  // @ts-expect-error todo add types
-  const { findTraceFromElement } = client.host.nuxt.$tracerRecord
+  const { findTraceFromElement } = client.host.nuxt.__tracerRecord
 
-  const traceInfo = (findTraceFromElement as typeof _findTraceFromElement)(el)
+  const traceInfo = findTraceFromElement(el)
   if (!traceInfo && el.parentElement) {
-    return findClosestTraceInfo(el.parentElement as unknown as Element & { __vnode: VNode })
+    return findClosestTraceInfo(el.parentElement)
   }
   return traceInfo
 }
 
-export function openElementSourceComponent(el: Element & { __vnode: VNode }) {
+export function openElementSourceComponent(el: Element) {
   const client = useDevtoolsClient().value
   if (!client || !client.host.inspector) {
     throw new Error('`openElementSourceComponent` must be used when the devtools client is connected')
   }
-  // @ts-expect-error todo add types
-  const { findTraceFromElement } = client.host.nuxt.$tracerRecord
 
-  const traceInfo = (findTraceFromElement as typeof _findTraceFromElement)(el)
+  const { findTraceFromElement } = client.host.nuxt.__tracerRecord
+
+  const traceInfo = findTraceFromElement(el)
   if (!traceInfo && el.parentElement) {
-    return openElementSourceComponent(el.parentElement as unknown as Element & { __vnode: VNode })
+    return openElementSourceComponent(el.parentElement)
   }
   if (traceInfo) {
     client.devtools.rpc.openInEditor(traceInfo.filepath)

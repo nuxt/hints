@@ -1,10 +1,9 @@
 import * as tracerOverlay from 'vite-plugin-vue-tracer/client/overlay'
+import * as tracerRecord from 'vite-plugin-vue-tracer/client/record'
 import { defineNuxtPlugin } from '#imports'
 
-export default defineNuxtPlugin(() => {
-  return {
-    provide: {
-      tracerOverlay,
-    },
-  }
+// provide tracer from main app/iframe context
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.__tracerOverlay = tracerOverlay
+  nuxtApp.__tracerRecord = tracerRecord
 })

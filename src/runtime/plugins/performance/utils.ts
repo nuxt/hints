@@ -26,3 +26,12 @@ type PreloadMissingOnLCPElementDetails = {
   type: ImagePerformanceIssueType.PreloadMissingOnLCPElement
 }
 export type ImagePerformanceIssueDetails = LazyAttrOnLCPElementDetails | ImgFormatDetails | FetchPriorityMissingOnLCPElementDetails | HeightWidthMissingOnLCPElementDetails | LoadingTooLongDetails | PreloadMissingOnLCPElementDetails
+
+export enum CLSIssueType {
+  LayoutShiftTooBig,
+}
+
+type LayoutShiftTooBigDetails = {
+  type: CLSIssueType.LayoutShiftTooBig
+}
+export type CLSIssueDetails = LayoutShiftTooBigDetails
