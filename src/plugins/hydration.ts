@@ -19,7 +19,7 @@ export const InjectHydrationPlugin = createUnplugin(() => {
       // Add useHydrationCheck after the <script setup> tag
       m.appendRight(
         match.index + match[0].length,
-        `\nimport { useHydrationCheck } from '@nuxt/hints/runtime/composables/hydration'\nuseHydrationCheck();`
+        `\nimport { useHydrationCheck } from '@nuxt/hints/runtime/composables/hydration'\nuseHydrationCheck();`,
       )
 
       return {

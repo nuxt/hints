@@ -17,9 +17,6 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  hints: {
-    enabled: true
-  },
 
   compatibilityDate: '2024-08-21',
 
@@ -37,5 +34,8 @@ export default defineNuxtConfig({
       },
       allowedHosts: true,
     },
+  },
+  hints: {
+    enabled: true,
   },
 })

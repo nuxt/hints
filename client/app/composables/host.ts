@@ -9,6 +9,6 @@ export function useHostPerformancesData() {
 
   return {
     imagePerformances: client.host.nuxt.__hintsPerformances.imagePerformances,
-    hydration: client.host.nuxt.__hintsHydration
+    hydration: client.host.nuxt.__hintsHydration,
   }
 }

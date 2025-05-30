@@ -1,6 +1,6 @@
+import { ref } from 'vue'
 import type { ImagePerformanceIssueDetails } from '../plugins/performance/utils'
 import { useNuxtApp } from '#app'
-import { ref } from 'vue'
 
 export type ImagePerformanceData = {
   componentLocation: string | undefined
