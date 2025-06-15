@@ -29,7 +29,7 @@ export default defineNuxtModule<ModuleOptions>({
       addComponent({
         name: 'NuxtIsland',
         filePath: resolver.resolve('./runtime/components/nuxt-island.ts'),
-        priority: 1000, // Ensure it runs before other components
+        priority: 1000,
       })
 
       if (options.devtools) {
