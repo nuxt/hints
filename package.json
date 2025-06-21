@@ -36,28 +36,28 @@
     "cleanup": "rimraf **/node_modules **/dist **/.output **/.nuxt --glob"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "^2.4.0",
-    "@nuxt/kit": "^3.16.2",
+    "@nuxt/devtools-kit": "^2.5.0",
+    "@nuxt/kit": "^3.17.5",
     "magic-string": "^0.30.17",
-    "shiki": "^3.3.0",
+    "shiki": "^3.7.0",
     "sirv": "^3.0.1",
-    "unplugin": "^2.3.2",
-    "vite-plugin-vue-tracer": "^0.1.3"
+    "unplugin": "^2.3.5",
+    "vite-plugin-vue-tracer": "^0.1.4"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^2.4.0",
-    "@nuxt/devtools-ui-kit": "^2.4.0",
-    "@nuxt/eslint": "^1.3.0",
-    "@nuxt/icon": "^1.12.0",
+    "@nuxt/devtools": "^2.5.0",
+    "@nuxt/devtools-ui-kit": "^2.5.0",
+    "@nuxt/eslint": "^1.4.1",
+    "@nuxt/icon": "^1.14.0",
     "@nuxt/module-builder": "^0.5.5",
-    "@nuxt/schema": "^3.16.2",
-    "@nuxt/test-utils": "^3.17.2",
-    "@types/node": "^22.14.1",
+    "@nuxt/schema": "^3.17.5",
+    "@nuxt/test-utils": "^3.19.1",
+    "@types/node": "^22.15.32",
     "changelogen": "^0.5.7",
-    "eslint": "^9.24.0",
-    "nuxt": "^3.16.2",
+    "eslint": "^9.29.0",
+    "nuxt": "^3.17.5",
     "rimraf": "^6.0.1",
-    "vitest": "^3.0.0"
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.8.1+sha512.c50088ba998c67b8ca8c99df8a5e02fd2ae2e2b29aaf238feaa9e124248d3f48f9fb6db2424949ff901cffbb5e0f0cc1ad6aedb602cd29450751d11c35023677"
 }
