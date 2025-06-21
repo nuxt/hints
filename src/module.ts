@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, hasNuxtModule } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -31,6 +31,9 @@ export default defineNuxtModule<ModuleOptions>({
         filePath: resolver.resolve('./runtime/components/nuxt-island.ts'),
         priority: 1000,
       })
+      if (!hasNuxtModule('@nuxt/scripts')) {
+        addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.client'))
+      }
 
       if (options.devtools) {
         setupDevToolsUI(nuxt, resolver)
