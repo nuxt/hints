@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from '#imports'
+
 declare global {
   interface Window {
     __hints_TPC_start_time: number
@@ -8,7 +9,6 @@ declare global {
     __hints_TPC_end_time?: number
   }
 }
-
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hooks.hookOnce('app:mounted', () => {

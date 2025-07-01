@@ -1,9 +1,9 @@
 /// <reference types="nuxt" />
-import { NitroAppPlugin} from "nitropack/types"
+import type { NitroAppPlugin } from 'nitropack/types'
 
-export default <NitroAppPlugin> function (nitroApp) { 
-    nitroApp.hooks.hook('render:html', ({head }) => {
-        head.unshift(`
+export default <NitroAppPlugin> function (nitroApp) {
+  nitroApp.hooks.hook('render:html', ({ head }) => {
+    head.unshift(`
 <script>
 window.__hints_TPC_start_time = Date.now();
 
@@ -32,5 +32,5 @@ function __hints_TPC_saveTime(e, startTime) {
     }
 }
 </script>`)
-    });
+  })
 }
