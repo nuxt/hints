@@ -10,7 +10,7 @@ import { useHead } from '#imports'
 useHead({
   script: [
     {
-      src: 'https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js'
+      src: 'https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js',
     },
   ],
 })
