@@ -21,6 +21,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         script.__hints_TPC_start_time = (navigationEntry ? performance.timeOrigin + navigationEntry.domContentLoadedEventStart : window.__hints_TPC_start_time) || window.__hints_TPC_start_time
       }
     }
-    console.log('[@nuxt/hints]: 📊 Third-party scripts detected on page load: consider using @nuxt/scripts')
+    if(hasThirdPartyScript) {
+      console.info('[@nuxt/hints]: 📊 Third-party scripts detected on page load: consider using @nuxt/scripts')
+    }
   })
 })
