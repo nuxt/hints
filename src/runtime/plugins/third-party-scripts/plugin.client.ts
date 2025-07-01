@@ -1,11 +1,26 @@
 import { defineNuxtPlugin } from '#imports'
+declare global {
+  interface Window {
+    __hints_TPC_start_time: number
+  }
+  interface HTMLScriptElement {
+    __hints_TPC_start_time?: number
+    __hints_TPC_end_time?: number
+  }
+}
+
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const scripts = document.scripts
-  for (const script of scripts) {
-    // If the script has another origin, we warn about using @nuxt/scripts
-    if (script.src && script.src.startsWith('http') && !script.src.includes(nuxtApp.$config.public.baseURL) && !script.attributes.getNamedItem('defer')) {
-      console.warn(`[@nuxt/scripts] Script from another origin detected: ${script.src}. Consider using @nuxt/scripts.`)
+  nuxtApp.hooks.hookOnce('app:mounted', () => {
+    const scripts = document.scripts
+    let hasThirdPartyScript = false
+    for (const script of scripts) {
+      if (script.src && script.src.startsWith('http')) {
+        hasThirdPartyScript = true
+        const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+        script.__hints_TPC_start_time = (navigationEntry ? performance.timeOrigin + navigationEntry.domContentLoadedEventStart : window.__hints_TPC_start_time) || window.__hints_TPC_start_time
+      }
     }
-  }
+    console.log('[@nuxt/hints]: 📊 Third-party scripts detected on page load: consider using @nuxt/scripts')
+  })
 })
