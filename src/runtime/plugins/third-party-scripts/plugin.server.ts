@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useHead } from '#imports'
+import { defineNuxtPlugin } from '#imports'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.ssrContext!.head.hooks.hook('tags:beforeResolve', (ctx) => {
