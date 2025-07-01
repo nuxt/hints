@@ -2,17 +2,25 @@
   <NCard
     p-4
     relative
-    @mouseenter="showElement(element)"
-    @mouseleave="resetTracer"
   >
-    <button
+    <div
       v-if="element"
-      class="absolute top-2 right-2"
-      title="open in editor"
-      @click="openElementSourceComponent(element)"
+      class="absolute top-2 right-2 space-x-2"
     >
-      <Icon name="material-symbols:file-open-outline" />
-    </button>
+      <button
+        title="show element in tracer"
+        @click="onToggleTracer(element)"
+      >
+        <Icon name="material-symbols:target" />
+      </button>
+
+      <button
+        title="open in editor"
+        @click="openElementSourceComponent(element)"
+      >
+        <Icon name="material-symbols:file-open-outline" />
+      </button>
+    </div>
 
     <slot />
   </NCard>
@@ -27,23 +35,41 @@ defineProps<{
 
 const client = useDevtoolsClient()
 
-function showElement(el?: Element) {
+const controller = new AbortController()
+const signal = controller.signal
+
+function onToggleTracer(el?: Element) {
   if (!el) {
     return
   }
-  if (findClosestTraceInfo(el)) {
-    client.value!.host.nuxt.__tracerOverlay.state.main = findClosestTraceInfo((el))
-    client.value!.host.nuxt.__tracerOverlay.state.isVisible = true
-    el.scrollIntoView({
-      behavior: 'smooth',
-    })
+
+  const { isVisible } = client.value!.host.nuxt.__tracerOverlay.state
+  if (isVisible) {
+    client.value!.host.nuxt.__tracerOverlay.state.isVisible = false
+  }
+
+  const traceInfo = findClosestTraceInfo(el)
+
+  if (!traceInfo) {
+    return
+  }
+
+  client.value!.host.nuxt.__tracerOverlay.state.main = traceInfo
+  client.value!.host.nuxt.__tracerOverlay.state.isVisible = true
+  el.scrollIntoView({
+    behavior: 'smooth',
+  })
+
+  window.addEventListener('keydown', onKeyDown, { once: true, signal })
+}
+
+function onKeyDown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    client.value!.host.nuxt.__tracerOverlay.state.isVisible = false
   }
 }
 
-function resetTracer(el?: HTMLElement) {
-  if (!el) {
-    return
-  }
-  client.value!.host.nuxt.__tracerOverlay.state.isVisible = false
-}
+onUnmounted(() => {
+  controller.abort()
+})
 </script>
