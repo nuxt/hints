@@ -11,7 +11,6 @@ function __hints_TPC_saveTime(e, startTime) {
     this.__hints_TPC_end_time = Date.now();
     const scriptStartTime = startTime || this.__hints_TPC_start_time || window.__hints_TPC_start_time;
     
-    // Try to get detailed timing from Resource Timing API
     const resourceEntries = performance.getEntriesByType('resource')
     const scriptEntry = resourceEntries.find(entry => entry.name === this.src)
     
