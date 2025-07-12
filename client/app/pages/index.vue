@@ -56,5 +56,25 @@ const { imagePerformances, hydration } = useHostPerformancesData()
         text-xl
       />
     </NButton>
+    <NButton
+      n="xl"
+      flex
+      justify-between
+      items-center
+      to="/third-party-scripts"
+    >
+      <span
+        flex
+        flex-col
+        gap-2
+      >
+        Third party scripts
+      </span>
+
+      <Icon
+        name="material-symbols:chevron-right-rounded"
+        text-xl
+      />
+    </NButton>
   </div>
 </template>

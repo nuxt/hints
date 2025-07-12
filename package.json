@@ -46,8 +46,8 @@
     "vite-plugin-vue-tracer": "^0.1.4"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^2.5.0",
-    "@nuxt/devtools-ui-kit": "^2.5.0",
+    "@nuxt/devtools": "^2.6.2",
+    "@nuxt/devtools-ui-kit": "^2.6.2",
     "@nuxt/eslint": "^1.4.1",
     "@nuxt/icon": "^1.14.0",
     "@nuxt/module-builder": "^0.8.0",
@@ -56,7 +56,6 @@
     "@types/node": "^22.15.32",
     "changelogen": "^0.5.7",
     "eslint": "^9.29.0",
-    "nuxt": "^3.17.5",
     "rimraf": "^6.0.1",
     "vitest": "^3.2.4"
   },

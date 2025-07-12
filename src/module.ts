@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, hasNuxtModule, addServerPlugin } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -31,11 +31,16 @@ export default defineNuxtModule<ModuleOptions>({
         filePath: resolver.resolve('./runtime/components/nuxt-island.ts'),
         priority: 1000,
       })
-      if (!hasNuxtModule('@nuxt/scripts')) {
-        addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.client'))
-        addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.server'))
-        addServerPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/nitro.plugin'))
-      }
+
+      // third-party scripts
+      addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.client'))
+      addServerPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/nitro.plugin'))
+
+      nuxt.hook('prepare:types', ({ references }) => {
+        references.push({
+          types: resolver.resolve('./runtime/types.d.ts'),
+        })
+      })
 
       if (options.devtools) {
         setupDevToolsUI(nuxt, resolver)

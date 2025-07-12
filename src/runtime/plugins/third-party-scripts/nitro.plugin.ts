@@ -7,29 +7,50 @@ export default <NitroAppPlugin> function (nitroApp) {
 <script>
 window.__hints_TPC_start_time = Date.now();
 
-function __hints_TPC_saveTime(e, startTime) {
-    this.__hints_TPC_end_time = Date.now();
-    const scriptStartTime = startTime || this.__hints_TPC_start_time || window.__hints_TPC_start_time;
+function __hints_TPC_saveTime(script, startTime) {
+    script.__hints_TPC_end_time = Date.now();
+    const scriptStartTime = startTime || script.__hints_TPC_start_time || window.__hints_TPC_start_time;
     
-    const resourceEntries = performance.getEntriesByType('resource')
-    const scriptEntry = resourceEntries.find(entry => entry.name === this.src)
-    
+    const resourceEntries = performance.getEntriesByName(script.src)
+    const scriptEntry = resourceEntries.find(entry => entry.name === script.src)
+
     if (scriptEntry) {
         // Calculate parse + execute time using modern API
         const navigationEntry = performance.getEntriesByType('navigation')[0]
         const navigationStart = navigationEntry ? performance.timeOrigin : performance.timeOrigin
-        const parseExecuteTime = this.__hints_TPC_end_time - (navigationStart + scriptEntry.responseEnd)
         
-        console.log('[@nuxt/hints]: 📊 Detailed timing for', this.src, {
-            'DNS Lookup': (scriptEntry.domainLookupEnd - scriptEntry.domainLookupStart).toFixed(5) + 'ms',
-            'TCP Connect': (scriptEntry.connectEnd - scriptEntry.connectStart).toFixed(5) + 'ms',
-            'Request': (scriptEntry.responseStart - scriptEntry.requestStart).toFixed(5) + 'ms',
-            'Download': (scriptEntry.responseEnd - scriptEntry.responseStart).toFixed(5) + 'ms',
-            'Total Network': (scriptEntry.responseEnd - scriptEntry.startTime).toFixed(5) + 'ms',
-            'Parse + Execute': parseExecuteTime.toFixed(5) + 'ms'
-        })
+        script.dnsLookupTime = (scriptEntry.domainLookupEnd - scriptEntry.domainLookupStart);
+        script.tcpConnectTime = (scriptEntry.connectEnd - scriptEntry.connectStart);
+        script.requestTime = (scriptEntry.responseStart - scriptEntry.requestStart);
+        script.downloadTime = (scriptEntry.responseEnd - scriptEntry.responseStart);
+        script.totalNetworkTime = (scriptEntry.responseEnd - scriptEntry.startTime);
+        script.parseExecuteTime =  script.__hints_TPC_end_time - (navigationStart + scriptEntry.responseEnd);
+        script.loaded = true;
+        console.log('[@nuxt/hints]: 📊 Detailed timing for', script.src, {
+            'DNS Lookup': script.dnsLookupTime.toFixed(2) + 'ms',
+            'TCP Connect': script.tcpConnectTime.toFixed(2) + 'ms',
+            'Request': script.requestTime.toFixed(2) + 'ms',
+            'Download': script.downloadTime.toFixed(2) + 'ms',
+            'Total Network': script.totalNetworkTime.toFixed(2) + 'ms',
+            'Parse + Execute': script.parseExecuteTime.toFixed(2) + 'ms'
+        });
     }
 }
-</script>`)
+</script>
+`)
+
+    head.push(`
+<script>
+for (const script of document.scripts) {
+    if (script.src && !script.src.startsWith(window.location.origin)) {
+        script.__hints_TPC_start_time = window.__hints_TPC_start_time || Date.now();
+        script.onload = function(_) {
+            __hints_TPC_saveTime(script, script.__hints_TPC_start_time);
+        }
+        __hints_TPC_saveTime(script, script.__hints_TPC_start_time);
+    }
+}
+</script>
+  `)
   })
 }

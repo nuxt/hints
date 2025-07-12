@@ -12,3 +12,16 @@ export function useHostPerformancesData() {
     hydration: client.host.nuxt.__hintsHydration,
   }
 }
+
+export function useHostThirdPartyScripts() {
+  const client = useDevtoolsClient().value
+
+  if (!client) {
+    throw new Error('`useHostThirdPartyScripts` must be used when the devtools client is connected')
+  }
+
+  return {
+    scripts: client.host.nuxt.__hints_tpc,
+    isUsingNuxtScripts: Boolean(client.host.nuxt.$scripts),
+  }
+}

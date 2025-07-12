@@ -1,4 +1,7 @@
+import { createResolver } from '@nuxt/kit'
 import { resolve } from 'pathe'
+
+const resolver = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
   appId: 'nuxt-hints-iframe',
@@ -35,7 +38,12 @@ export default defineNuxtConfig({
       allowedHosts: true,
     },
   },
-  hints: {
-    enabled: true,
+
+  hooks: {
+    'prepare:types': ({ references }) => {
+      references.push({
+        types: resolver.resolve('../src/runtime/types.d.ts'),
+      })
+    },
   },
 })
