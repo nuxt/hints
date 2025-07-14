@@ -1,8 +1,6 @@
 export function getScriptTime(script: HTMLScriptElement): {
   startTime: number
   endTime?: number
-  dnsLookupTime?: number
-  tcpConnectTime?: number
   requestTime?: number
   downloadTime?: number
   totalNetworkTime?: number
@@ -14,8 +12,6 @@ export function getScriptTime(script: HTMLScriptElement): {
   return {
     startTime,
     endTime,
-    dnsLookupTime: script.dnsLookupTime,
-    tcpConnectTime: script.tcpConnectTime,
     requestTime: script.requestTime,
     downloadTime: script.downloadTime,
     totalNetworkTime: script.totalNetworkTime,
