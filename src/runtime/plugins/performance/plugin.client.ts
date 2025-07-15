@@ -1,4 +1,5 @@
-import { useHintIssues, type ImagePerformanceData } from '../../composables/devtoolsData'
+import { useHintIssues } from '../../composables/devtoolsData'
+import type { ImagePerformanceData } from '../../composables/devtoolsData'
 import { CLSIssueType, ImagePerformanceIssueType } from './utils'
 import { defineNuxtPlugin } from '#imports'
 
