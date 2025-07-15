@@ -19,16 +19,12 @@ function __hints_TPC_saveTime(script, startTime) {
         const navigationEntry = performance.getEntriesByType('navigation')[0]
         const navigationStart = navigationEntry ? performance.timeOrigin : performance.timeOrigin
         
-        script.dnsLookupTime = (scriptEntry.domainLookupEnd - scriptEntry.domainLookupStart);
-        script.tcpConnectTime = (scriptEntry.connectEnd - scriptEntry.connectStart);
         script.requestTime = (scriptEntry.responseStart - scriptEntry.requestStart);
         script.downloadTime = (scriptEntry.responseEnd - scriptEntry.responseStart);
         script.totalNetworkTime = (scriptEntry.responseEnd - scriptEntry.startTime);
         script.parseExecuteTime =  script.__hints_TPC_end_time - (navigationStart + scriptEntry.responseEnd);
         script.loaded = true;
         console.log('[@nuxt/hints]: 📊 Detailed timing for', script.src, {
-            'DNS Lookup': script.dnsLookupTime.toFixed(2) + 'ms',
-            'TCP Connect': script.tcpConnectTime.toFixed(2) + 'ms',
             'Request': script.requestTime.toFixed(2) + 'ms',
             'Download': script.downloadTime.toFixed(2) + 'ms',
             'Total Network': script.totalNetworkTime.toFixed(2) + 'ms',

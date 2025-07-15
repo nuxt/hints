@@ -10,8 +10,6 @@
         <tr class="n-border-base border">
           <th>Script URL</th>
           <th>Loaded</th>
-          <th>DNS Lookup Time</th>
-          <th>TCP Connect Time</th>
           <th>Request Time</th>
           <th>Download Time</th>
           <th>Total network time</th>
@@ -28,8 +26,6 @@
         >
           <td>{{ script.element.src }}</td>
           <td>{{ script.loaded ? 'Yes' : 'No' }}</td>
-          <td>{{ script.element.dnsLookupTime ? script.element.dnsLookupTime.toFixed(2) + ' ms' : 'N/A' }}</td>
-          <td>{{ script.element.tcpConnectTime ? script.element.tcpConnectTime.toFixed(2) + ' ms' : 'N/A' }}</td>
           <td>{{ script.element.requestTime ? script.element.requestTime.toFixed(2) + ' ms' : 'N/A' }}</td>
           <td>{{ script.element.downloadTime ? script.element.downloadTime.toFixed(2) + ' ms' : 'N/A' }}</td>
           <td>{{ script.element.totalNetworkTime ? script.element.totalNetworkTime.toFixed(2) + ' ms' : 'N/A' }}</td>

@@ -6,8 +6,6 @@ declare global {
   interface HTMLScriptElement {
     __hints_TPC_start_time?: number
     __hints_TPC_end_time?: number
-    dnsLookupTime?: number
-    tcpConnectTime?: number
     requestTime?: number
     downloadTime?: number
     totalNetworkTime?: number
