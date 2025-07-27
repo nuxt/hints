@@ -1,47 +1,34 @@
-# WIP Nuxt Hints
+# Nuxt Hints
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-Nuxt module that shows hints for aspects of your application such as Performance, A11Y, Security, and more!
+Nuxt module that shows hints for aspects of your application such as Performance issues and more!
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
-  <!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/@nuxt/hints?file=playground%2Fapp.vue) -->
-  <!-- - [📖 &nbsp;Documentation](https://example.com) -->
 
-## Background
+## Features
 
-https://github.com/nuxt/image/pull/763
+### 🚀 **Performance Analysis**
+- **LCP (Largest Contentful Paint) Optimization**: Identifies images that could benefit from modern formats (WebP, AVIF), proper sizing, fetch priority, and preloading
+- **CLS (Cumulative Layout Shift) Detection**: Warns about layout shifts caused by images without dimensions
+- **Loading Performance**: Tracks and reports slow-loading elements (>2.5s)
+- **Image Best Practices**: Validates proper `width`, `height`, `loading`, and `fetchPriority` attributes
 
-1. Lazy loading LCP element with `loading="lazy"` attribute
-2. Not using modern light image formats such as `webp`
-3. Not using `fetchPriority="high"`
-4. Not having `width` and `height` attributes set (bad for both LCP and CLS)
-5. LCP loading in more than 2500 miliseconds
-6. Not preloading the LCP element
+### 📦 **Third-Party Script Monitoring**
+- **Script Detection**: Automatically identifies third-party scripts on your pages
+- **Performance Tracking**: Measures load times for external scripts with detailed timing breakdowns
+- **Security Recommendations**: Suggests adding `crossorigin="anonymous"` for better security and error reporting
+- **@nuxt/scripts Integration**: Recommends using `@nuxt/scripts` for better third-party script management
 
-## How it works?
+### 💧 **Hydration Insights**
+- **SSR/Client Mismatch Detection**: Helps identify hydration issues between server and client rendering
 
-The plugin is using [Performance Observer API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver) under the hood to find the potential LCP element and measure metric values such as load time.
-
-Later on, a set of statements is checking whether this LCP element matches the good practices and follows the [Optimize LCP document](https://web.dev/optimize-lcp/) values and recommendations. If not, warnings are displayed in the browser that would allow users to faster find performance bottlenecks and issues. Screenshot below for reference:
-
-<img width="997" alt="Screenshot 2023-03-04 at 11 50 48" src="https://user-images.githubusercontent.com/37120330/222896555-0f4cfc8b-3b61-4fa1-93ec-849a9216c67a.png">
-
-## Todo
-
-- Write documentation about this feature
-- Add other Performance hints
-- Add A11Y hints based on Axe
-- Add Security hints based on NuxtSecurity (OWASP, Helmet, etc)
-
-## Next steps
-
-Keep in mind that this PR is just beginning of the hints that we can show to the users that would allow them to have a better performing website (and improve Lighthouse and Core Web Vitals score).
-
-I have been thinking about developing a functionality that would fix these kind of issues automatically (something like fontaine plugin) but I failed because there is no way to detect LCP programatically (without access to browser) but maybe someone else here would have some interesting ideas for that.
+### 🛠️ **Developer Experience**
+- **Nuxt DevTools Integration**: Rich UI for visualizing performance issues and recommendations
+- **Console Warnings**: Clear, actionable messages with links to web.dev documentation
 
 ## Quick Setup
 
@@ -67,6 +54,36 @@ export default defineNuxtConfig({
 ```
 
 That's it! You can now use Nuxt Hints in your Nuxt app ✨
+
+## How It Works
+
+### Performance Monitoring
+
+Nuxt Hints uses the **Performance Observer API** to monitor your application.
+
+### Third-Party Script Analysis
+
+The module automatically detects and analyzes third-party scripts.
+
+### Example Console Output
+
+When Nuxt Hints detects issues, you'll see warnings in console like:
+
+```
+[@nuxt/hints:performance] LCP Element should not have `loading="lazy"`
+Learn more: https://web.dev/optimize-lcp/#optimize-the-priority-the-resource-is-given
+```
+
+```
+[@nuxt/hints:performance] LCP Element can be served in a next gen format like `webp` or `avif`
+Learn more: https://web.dev/choose-the-right-image-format/
+Use: https://image.nuxt.com/usage/nuxt-img#format
+```
+
+```
+[@nuxt/hints] Third-party script "https://cdn.example.com/script.js" is missing crossorigin attribute. 
+Consider adding crossorigin="anonymous" for better security and error reporting.
+```
 
 ## Development
 
