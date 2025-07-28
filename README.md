@@ -5,7 +5,7 @@
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-Nuxt module that shows hints for aspects of your application such as Performance issues and more!
+Easily detect Performance, Hydration, and Security issues in your Nuxt application !
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
 
