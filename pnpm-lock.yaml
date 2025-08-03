@@ -33,8 +33,8 @@ importers:
         specifier: ^2.3.5
         version: 2.3.5
       vite-plugin-vue-tracer:
-        specifier: ^0.1.5
-        version: 0.1.5(vite@7.0.4(@types/node@22.16.3)(jiti@2.5.1)(terser@5.43.1)(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3))
+        specifier: ^1.0.0
+        version: 1.0.0(vite@7.0.4(@types/node@22.16.3)(jiti@2.5.1)(terser@5.43.1)(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3))
     devDependencies:
       '@nuxt/devtools':
         specifier: ^2.6.2
@@ -5765,12 +5765,6 @@ packages:
     peerDependenciesMeta:
       '@nuxt/kit':
         optional: true
-
-  vite-plugin-vue-tracer@0.1.5:
-    resolution: {integrity: sha512-8jRp5b7nuJ1MPgn2Q3Lx7wd+VwXtDqOU765mj4OjbwQsrrzSwdOUj5DjP9FUX+kkskqdkHkOrsqTzSytMQHVyg==}
-    peerDependencies:
-      vite: ^6.0.0 || ^7.0.0
-      vue: ^3.5.0
 
   vite-plugin-vue-tracer@1.0.0:
     resolution: {integrity: sha512-a+UB9IwGx5uwS4uG/a9kM6fCMnxONDkOTbgCUbhFpiGhqfxrrC1+9BibV7sWwUnwj1Dg6MnRxG0trLgUZslDXA==}
@@ -12413,16 +12407,6 @@ snapshots:
       '@nuxt/kit': 3.17.6(magicast@0.3.5)
     transitivePeerDependencies:
       - supports-color
-
-  vite-plugin-vue-tracer@0.1.5(vite@7.0.4(@types/node@22.16.3)(jiti@2.5.1)(terser@5.43.1)(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3)):
-    dependencies:
-      estree-walker: 3.0.3
-      exsolve: 1.0.7
-      magic-string: 0.30.17
-      pathe: 2.0.3
-      source-map-js: 1.2.1
-      vite: 7.0.4(@types/node@22.16.3)(jiti@2.5.1)(terser@5.43.1)(yaml@2.8.0)
-      vue: 3.5.17(typescript@5.8.3)
 
   vite-plugin-vue-tracer@1.0.0(vite@7.0.4(@types/node@22.16.3)(jiti@2.5.1)(terser@5.43.1)(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3)):
     dependencies:

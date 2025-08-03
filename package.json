@@ -43,7 +43,7 @@
     "shiki": "^3.7.0",
     "sirv": "^3.0.1",
     "unplugin": "^2.3.5",
-    "vite-plugin-vue-tracer": "^0.1.5"
+    "vite-plugin-vue-tracer": "^1.0.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.6.2",
