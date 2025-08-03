@@ -17,9 +17,6 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/__nuxt-hints',
   },
-  future: {
-    compatibilityVersion: 4,
-  },
 
   compatibilityDate: '2024-08-21',
 
