@@ -32,6 +32,12 @@ Easily detect Performance, Hydration, and Security issues in your Nuxt applicati
 
 ## Quick Setup
 
+### Quick install using nuxt CLI
+
+1. run `npx nuxt module add @nuxt/hints`
+
+### Manual install
+
 1. Add `@nuxt/hints` dependency to your project
 
 ```bash
