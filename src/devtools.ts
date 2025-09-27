@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import type { Nuxt } from 'nuxt/schema'
+import type { Nuxt } from '@nuxt/schema'
 import type { Resolver } from '@nuxt/kit'
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-hints'
