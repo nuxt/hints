@@ -25,4 +25,5 @@ jobs:
       - run: pnpm install
       - run: pnpm dev:prepare
       - run: pnpm prepack
+      - run: pnpm test:types
       - run: pnpm lint
