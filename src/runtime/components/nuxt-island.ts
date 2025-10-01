@@ -2,9 +2,7 @@ import NuxtIsland from '#app/components/nuxt-island'
 import { useNuxtApp } from '#imports'
 
 const originalSetup = NuxtIsland.setup!
-const HintsNuxtIsland = {
-  ...NuxtIsland,
-  // @ts-expect-error typed by NuxtIsland
+const HintsNuxtIsland = Object.assign(<typeof NuxtIsland>{}, NuxtIsland, <typeof NuxtIsland>{
   setup(props, ctx) {
     if (useNuxtApp().ssrContext?.islandContext) {
       console.warn(
@@ -13,5 +11,6 @@ const HintsNuxtIsland = {
     }
     return originalSetup(props, ctx)
   },
-}
+})
+
 export default HintsNuxtIsland
