@@ -13,7 +13,7 @@ function wrapWithWarning<Fn extends (...args: any[]) => any>(fn: Fn, name: strin
   } as Fn
 }
 
-export const ref = wrapWithWarning(_ref, 'ref')
-export const reactive = wrapWithWarning(_reactive, 'reactive')
-export const shallowReactive = wrapWithWarning(_shallowReactive, 'shallowReactive')
-export const shallowRef = wrapWithWarning(_shallowRef, 'shallowRef')
+export const ref = import.meta.server ? wrapWithWarning(_ref, 'ref') : _ref
+export const reactive = import.meta.server ? wrapWithWarning(_reactive, 'reactive') : _reactive
+export const shallowReactive = import.meta.server ? wrapWithWarning(_shallowReactive, 'shallowReactive') : _shallowReactive
+export const shallowRef = import.meta.server ? wrapWithWarning(_shallowRef, 'shallowRef') : _shallowRef
