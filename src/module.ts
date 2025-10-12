@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addImports } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -37,6 +37,14 @@ export default defineNuxtModule<ModuleOptions>({
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.client'))
     addServerPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/nitro.plugin'))
+
+    // Imports for server side misusage detection
+    addImports([
+      { from: resolver.resolve('./runtime/composables/vue'), name: 'ref' },
+      { from: resolver.resolve('./runtime/composables/vue'), name: 'shallowRef' },
+      { from: resolver.resolve('./runtime/composables/vue'), name: 'reactive' },
+      { from: resolver.resolve('./runtime/composables/vue'), name: 'shallowReactive' },
+    ])
 
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
