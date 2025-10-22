@@ -2,6 +2,7 @@ import { useHintIssues } from '../../composables/devtoolsData'
 import type { ImagePerformanceData } from '../../composables/devtoolsData'
 import { CLSIssueType, ImagePerformanceIssueType } from './utils'
 import { defineNuxtPlugin } from '#imports'
+import { onINP } from 'web-vitals/attribution'
 
 type ElementNode = ChildNode & { attributes: { href: { value: string } } }
 
@@ -157,6 +158,18 @@ export default defineNuxtPlugin({
           }
         }
       }).observe({ type: 'layout-shift', buffered: true })
+    })
+
+    onINP((metric) => {
+      if (metric.rating === 'good') {
+        return
+      }
+      console.log(
+        '[@nuxt/hints:performance] INP Metric: ',
+        metric,
+      )
+    }, {
+      reportAllChanges: true,
     })
   },
 })
