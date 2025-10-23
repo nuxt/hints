@@ -1,5 +1,5 @@
 import type { ComponentInternalInstance, VNode, Ref } from 'vue'
-import type { ImagePerformanceData } from './src/runtime/plugins/performance/utils'
+import type { ImagePerformanceData } from './src/runtime/plugins/web-vitals/utils'
 
 declare module '#app' {
   interface NuxtApp {
