@@ -1,8 +1,8 @@
+import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import { onINP, onLCP, onCLS } from 'web-vitals/attribution'
 import { useHintIssues } from '../../composables/devtoolsData'
 import type { ImagePerformanceData } from '../../composables/devtoolsData'
 import { CLSIssueType, ImagePerformanceIssueType } from './utils'
-import { defineNuxtPlugin } from '#imports'
-import { onINP } from 'web-vitals/attribution'
 
 type ElementNode = ChildNode & { attributes: { href: { value: string } } }
 
@@ -19,14 +19,14 @@ declare global {
 }
 
 function isImgElement(
-  element: HTMLElement,
+  element: unknown,
 ): element is HTMLImageElement {
-  return element.tagName === 'IMG'
+  return element instanceof Element && element.tagName === 'IMG'
 }
 
 export default defineNuxtPlugin({
   name: 'nuxt-hints:performance',
-  setup(nuxtApp) {
+  setup() {
     const state = useHintIssues()
     const issues = state.imagePerformances
 
@@ -48,18 +48,33 @@ export default defineNuxtPlugin({
       return newIssue
     }
 
+    const nuxtApp = useNuxtApp()
     nuxtApp.hook('app:mounted', () => {
-      new PerformanceObserver((entryList) => {
-        for (const entry of entryList.getEntries()) {
-          const performanceEntry = entry
+      onINP((metric) => {
+        if (metric.rating === 'good') {
+          return
+        }
+        console.info(
+          '[@nuxt/hints:web-vitals] INP Metric: ',
+          metric,
+        )
+      }, {
+        reportAllChanges: true,
+      })
 
-          console.info(
-            '[@nuxt/hints:performance] Potential LCP Element: ',
-            performanceEntry,
-          )
+      onLCP((metric) => {
+        if (metric.rating === 'good') {
+          return
+        }
+        console.info(
+          `[@nuxt/hints:web-vitals] LCP Metric: `,
+          metric,
+        )
 
-          // If element is not an image, stop execution
-          if (!performanceEntry.element || !isImgElement(performanceEntry.element)) return
+        for (const performanceEntry of metric.entries) {
+          if (!performanceEntry.element || !isImgElement(performanceEntry.element)) {
+            continue
+          }
 
           if (performanceEntry.element.attributes?.getNamedItem('loading')?.value === 'lazy') {
             console.warn(
@@ -117,10 +132,19 @@ export default defineNuxtPlugin({
             })
           }
         }
-      }).observe({ type: 'largest-contentful-paint', buffered: true })
+      }, {
+        reportAllChanges: true,
+      })
 
-      new PerformanceObserver((entryList) => {
-        for (const entry of entryList.getEntries()) {
+      onCLS((metric) => {
+        if (metric.rating === 'good') {
+          return
+        }
+        console.info(
+          '[@nuxt/hints:web-vitals] CLS Metric: ', metric,
+        )
+
+        for (const entry of metric.entries) {
           const performanceEntry = entry
 
           if (!performanceEntry.sources?.[0]) return
@@ -139,9 +163,11 @@ export default defineNuxtPlugin({
             console.warn(
               `[@nuxt/hints:performance] CLS was ${performanceEntry.value}. Good result is below 0.1 \n\n Learn more: https://web.dev/articles/cls#what-is-a-good-cls-score`,
             )
-            findAndPushElement(performanceEntry.sources?.[0].node).issues.push({
-              type: CLSIssueType.LayoutShiftTooBig,
-            })
+            if (isImgElement(performanceEntry.sources?.[0].node)) {
+              findAndPushElement(performanceEntry.sources?.[0].node).issues.push({
+                type: CLSIssueType.LayoutShiftTooBig,
+              })
+            }
           }
 
           if (
@@ -157,19 +183,7 @@ export default defineNuxtPlugin({
             })
           }
         }
-      }).observe({ type: 'layout-shift', buffered: true })
-    })
-
-    onINP((metric) => {
-      if (metric.rating === 'good') {
-        return
-      }
-      console.log(
-        '[@nuxt/hints:performance] INP Metric: ',
-        metric,
-      )
-    }, {
-      reportAllChanges: true,
+      })
     })
   },
 })

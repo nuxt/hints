@@ -23,7 +23,7 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // performances
-    addPlugin(resolver.resolve('./runtime/plugins/performance/plugin.client'))
+    addPlugin(resolver.resolve('./runtime/plugins/web-vitals/plugin.client'))
 
     // hydration
     addPlugin(resolver.resolve('./runtime/plugins/hydration/plugin.client'))

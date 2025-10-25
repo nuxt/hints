@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ImagePerformanceIssueType } from '../../../src/runtime/plugins/performance/utils'
+import { ImagePerformanceIssueType } from '../../../src/runtime/plugins/web-vitals/utils'
 
 definePageMeta({
   title: 'Image Performances',

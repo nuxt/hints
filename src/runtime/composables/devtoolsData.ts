@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { ImagePerformanceIssueDetails } from '../plugins/performance/utils'
+import type { ImagePerformanceIssueDetails } from '../plugins/web-vitals/utils'
 import { useNuxtApp } from '#app'
 
 export type ImagePerformanceData = {
