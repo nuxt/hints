@@ -7,10 +7,7 @@ export function useHostPerformancesData() {
     throw new Error('`useHostPerformancesData` must be used when the devtools client is connected')
   }
 
-  return {
-    imagePerformances: client.host.nuxt.__hintsPerformances.imagePerformances,
-    hydration: client.host.nuxt.__hintsHydration,
-  }
+  return client.host.nuxt.__hints
 }
 
 export function useHostThirdPartyScripts() {

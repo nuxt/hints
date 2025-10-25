@@ -53,7 +53,7 @@ export function useHydrationCheck() {
   onMounted(() => {
     const htmlPostHydration = formatHTML(instance.vnode.el?.outerHTML)
     if (htmlPrehydration !== htmlPostHydration) {
-      nuxtApp.__hintsHydration.push({
+      nuxtApp.__hints.hintsHydration.push({
         instance,
         vnode: vnodePrehydration,
         htmlPreHydration: htmlPrehydration,

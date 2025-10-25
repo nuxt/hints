@@ -1,14 +1,18 @@
 import type { ComponentInternalInstance, VNode, Ref } from 'vue'
-import type { ImagePerformanceData } from './src/runtime/plugins/web-vitals/utils'
+import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
 
 declare module '#app' {
   interface NuxtApp {
-    __hintsPerformances: {
-      imagePerformances: Ref<ImagePerformanceData[]>
+    __hints: {
+      hydration: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }[]
+      webvitals: {
+        lcp: Ref<LCPMetricWithAttribution[]>
+        inp: Ref<INPMetricWithAttribution[]>
+        cls: Ref<CLSMetricWithAttribution[]>
+      }
     }
     __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
-    __hintsHydration: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }[]
   }
 }
 

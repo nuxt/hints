@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { imagePerformances, hydration } = useHostPerformancesData()
+const { hydration } = useHostPerformancesData()
 </script>
 
 <template>
@@ -9,20 +9,14 @@ const { imagePerformances, hydration } = useHostPerformancesData()
       flex
       justify-between
       items-center
-      to="/image-performance"
+      to="/web-vitals"
     >
       <span
         flex
         flex-col
         gap-2
       >
-        Image performances
-        <span
-          v-if="imagePerformances.length"
-          text-sm
-        >
-          {{ imagePerformances.length }} image have issues
-        </span>
+        Web vitals
       </span>
 
       <Icon

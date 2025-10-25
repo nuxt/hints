@@ -1,8 +1,12 @@
-import { defineNuxtPlugin } from '#imports'
+import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import { defu } from 'defu'
 
 export default defineNuxtPlugin({
   name: '@nuxt/hints:hydration',
-  setup(nuxtApp) {
-    nuxtApp.__hintsHydration = []
+  setup() {
+    const nuxtApp = useNuxtApp()
+    nuxtApp.__hints = defu(nuxtApp.__hints, {
+      hydration: [],
+    })
   },
 })
