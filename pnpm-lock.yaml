@@ -14,6 +14,9 @@ importers:
       '@nuxt/kit':
         specifier: ^4.1.2
         version: 4.2.0(magicast@0.3.5)
+      h3:
+        specifier: 2.0.1-rc.4
+        version: 2.0.1-rc.4
       magic-string:
         specifier: ^0.30.19
         version: 0.30.21
@@ -2846,6 +2849,15 @@ packages:
   h3@1.15.4:
     resolution: {integrity: sha512-z5cFQWDffyOe4vQ9xIqNfCZdV4p//vy6fBnr8Q1AWnVZ0teurKMG66rLj++TKwKPUP3u7iMUvrvKaEUiQw2QWQ==}
 
+  h3@2.0.1-rc.4:
+    resolution: {integrity: sha512-vZq8pEUp6THsXKXrUXX44eOqfChic2wVQ1GlSzQCBr7DeFBkfIZAo2WyNND4GSv54TAa0E4LYIK73WSPdgKUgw==}
+    engines: {node: '>=20.11.1'}
+    peerDependencies:
+      crossws: ^0.4.1
+    peerDependenciesMeta:
+      crossws:
+        optional: true
+
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
@@ -3964,6 +3976,9 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
+  rou3@0.7.8:
+    resolution: {integrity: sha512-21X/el5fdOaEsqwl3an/d9kpZ8hshVIyrwFCpsoleJ4ccAGRbN+PVoxyXzWXkHDxfMkVnLe4yzx+imz2qoem2Q==}
+
   run-applescript@7.1.0:
     resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
     engines: {node: '>=18'}
@@ -4098,6 +4113,11 @@ packages:
 
   srvx@0.8.16:
     resolution: {integrity: sha512-hmcGW4CgroeSmzgF1Ihwgl+Ths0JqAJ7HwjP2X7e3JzY7u4IydLMcdnlqGQiQGUswz+PO9oh/KtCpOISIvs9QQ==}
+    engines: {node: '>=20.16.0'}
+    hasBin: true
+
+  srvx@0.9.1:
+    resolution: {integrity: sha512-5aj0RC0IGUMoSClrFvwz8AJkI4x6y91treTDN8CALV7sib/7szhPN4RbbcgLJ+YMZ0gz1XDoiiPA+SgZ5Gm8Uw==}
     engines: {node: '>=20.16.0'}
     hasBin: true
 
@@ -8043,6 +8063,11 @@ snapshots:
       ufo: 1.6.1
       uncrypto: 0.1.3
 
+  h3@2.0.1-rc.4:
+    dependencies:
+      rou3: 0.7.8
+      srvx: 0.9.1
+
   has-flag@4.0.0: {}
 
   hasown@2.0.2:
@@ -9329,6 +9354,8 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.52.5
       fsevents: 2.3.3
 
+  rou3@0.7.8: {}
+
   run-applescript@7.1.0: {}
 
   run-parallel@1.2.0:
@@ -9469,6 +9496,8 @@ snapshots:
       vue: 3.5.22(typescript@5.9.3)
 
   srvx@0.8.16: {}
+
+  srvx@0.9.1: {}
 
   stable-hash-x@0.2.0: {}
 
