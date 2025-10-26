@@ -1,3 +1,6 @@
+import type { ComponentInternalInstance, VNode, Ref } from 'vue'
+import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
+
 declare global {
   interface Window {
     __hints_TPC_start_time: number
@@ -11,6 +14,9 @@ declare global {
     totalNetworkTime?: number
     parseExecuteTime?: number
     loaded?: boolean
+  }
+  interface Element {
+    __vnode?: VNode
   }
 }
 declare module '#app' {
@@ -26,6 +32,16 @@ declare module '#app' {
 
   interface NuxtApp {
     __hints_tpc: Ref<{ element: HTMLScriptElement, loaded: boolean }[]>
+    __hints: {
+      hydration: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }[]
+      webvitals: {
+        lcp: Ref<LCPMetricWithAttribution[]>
+        inp: Ref<INPMetricWithAttribution[]>
+        cls: Ref<CLSMetricWithAttribution[]>
+      }
+    }
+    __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
+    __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
   }
 }
 
