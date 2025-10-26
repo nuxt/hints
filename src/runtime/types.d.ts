@@ -17,6 +17,11 @@ declare module '#app' {
   interface RuntimeNuxtHooks {
     'hints:scripts:added': (script: HTMLScriptElement) => void
     'hints:scripts:loaded': (script: HTMLScriptElement) => void
+
+    'hints:webvitals:sync': (webvitals: NuxtApp['__hints']['webvitals']) => void
+    'hints:webvitals:lcp': (metric: LCPMetricWithAttribution) => void
+    'hints:webvitals:inp': (metric: INPMetricWithAttribution) => void
+    'hints:webvitals:cls': (metric: CLSMetricWithAttribution) => void
   }
 
   interface NuxtApp {

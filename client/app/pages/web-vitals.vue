@@ -14,7 +14,29 @@ const headers = [
   { title: 'CLS', key: 'cls', articleLink: 'https://web.dev/articles/cls', description: 'Cumulative Layout Shift' },
 ] as const
 
-const { webvitals } = useHostPerformancesData()
+const lcp = ref<LCPMetricWithAttribution[]>([])
+const inp = ref<INPMetricWithAttribution[]>([])
+const cls = ref<CLSMetricWithAttribution[]>([])
+
+const hostNuxt = useHostNuxt()
+
+hostNuxt.callHook('hints:webvitals:sync', { lcp, inp, cls })
+
+const unsubArray = [
+  hostNuxt.hook('hints:webvitals:cls', (metric: CLSMetricWithAttribution) => {
+    cls.value.push(metric)
+  }),
+  hostNuxt.hook('hints:webvitals:lcp', (metric: LCPMetricWithAttribution) => {
+    lcp.value.push(metric)
+  }),
+  hostNuxt.hook('hints:webvitals:inp', (metric: INPMetricWithAttribution) => {
+    inp.value.push(metric)
+  }),
+]
+
+onBeforeUnmount(() => {
+  unsubArray.forEach(unsub => unsub())
+})
 
 const selectedHeader = ref<typeof headers[number]['key']>()
 
@@ -23,32 +45,22 @@ type AllItem
     | { type: 'inp', metric: INPMetricWithAttribution }
     | { type: 'cls', metric: CLSMetricWithAttribution }
 
-const allMetricsFlat = computed<AllItem[]>(() => {
-  return [
-    ...((webvitals.lcp.value).map(m => ({ type: 'lcp', metric: m })) as AllItem[]),
-    ...((webvitals.inp.value).map(m => ({ type: 'inp', metric: m })) as AllItem[]),
-    ...((webvitals.cls.value).map(m => ({ type: 'cls', metric: m })) as AllItem[]),
-  ]
-})
-
 const displayItems = computed<AllItem[]>(() => {
   if (selectedHeader.value === 'lcp') {
-    return (webvitals.lcp.value).map(m => ({ type: 'lcp', metric: m })) as AllItem[]
+    return (lcp.value).map(m => ({ type: 'lcp', metric: m })) as AllItem[]
   }
   if (selectedHeader.value === 'inp') {
-    return (webvitals.inp.value).map(m => ({ type: 'inp', metric: m })) as AllItem[]
+    return (inp.value).map(m => ({ type: 'inp', metric: m })) as AllItem[]
   }
   if (selectedHeader.value === 'cls') {
-    return (webvitals.cls.value).map(m => ({ type: 'cls', metric: m })) as AllItem[]
+    return (cls.value).map(m => ({ type: 'cls', metric: m })) as AllItem[]
   }
-  return allMetricsFlat.value
+  return [
+    ...((lcp.value).map(m => ({ type: 'lcp', metric: m })) as AllItem[]),
+    ...((inp.value).map(m => ({ type: 'inp', metric: m })) as AllItem[]),
+    ...((cls.value).map(m => ({ type: 'cls', metric: m })) as AllItem[]),
+  ]
 })
-
-const componentFor = {
-  lcp: WebVitalsLCPMetric,
-  inp: WebVitalsINPMetric,
-  cls: WebVitalsCLSMetric,
-} as const
 </script>
 
 <template>
@@ -126,12 +138,20 @@ const componentFor = {
       gap-3
     >
       <template v-if="displayItems.length">
-        <component
-          :is="componentFor[item.type]"
-          v-for="item in displayItems"
-          :key="item.metric.id"
-          :metric="(item.metric as any)"
-        />
+        <template v-for="item in displayItems">
+          <WebVitalsCLSMetric
+            v-if="item.type === 'cls'"
+            :metric="item.metric"
+          />
+          <WebVitalsLCPMetric
+            v-else-if="item.type === 'lcp'"
+            :metric="item.metric"
+          />
+          <WebVitalsINPMetric
+            v-else-if="item.type === 'inp'"
+            :metric="item.metric"
+          />
+        </template>
       </template>
       <div
         v-else

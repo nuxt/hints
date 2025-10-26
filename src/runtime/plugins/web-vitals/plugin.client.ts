@@ -1,6 +1,7 @@
-import { defineNuxtPlugin, useNuxtApp, ref } from '#imports'
+import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { onINP, onLCP, onCLS } from 'web-vitals/attribution'
 import { defu } from 'defu'
+import { ref } from 'vue'
 
 type ElementNode = ChildNode & { attributes: { href: { value: string } } }
 
@@ -33,6 +34,13 @@ export default defineNuxtPlugin({
         cls: ref([]),
       },
     })
+
+    nuxtApp.hook('hints:webvitals:sync', (webvitals) => {
+      webvitals.lcp.value = [...nuxtApp.__hints.webvitals.lcp.value]
+      webvitals.inp.value = [...nuxtApp.__hints.webvitals.inp.value]
+      webvitals.cls.value = [...nuxtApp.__hints.webvitals.cls.value]
+    })
+
     nuxtApp.hook('app:mounted', () => {
       onINP((metric) => {
         if (metric.rating === 'good') {
@@ -43,6 +51,7 @@ export default defineNuxtPlugin({
           metric,
         )
         nuxtApp.__hints.webvitals.inp.value.push(metric)
+        nuxtApp.callHook('hints:webvitals:inp', metric)
       }, {
         reportAllChanges: true,
       })
@@ -56,6 +65,7 @@ export default defineNuxtPlugin({
           metric,
         )
         nuxtApp.__hints.webvitals.lcp.value.push(metric)
+        nuxtApp.callHook('hints:webvitals:lcp', metric)
 
         for (const performanceEntry of metric.entries) {
           if (!performanceEntry.element || !isImgElement(performanceEntry.element)) {
@@ -113,6 +123,10 @@ export default defineNuxtPlugin({
         }
         console.info(
           '[@nuxt/hints:web-vitals] CLS Metric: ', metric,
+        )
+        nuxtApp.callHook(
+          'hints:webvitals:cls',
+          metric,
         )
         // Push the metric as-is; components will access entries[0] directly for element
         nuxtApp.__hints.webvitals.cls.value.push(metric)

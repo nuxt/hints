@@ -22,3 +22,13 @@ export function useHostThirdPartyScripts() {
     isUsingNuxtScripts: Boolean(client.host.nuxt.$scripts),
   }
 }
+
+export function useHostNuxt() {
+  const client = useDevtoolsClient().value
+
+  if (!client) {
+    throw new Error('`useHostNuxt` must be used when the devtools client is connected')
+  }
+
+  return client.host.nuxt
+}
