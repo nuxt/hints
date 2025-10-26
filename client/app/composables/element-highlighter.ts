@@ -44,6 +44,8 @@ function removeOverlay() {
 }
 
 export function useElementHighlighter() {
+  const client = useDevtoolsClient()
+
   const highlightElement = (element: HTMLElement | undefined) => {
     if (!element) {
       removeOverlay()
@@ -72,8 +74,8 @@ export function useElementHighlighter() {
     if (!element)
       return
 
-    const client = useDevtoolsClient().value
-    if (!client)
+    const clientValue = client.value
+    if (!clientValue)
       return
 
     // Use devtools inspector to open element in editor
