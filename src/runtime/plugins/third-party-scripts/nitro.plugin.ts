@@ -1,7 +1,6 @@
-/// <reference types="nuxt" />
-import type { NitroAppPlugin } from 'nitropack/types'
+import type { NitroApp } from 'nitropack/types'
 
-export default <NitroAppPlugin> function (nitroApp) {
+export default function (nitroApp: NitroApp) {
   nitroApp.hooks.hook('render:html', ({ head }) => {
     head.unshift(`
 <script>
