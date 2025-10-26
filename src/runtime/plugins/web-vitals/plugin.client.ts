@@ -1,9 +1,7 @@
 import { defineNuxtPlugin, useNuxtApp, ref } from '#imports'
-import { onINP, onLCP, onCLS, onTTFB } from 'web-vitals/attribution'
-import { useHintIssues } from '../../composables/devtoolsData'
-import type { ImagePerformanceData } from '../../composables/devtoolsData'
-import { CLSIssueType, ImagePerformanceIssueType } from './utils'
+import { onINP, onLCP, onCLS } from 'web-vitals/attribution'
 import { defu } from 'defu'
+
 type ElementNode = ChildNode & { attributes: { href: { value: string } } }
 
 declare global {
@@ -116,6 +114,7 @@ export default defineNuxtPlugin({
         console.info(
           '[@nuxt/hints:web-vitals] CLS Metric: ', metric,
         )
+        // Push the metric as-is; components will access entries[0] directly for element
         nuxtApp.__hints.webvitals.cls.value.push(metric)
 
         for (const entry of metric.entries) {
@@ -137,9 +136,6 @@ export default defineNuxtPlugin({
             console.warn(
               `[@nuxt/hints:performance] CLS was ${performanceEntry.value}. Good result is below 0.1 \n\n Learn more: https://web.dev/articles/cls#what-is-a-good-cls-score`,
             )
-            if (isImgElement(performanceEntry.sources?.[0].node)) {
-
-            }
           }
 
           if (

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { CLSMetricWithAttribution } from 'web-vitals'
 
-defineProps<{
+const props = defineProps<{
   metric: CLSMetricWithAttribution
 }>()
+
+const element = computed(() => props.metric.entries[0]?.sources?.[0]?.node as HTMLElement | undefined)
 
 const formatScore = (score: number) => score.toFixed(4)
 const formatTime = (time: number) => `${time.toFixed(0)}ms`
@@ -51,26 +53,12 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       </div>
 
       <!-- Largest Shift Info -->
-      <div
+      <ElementInfo
         v-if="metric.attribution.largestShiftTarget"
-        border
-        border-gray-200
-        rounded
-        p-2
-        bg-gray-50
-      >
-        <div
-          text-xs
-          text-gray-500
-          mb-1
-        >
-          Largest Shift Element
-        </div>
-        <code
-          text-sm
-          text-purple-600
-        >{{ metric.attribution.largestShiftTarget }}</code>
-      </div>
+        label="Largest Shift Element"
+        :target="metric.attribution.largestShiftTarget"
+        :element="element"
+      />
 
       <!-- Shift Details -->
       <div

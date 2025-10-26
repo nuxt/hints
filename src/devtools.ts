@@ -1,9 +1,8 @@
 import { existsSync } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
-import { addDevServerHandler, addVitePlugin, type Resolver } from '@nuxt/kit'
-import { defu } from 'defu'
-import { sendProxy, proxyRequest, eventHandler } from 'h3'
- 
+import { addDevServerHandler, type Resolver } from '@nuxt/kit'
+import { proxyRequest, eventHandler } from 'h3'
+
 const DEVTOOLS_UI_ROUTE = '/__nuxt-hints'
 const DEVTOOLS_UI_LOCAL_PORT = 3300
 

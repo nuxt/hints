@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { LCPMetricWithAttribution } from 'web-vitals'
 
-defineProps<{
+const props = defineProps<{
   metric: LCPMetricWithAttribution
 }>()
+
+const element = computed(() => props.metric.entries[0]?.element as HTMLElement | undefined)
 
 const formatTime = (time: number) => `${time.toFixed(0)}ms`
 </script>
@@ -50,35 +52,24 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       </div>
 
       <!-- Element Info -->
-      <div
+      <ElementInfo
         v-if="metric.attribution.target"
-        border
-        border-gray-200
-        rounded
-        p-2
-        bg-gray-50
+        label="LCP Element"
+        :target="metric.attribution.target"
+        :element="element"
       >
-        <div
-          text-xs
-          text-gray-500
-          mb-1
-        >
-          LCP Element
-        </div>
-        <code
-          text-sm
-          text-purple-600
-        >{{ metric.attribution.target }}</code>
-        <div
-          v-if="metric.attribution.url"
-          text-xs
-          text-gray-600
-          mt-1
-          break-all
-        >
-          {{ metric.attribution.url }}
-        </div>
-      </div>
+        <template #sub>
+          <div
+            v-if="metric.attribution.url"
+            text-xs
+            text-gray-600
+            mt-1
+            break-all
+          >
+            {{ metric.attribution.url }}
+          </div>
+        </template>
+      </ElementInfo>
 
       <!-- Timing Breakdown -->
       <div

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { INPMetricWithAttribution } from 'web-vitals'
 
-defineProps<{
+const props = defineProps<{
   metric: INPMetricWithAttribution
 }>()
+
+const element = computed(() => props.metric.entries[0]?.target as HTMLElement | undefined)
 
 const formatTime = (time: number) => `${time.toFixed(0)}ms`
 </script>
@@ -50,25 +52,12 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       </div>
 
       <!-- Interaction Info -->
-      <div
-        border
-        border-gray-200
-        rounded
-        p-2
-        bg-gray-50
+      <ElementInfo
+        label="Interaction Target"
+        :target="metric.attribution.interactionTarget"
+        :element="element"
       >
-        <div
-          flex
-          items-center
-          justify-between
-          mb-2
-        >
-          <div
-            text-xs
-            text-gray-500
-          >
-            Interaction Target
-          </div>
+        <template #header-right>
           <span
             text-xs
             font-semibold
@@ -77,12 +66,8 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
           >
             {{ metric.attribution.interactionType }}
           </span>
-        </div>
-        <code
-          text-sm
-          text-purple-600
-        >{{ metric.attribution.interactionTarget }}</code>
-      </div>
+        </template>
+      </ElementInfo>
 
       <!-- Timing Breakdown -->
       <div
