@@ -35,5 +35,9 @@ jobs:
       - name: Build (stub)
         run: pnpm dev:prepare
 
+      - run: npx changelogithub
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
       - name: Publish
         run: pnpm publish --access public --no-git-checks
