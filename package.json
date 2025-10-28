@@ -46,7 +46,7 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^2.6.5",
+    "@nuxt/devtools": "^3.0.0",
     "@nuxt/devtools-ui-kit": "^2.6.5",
     "@nuxt/eslint": "^1.9.0",
     "@nuxt/icon": "^2.0.0",
