@@ -1,8 +1,9 @@
 {
   "name": "@nuxt/hints",
   "version": "1.0.0",
-  "description": "Nuxt module that shows hints for aspects of your application such as Performance, A11Y, Security, and more!",
-  "repository": "nuxt/hints",
+  "description": "Nuxt module that shows hints for aspects of your application such as Performance, Security, and more!",
+  "repository": "https://github.com/nuxt/hints",
+  "homepage": "https://github.com/nuxt/hints",
   "license": "MIT",
   "type": "module",
   "exports": {
