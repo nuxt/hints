@@ -1,5 +1,6 @@
 import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
 import type { CLSMetricWithAttribution, INPMetricWithAttribution, LCPMetricWithAttribution } from 'web-vitals/attribution'
+import { computed, onScopeDispose, ref } from 'vue'
 
 export function useHostThirdPartyScripts() {
   const client = useDevtoolsClient().value
