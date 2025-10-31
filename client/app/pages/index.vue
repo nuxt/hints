@@ -11,7 +11,9 @@ const hydrationCount = computed(() => hydration.length || 0)
       to="/web-vitals"
       class="block"
     >
-      <n-card class="flex items-center justify-between p-4">
+      <n-card
+        class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500"
+      >
         <div class="flex items-center gap-3 min-w-0">
           <Icon
             name="material-symbols:monitoring"
@@ -21,7 +23,7 @@ const hydrationCount = computed(() => hydration.length || 0)
             <div class="text-sm font-medium truncate">
               Web Vitals
             </div>
-            <div class="text-xs text-gray-500">
+            <div class="text-xs text-neutral-500">
               LCP / INP / CLS
             </div>
           </div>
@@ -38,7 +40,7 @@ const hydrationCount = computed(() => hydration.length || 0)
       to="/hydration"
       class="block"
     >
-      <n-card class="flex items-center justify-between p-4">
+      <n-card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
         <div class="flex items-center gap-3 min-w-0">
           <Icon
             name="material-symbols:water-full"
@@ -48,7 +50,7 @@ const hydrationCount = computed(() => hydration.length || 0)
             <div class="text-sm font-medium truncate">
               Hydration
             </div>
-            <div class="text-xs text-gray-500">
+            <div class="text-xs text-neutral-500">
               SSR vs client diffs
             </div>
           </div>
@@ -68,13 +70,18 @@ const hydrationCount = computed(() => hydration.length || 0)
       to="/third-party-scripts"
       class="block"
     >
-      <n-card class="p-4 flex items-center gap-3">
+      <n-card class="p-4 flex items-center gap-3 hover:border-neutral-400 dark:hover:border-neutral-500">
         <Icon
           name="material-symbols:extension"
           class="text-xl text-violet-500"
         />
-        <div class="text-sm font-medium truncate">
-          Third party scripts
+        <div class="min-w-0">
+          <div class="text-sm font-medium truncate">
+            Third party scripts
+          </div>
+          <div class="text-xs text-neutral-500">
+            Analyze third-party scripts speed.
+          </div>
         </div>
       </n-card>
     </NuxtLink>

@@ -62,7 +62,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
           <div
             v-if="metric.attribution.url"
             text-xs
-            text-gray-600
+            text-neutral-600
             mt-1
             break-all
           >
@@ -79,13 +79,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       >
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Time to First Byte
           </div>
@@ -100,13 +100,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
 
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Resource Load Delay
           </div>
@@ -121,13 +121,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
 
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Resource Load Duration
           </div>
@@ -142,13 +142,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
 
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Element Render Delay
           </div>
@@ -165,7 +165,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       <!-- ID -->
       <div
         text-xs
-        text-gray-400
+        text-neutral-400
       >
         ID: {{ metric.id }}
       </div>
