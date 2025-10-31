@@ -56,6 +56,7 @@
     "@types/node": "^24.0.0",
     "changelogen": "^0.6.0",
     "eslint": "^9.36.0",
+    "pkg-pr-new": "0.0.60",
     "rimraf": "^6.0.1",
     "vitest": "^4.0.0"
   },
