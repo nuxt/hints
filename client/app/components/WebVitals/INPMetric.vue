@@ -77,13 +77,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       >
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Input Delay
           </div>
@@ -98,13 +98,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
 
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Processing
           </div>
@@ -119,13 +119,13 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
 
         <div
           border
-          border-gray-200
+          border-neutral-200
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
           >
             Presentation
           </div>
@@ -158,7 +158,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         </div>
         <div
           text-xs
-          text-gray-600
+          text-neutral-600
         >
           {{ metric.attribution.longAnimationFrameEntries.length }} frame(s)
         </div>
@@ -168,7 +168,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
           text-xs
         >
           <div
-            text-gray-500
+            text-neutral-500
             mb-1
           >
             Longest Script ({{ metric.attribution.longestScript.subpart }})
@@ -192,7 +192,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       >
         <div>
           <span
-            text-gray-500
+            text-neutral-500
           >Total Script:</span>
           <span
             font-mono
@@ -201,7 +201,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         </div>
         <div>
           <span
-            text-gray-500
+            text-neutral-500
           >Style & Layout:</span>
           <span
             font-mono
@@ -210,7 +210,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         </div>
         <div v-if="metric.attribution.totalPaintDuration !== undefined">
           <span
-            text-gray-500
+            text-neutral-500
           >Paint:</span>
           <span
             font-mono
@@ -219,7 +219,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         </div>
         <div v-if="metric.attribution.totalUnattributedDuration !== undefined">
           <span
-            text-gray-500
+            text-neutral-500
           >Unattributed:</span>
           <span
             font-mono
@@ -234,7 +234,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         items-center
         justify-between
         text-xs
-        text-gray-400
+        text-neutral-400
       >
         <span>Load State: {{ metric.attribution.loadState }}</span>
         <span>ID: {{ metric.id }}</span>

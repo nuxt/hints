@@ -30,7 +30,7 @@ export default defineNuxtModule<ModuleOptions>({
     addBuildPlugin(InjectHydrationPlugin)
     addComponent({
       name: 'NuxtIsland',
-      filePath: resolver.resolve('./runtime/components/nuxt-island.ts'),
+      filePath: resolver.resolve('./runtime/components/nuxt-island'),
       priority: 1000,
     })
 

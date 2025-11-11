@@ -47,68 +47,35 @@ const displayItems = computed<AllItem[]>(() => {
     grid
     gap-4
   >
-    <header class="overflow-x-auto flex gap-4 grid-cols-4">
+    <header class="overflow-x-auto grid gap-4 grid-cols-4">
       <!-- All metrics button -->
-      <n-button
-        p-2
-        hoverable
+      <n-card
+        class="p-2 flex flex-col justify-center gap-1 cursor-pointer"
+        :class="[!selectedHeader ? 'border-neutral-500 dark:border-neutral-400 bg-neutral-50 dark:bg-neutral-800' : 'hover:border-neutral-400 dark:hover:border-neutral-500']"
         @click="selectedHeader = undefined"
       >
-        <div
-          flex
-          flex-col
-          gap-2
-        >
-          <span
-            font-bold
-            text-lg
-          >
-            All
-          </span>
-          <p
-            text-xs
-            text-gray-500
-          >
-            Show all issues
-          </p>
-        </div>
-      </n-button>
-      <n-button
+        <span class="text-lg font-bold">All</span>
+        <span class="text-xs text-neutral-700 dark:text-neutral-300">Show all issues</span>
+      </n-card>
+      <n-card
         v-for="header in headers"
-        p-2
-        hoverable
+        class="p-2 gap-1 flex flex-col justify-center cursor-pointer"
+        :class="[selectedHeader === header.key ? 'border-neutral-500 dark:border-neutral-400 bg-neutral-50 dark:bg-neutral-800' : 'hover:border-neutral-400 dark:hover:border-neutral-500']"
         @click="selectedHeader = selectedHeader === header.key ? undefined : header.key"
       >
-        <div
-          flex
-          flex-col
-          gap-2
+        <span class="text-lg font-bold">{{ header.title }}</span>
+        <span class="text-xs text-neutral-700 dark:text-neutral-300">{{ header.description }}</span>
+        <a
+          :href="header.articleLink"
+          target="_blank"
+          class="flex items-center gap-0.5 truncate max-w-full text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
+          rel="noopener noreferrer"
+          text-sm
         >
-          <span
-            font-bold
-            text-lg
-          >
-            {{ header.title }}
-          </span>
-          <span
-            text-xs
-            text-gray-500
-          >{{ header.description }}</span>
-          <p>
-            <span>Read more at</span>
-            <a
-              :href="header.articleLink"
-              target="_blank"
-              class="flex items-center gap-1 truncate max-w-full"
-              rel="noopener noreferrer"
-              text-sm
-            >
-              {{ header.articleLink }}
-              <icon name="akar-icons:link-out" />
-            </a>
-          </p>
-        </div>
-      </n-button>
+          {{ header.articleLink }}
+          <icon name="lucide:arrow-up-right" />
+        </a>
+      </n-card>
     </header>
 
     <main
@@ -135,9 +102,9 @@ const displayItems = computed<AllItem[]>(() => {
         v-else
         text-center
         py-8
-        text-gray-500
+        text-neutral-500
       >
-        No performance issues detected. All metrics are good! 🎉
+        No performance issues detected. {{ selectedHeader ? selectedHeader?.toUpperCase() : 'All' }} metrics are good! 🎉
       </div>
     </main>
   </div>

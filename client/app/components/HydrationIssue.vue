@@ -84,7 +84,7 @@ function copy(text: string) {
         <div class="text-sm font-semibold">
           {{ componentName }}
         </div>
-        <div class="text-xs text-gray-500 truncate">
+        <div class="text-xs text-neutral-500 truncate">
           {{ filePath }}
         </div>
         <div class="mt-1 flex flex-wrap gap-2 text-[11px]">
@@ -148,7 +148,7 @@ function copy(text: string) {
 
     <div class="grid mt-3 gap-2 grid-cols-2">
       <div>
-        <div class="text-xs text-gray-500 mb-1">
+        <div class="text-xs text-neutral-500 mb-1">
           Pre Hydration
         </div>
         <div
@@ -157,7 +157,7 @@ function copy(text: string) {
         />
       </div>
       <div>
-        <div class="text-xs text-gray-500 mb-1">
+        <div class="text-xs text-neutral-500 mb-1">
           Post Hydration
         </div>
         <div

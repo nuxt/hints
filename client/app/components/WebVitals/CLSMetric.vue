@@ -69,13 +69,15 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       >
         <div
           border
-          border-gray-200
+          border-neutral-200
+          dark:border-neutral-800
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
+            dark:text-neutral-400
           >
             Largest Shift Score
           </div>
@@ -91,13 +93,15 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         <div
           v-if="metric.attribution.largestShiftTime !== undefined"
           border
-          border-gray-200
+          border-neutral-200
+          dark:border-neutral-800
           rounded
           p-2
         >
           <div
             text-xs
-            text-gray-500
+            text-neutral-500
+            dark:text-neutral-400
           >
             Shift Time
           </div>
@@ -115,14 +119,14 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
       <div
         v-if="metric.entries.length"
         border
-        border-blue-200
         rounded
         p-2
-        bg-blue-50
+        class="bg-blue-50 dark:bg-blue-800/10 border-blue-200 dark:border-blue-800"
       >
         <div
           text-xs
           text-blue-700
+          dark:text-blue-400
           font-semibold
         >
           Total Layout Shifts: {{ metric.entries.length }}
@@ -135,7 +139,8 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         items-center
         justify-between
         text-xs
-        text-gray-400
+        text-neutral-500
+        dark:text-neutral-400
       >
         <span v-if="metric.attribution.loadState">Load State: {{ metric.attribution.loadState }}</span>
         <span>ID: {{ metric.id }}</span>

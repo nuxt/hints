@@ -32,9 +32,10 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
 
   nuxt.hook('devtools:customTabs', (tabs) => {
     tabs.push({
-      name: 'nuxt-hints',
-      title: '@nuxt/hints',
-      icon: 'carbon:apps',
+      name: 'hints',
+      title: 'Hints',
+      icon: 'carbon:idea',
+      category: 'analyze',
       view: {
         type: 'iframe',
         src: DEVTOOLS_UI_ROUTE,

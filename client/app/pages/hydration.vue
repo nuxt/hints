@@ -12,9 +12,17 @@ const { hydration } = useHostHydration()
     gap-4
     p-4
   >
-    <HydrationIssue
-      v-for="issue in hydration"
-      :issue="issue"
-    />
+    <template v-if="hydration.length">
+      <HydrationIssue
+        v-for="issue in hydration"
+        :issue="issue"
+      />
+    </template>
+    <div
+      v-else
+      class="text-neutral-500 dark:text-neutral-400"
+    >
+      No hydration issues found
+    </div>
   </div>
 </template>

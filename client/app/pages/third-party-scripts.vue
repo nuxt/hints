@@ -7,7 +7,7 @@
     >
       <n-card p-3>
         <div
-          class="text-xs text-gray-500"
+          class="text-xs text-neutral-500"
         >
           3rd-party scripts
         </div>
@@ -19,7 +19,7 @@
       </n-card>
       <n-card p-3>
         <div
-          class="text-xs text-gray-500"
+          class="text-xs text-neutral-500"
         >
           Loaded
         </div>
@@ -31,7 +31,7 @@
       </n-card>
       <n-card p-3>
         <div
-          class="text-xs text-gray-500"
+          class="text-xs text-neutral-500"
         >
           Slow network (>{{ thresholds.network }}ms)
         </div>
@@ -43,7 +43,7 @@
       </n-card>
       <n-card p-3>
         <div
-          class="text-xs text-gray-500"
+          class="text-xs text-neutral-500"
         >
           Long parse (>{{ thresholds.parse }}ms)
         </div>
@@ -55,7 +55,7 @@
       </n-card>
       <n-card p-3>
         <div
-          class="text-xs text-gray-500"
+          class="text-xs text-neutral-500"
         >
           Render-blocking
         </div>
@@ -89,7 +89,7 @@
             class="min-w-0"
           >
             <div
-              class="text-xs text-gray-500"
+              class="text-xs text-neutral-500"
             >
               {{ s.domain }}
             </div>
@@ -192,7 +192,7 @@
             class="n-border-base border rounded p-2"
           >
             <div
-              class="text-xs text-gray-500"
+              class="text-xs text-neutral-500"
             >
               Total network
             </div>
@@ -206,7 +206,7 @@
             class="n-border-base border rounded p-2"
           >
             <div
-              class="text-xs text-gray-500"
+              class="text-xs text-neutral-500"
             >
               Parse + execute
             </div>
@@ -220,7 +220,7 @@
             class="n-border-base border rounded p-2"
           >
             <div
-              class="text-xs text-gray-500"
+              class="text-xs text-neutral-500"
             >
               Request
             </div>
@@ -234,7 +234,7 @@
             class="n-border-base border rounded p-2"
           >
             <div
-              class="text-xs text-gray-500"
+              class="text-xs text-neutral-500"
             >
               Download
             </div>

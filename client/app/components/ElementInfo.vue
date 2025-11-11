@@ -21,11 +21,13 @@ const onClick = () => {
 <template>
   <div
     border
-    border-gray-200
+    border-neutral-200
+    dark:border-neutral-700
     rounded
     p-2
-    bg-gray-50
-    :class="element ? 'cursor-pointer hover:bg-gray-100 transition-colors' : ''"
+    bg-neutral-50
+    dark:bg-neutral-800
+    :class="element ? 'cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors' : ''"
     @mouseenter="onEnter"
     @mouseleave="onLeave"
     @click="onClick"
@@ -38,12 +40,14 @@ const onClick = () => {
     >
       <div
         text-xs
-        text-gray-500
+        text-neutral-500
+        dark:text-neutral-400
       >
         {{ label }}
         <span
           v-if="element"
           text-blue-600
+          dark:text-blue-400
           ml-1
         >(hover to highlight, click to inspect)</span>
       </div>
