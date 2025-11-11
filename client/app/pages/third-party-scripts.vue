@@ -105,84 +105,84 @@
           <div
             class="flex items-center gap-2 shrink-0"
           >
-            <n-tag
+            <n-tip
               :type="s.loaded ? 'success' : 'warning'"
               size="small"
             >
               {{ s.loaded ? 'Loaded' : 'Pending' }}
-            </n-tag>
+            </n-tip>
           </div>
         </div>
 
         <div
           class="mt-2 flex flex-wrap gap-2 text-[11px]"
         >
-          <n-tag
+          <n-tip
             v-if="s.renderBlocking"
             type="error"
             size="small"
             title="In document head and not async/defer/module; blocks HTML parsing and delays first paint. Prefer defer or type=module."
           >
             render-blocking
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.isModule"
             size="small"
             title="Module scripts are deferred by default and don't block parsing; execution order differs from classic scripts."
           >
             module
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.async"
             size="small"
             title="Doesn't block parsing; executes as soon as it's downloaded. Order is not guaranteed."
           >
             async
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.defer"
             size="small"
             title="Doesn't block parsing; executes after document parsing, preserving script order."
           >
             defer
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.crossorigin"
             size="small"
             title="CORS mode for this script. Use 'anonymous' for cross-origin with SRI and better error reporting."
           >
             crossorigin={{ s.crossorigin }}
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-else
             type="warning"
             size="small"
             title="Cross-origin script without crossorigin. Add crossorigin='anonymous' for SRI and better error reporting."
           >
             missing crossorigin
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.integrity"
             size="small"
             title="Subresource Integrity: protects against CDN/script tampering."
           >
             sri
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.referrerPolicy"
             size="small"
             title="Referrer policy controls the Referer header for this request."
           >
             referrer={{ s.referrerPolicy }}
-          </n-tag>
-          <n-tag
+          </n-tip>
+          <n-tip
             v-if="s.https === false"
             type="error"
             size="small"
             title="Loaded over HTTP; use HTTPS to avoid mixed content and security risks."
           >
             insecure http
-          </n-tag>
+          </n-tip>
         </div>
 
         <div

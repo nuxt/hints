@@ -88,12 +88,12 @@ function copy(text: string) {
           {{ filePath }}
         </div>
         <div class="mt-1 flex flex-wrap gap-2 text-[11px]">
-          <n-tag
+          <n-tip
             size="small"
             title="Root element tag where mismatch was detected."
           >
             root: {{ rootTag }}
-          </n-tag>
+          </n-tip>
         </div>
       </div>
       <div class="shrink-0 flex items-center gap-2">
