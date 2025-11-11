@@ -55,14 +55,14 @@ const hydrationCount = computed(() => hydration.length || 0)
             </div>
           </div>
         </div>
-        <n-tag
+        <n-tip
           v-if="hydrationCount"
           size="small"
           type="error"
           :bordered="false"
         >
           {{ hydrationCount }} issues
-        </n-tag>
+        </n-tip>
       </n-card>
     </NuxtLink>
 
