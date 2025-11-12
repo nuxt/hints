@@ -33,5 +33,5 @@ body:
       options:
         - label: Read the [contribution guide](https://nuxt.com/docs/4.x/community/contribution).
           required: true
-        - label: Check existing [discussions](https://github.com/nuxt/nuxt/discussions) and [issues](https://github.com/nuxt/nuxt/issues).
+        - label: Check existing [discussions](https://github.com/nuxt/hints/discussions) and [issues](https://github.com/nuxt/hints/issues).
           required: true
