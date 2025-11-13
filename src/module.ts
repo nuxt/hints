@@ -23,20 +23,20 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // performances
-    addPlugin(resolver.resolve('./runtime/plugins/web-vitals/plugin.client'))
+    addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
 
     // hydration
-    addPlugin(resolver.resolve('./runtime/plugins/hydration/plugin.client'))
+    addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
     addComponent({
       name: 'NuxtIsland',
-      filePath: resolver.resolve('./runtime/components/nuxt-island'),
+      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
       priority: 1000,
     })
 
     // third-party scripts
-    addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.client'))
-    addServerPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/nitro.plugin'))
+    addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
+    addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
 
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
@@ -46,7 +46,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.devtools) {
       setupDevToolsUI(nuxt, resolver)
-      addPlugin(resolver.resolve('./runtime/plugins/vue-tracer-state.client'))
+      addPlugin(resolver.resolve('./runtime/core/plugins/vue-tracer-state.client'))
     }
   },
 })
