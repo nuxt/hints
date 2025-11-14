@@ -11,6 +11,17 @@ Nuxt Hints integrates directly into the Nuxt DevTools, giving you actionable ins
 
 - [✨Release Notes](/CHANGELOG.md)
 
+## Getting Started
+
+To install and add the module, you can run the following command:
+
+```bash
+npx nuxt module add hints
+```
+
+The module is now automatically installed and added to your `nuxt.config.ts`.
+Now you can open your Nuxt app, go to the DevTools, and click the Nuxt Hints icon to get started.
+
 ## Features
 
 - **🚀 Rich DevTools UI**: A dedicated tab in Nuxt DevTools to visualize issues, inspect elements, and get recommendations.
@@ -49,31 +60,6 @@ Debug hydration mismatches with a powerful side-by-side diff viewer. See the exa
 Analyze all third-party scripts on your page. The dashboard shows loading times, render-blocking status, and security attributes, helping you identify and mitigate performance bottlenecks.
 
 ![hints devtools third-party screenshot](./.github/assets/devtools-thirdparties.png)
-
-## Quick Setup
-
-1.  Add `@nuxt/hints` dependency to your project:
-    ```bash
-    # Using pnpm
-    pnpm add -D @nuxt/hints
-
-    # Using yarn
-    yarn add --dev @nuxt/hints
-
-    # Using npm
-    npm install --save-dev @nuxt/hints
-    ```
-
-2.  Add `@nuxt/hints` to the `modules` section of `nuxt.config.ts`:
-    ```js
-    export default defineNuxtConfig({
-      modules: [
-        '@nuxt/hints'
-      ]
-    })
-    ```
-
-That's it! Open your Nuxt app, go to the DevTools, and click the Nuxt Hints icon to get started.
 
 ## How It Works
 
