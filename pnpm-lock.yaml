@@ -18,7 +18,7 @@ importers:
         specifier: ^8.0.2
         version: 8.0.2
       h3:
-        specifier: 1.15.4
+        specifier: ^1.15.4
         version: 1.15.4
       magic-string:
         specifier: ^0.30.19

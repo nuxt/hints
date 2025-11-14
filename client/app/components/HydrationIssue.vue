@@ -20,9 +20,11 @@ const diffHtml = ref('')
 
 async function render(pre: string, post: string) {
   const diff = diffLines(pre, post, { stripTrailingCr: true, ignoreNewlineAtEof: true })
-  diffHtml.value = await codeToHtml(generateDiffHtml(diff), { theme: 'github-dark', lang: 'html', transformers: [
-    transformerNotationDiff(),
-  ] })
+  diffHtml.value = await codeToHtml(generateDiffHtml(diff), {
+    theme: 'github-dark', lang: 'html', transformers: [
+      transformerNotationDiff(),
+    ],
+  })
 }
 
 function generateDiffHtml(change: ChangeObject<string>[]) {
@@ -47,15 +49,12 @@ watch([fullPre, fullPost], ([newPre, newPost]) => {
 }, { immediate: true })
 
 function copy(text: string) {
-  navigator.clipboard?.writeText(text).catch(() => {})
+  navigator.clipboard?.writeText(text).catch(() => { })
 }
 </script>
 
 <template>
-  <n-card
-    p-4
-    relative
-  >
+  <n-card p-4 relative>
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
         <div class="text-sm font-semibold">
@@ -65,72 +64,39 @@ function copy(text: string) {
           {{ filePath }}
         </div>
         <div class="mt-1 flex flex-wrap gap-2 text-[11px]">
-          <n-tip
-            size="small"
-            title="Root element tag where mismatch was detected."
-          >
+          <n-tip size="small" title="Root element tag where mismatch was detected.">
             root: {{ rootTag }}
           </n-tip>
         </div>
       </div>
       <div class="shrink-0 flex items-center gap-2">
-        <n-button
-          size="small"
-          quaternary
-          title="Open in editor"
-          @mouseover="highlightElement(element)"
-          @mouseleave="clearHighlight()"
-          @click="inspectElementInEditor(element)"
-        >
-          <Icon
-            name="material-symbols:file-open-outline"
-            class="text-lg"
-          />
+        <n-button size="small" quaternary title="Open in editor" @mouseover="highlightElement(element)"
+          @mouseleave="clearHighlight()" @click="inspectElementInEditor(element)">
+          <Icon name="material-symbols:file-open-outline" class="text-lg" />
         </n-button>
-        <n-button
-          size="small"
-          quaternary
-          @click="copy(fullPre)"
-        >
-          <Icon
-            name="material-symbols:content-copy-outline"
-            class="text-lg"
-          />
+        <n-button size="small" quaternary @click="copy(fullPre)">
+          <Icon name="material-symbols:content-copy-outline" class="text-lg" />
           <span class="ml-1">Copy pre</span>
         </n-button>
-        <n-button
-          size="small"
-          quaternary
-          @click="copy(fullPost)"
-        >
-          <Icon
-            name="material-symbols:content-copy-outline"
-            class="text-lg"
-          />
+        <n-button size="small" quaternary @click="copy(fullPost)">
+          <Icon name="material-symbols:content-copy-outline" class="text-lg" />
           <span class="ml-1">Copy post</span>
         </n-button>
       </div>
     </div>
 
-    <div class="grid mt-3">
-      <div class="text-xs text-neutral-500 mb-1">
-        Pre Hydration
-      </div>
-      <div
-        class="w-full overflow-auto"
-        v-html="diffHtml"
-      />
-    </div>
+    <div class="w-full mt-3 overflow-auto rounded-lg" v-html="diffHtml" />
   </n-card>
 </template>
 
 <style lang="scss" scoped>
-:deep(.diff){
-    &.add{
-      background-color: rgba(22, 163, 74, 0.15); // green-600 at 15% opacity
-    }
-    &.remove{
-      background-color: rgba(220, 38, 38, 0.15); // red-600 at 15% opacity
-    }
+:deep(.diff) {
+  &.add {
+    background-color: rgba(22, 163, 74, 0.15); // green-600 at 15% opacity
+  }
+
+  &.remove {
+    background-color: rgba(220, 38, 38, 0.15); // red-600 at 15% opacity
+  }
 }
 </style>
