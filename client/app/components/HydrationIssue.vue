@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { codeToHtml } from 'shiki/bundle/web'
 import type { ComponentInternalInstance, VNode } from 'vue'
+import { diffLines, type ChangeObject } from 'diff'
+import { transformerNotationDiff } from '@shikijs/transformers'
 
 const props = defineProps<{
   issue: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }
@@ -14,63 +16,40 @@ const element = computed(() => props.issue.instance.vnode.el as HTMLElement | un
 
 const { highlightElement, inspectElementInEditor, clearHighlight } = useElementHighlighter()
 
-const compact = ref(true)
-const contextLines = 3
-
-function diffSlice(a: string, b: string) {
-  const la = (a || '').split('\n')
-  const lb = (b || '').split('\n')
-  let start = 0
-  while (start < la.length && start < lb.length && la[start] === lb[start]) start++
-  let enda = la.length - 1
-  let endb = lb.length - 1
-  while (enda >= start && endb >= start && la[enda] === lb[endb]) {
-    enda--
-    endb--
-  }
-  // If identical, show a small head
-  if (start >= la.length && start >= lb.length) {
-    return {
-      a: la.slice(0, Math.min(10, la.length)).join('\n'),
-      b: lb.slice(0, Math.min(10, lb.length)).join('\n'),
-    }
-  }
-  const from = Math.max(0, start - contextLines)
-  const toA = Math.min(la.length, enda + 1 + contextLines)
-  const toB = Math.min(lb.length, endb + 1 + contextLines)
-  return {
-    a: la.slice(from, toA).join('\n'),
-    b: lb.slice(from, toB).join('\n'),
-  }
-}
-
-const preHtml = ref('')
-const postHtml = ref('')
+const diffHtml = ref('')
 
 async function render(pre: string, post: string) {
-  const preOut = await codeToHtml(pre, { theme: 'github-dark', lang: 'html' })
-  const postOut = await codeToHtml(post, { theme: 'github-dark', lang: 'html' })
-  preHtml.value = preOut
-  postHtml.value = postOut
+  const diff = diffLines(pre, post, { stripTrailingCr: true, ignoreNewlineAtEof: true })
+  diffHtml.value = await codeToHtml(generateDiffHtml(diff), {
+    theme: 'github-dark', lang: 'html', transformers: [
+      transformerNotationDiff(),
+    ],
+  })
+}
+
+function generateDiffHtml(change: ChangeObject<string>[]) {
+  return change.map((part) => {
+    if (part.added) {
+      return `// [!code ++]\n${part.value}`
+    }
+    else if (part.removed) {
+      return `// [!code --]\n${part.value} `
+    }
+    else {
+      return part.value
+    }
+  }).join('')
 }
 
 const fullPre = computed(() => props.issue.htmlPreHydration ?? '')
 const fullPost = computed(() => props.issue.htmlPostHydration ?? '')
 
-watchEffect(async () => {
-  const pre = fullPre.value
-  const post = fullPost.value
-  if (compact.value) {
-    const { a, b } = diffSlice(pre, post)
-    await render(a, b)
-  }
-  else {
-    await render(pre, post)
-  }
-})
+watch([fullPre, fullPost], ([newPre, newPost]) => {
+  render(newPre, newPost)
+}, { immediate: true })
 
 function copy(text: string) {
-  navigator.clipboard?.writeText(text).catch(() => {})
+  navigator.clipboard?.writeText(text).catch(() => { })
 }
 </script>
 
@@ -113,17 +92,6 @@ function copy(text: string) {
         <n-button
           size="small"
           quaternary
-          @click="compact = !compact"
-        >
-          <Icon
-            name="material-symbols:compare-arrows"
-            class="text-lg"
-          />
-          <span class="ml-1">{{ compact ? 'Show full' : 'Compact' }}</span>
-        </n-button>
-        <n-button
-          size="small"
-          quaternary
           @click="copy(fullPre)"
         >
           <Icon
@@ -146,25 +114,21 @@ function copy(text: string) {
       </div>
     </div>
 
-    <div class="grid mt-3 gap-2 grid-cols-2">
-      <div>
-        <div class="text-xs text-neutral-500 mb-1">
-          Pre Hydration
-        </div>
-        <div
-          class="w-full overflow-auto"
-          v-html="preHtml"
-        />
-      </div>
-      <div>
-        <div class="text-xs text-neutral-500 mb-1">
-          Post Hydration
-        </div>
-        <div
-          class="w-full overflow-auto"
-          v-html="postHtml"
-        />
-      </div>
-    </div>
+    <div
+      class="w-full mt-3 overflow-auto rounded-lg"
+      v-html="diffHtml"
+    />
   </n-card>
 </template>
+
+<style lang="scss" scoped>
+:deep(.diff) {
+  &.add {
+    background-color: rgba(22, 163, 74, 0.15); // green-600 at 15% opacity
+  }
+
+  &.remove {
+    background-color: rgba(220, 38, 38, 0.15); // red-600 at 15% opacity
+  }
+}
+</style>
