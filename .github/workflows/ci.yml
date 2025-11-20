@@ -27,3 +27,4 @@ jobs:
       - run: pnpm prepack
       - run: pnpm test:types
       - run: pnpm lint
+      - run: pnpm test
