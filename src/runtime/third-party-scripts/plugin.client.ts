@@ -1,5 +1,25 @@
 import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
 
+const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension):\/\//
+
+function isExtensionScript(src: string) {
+  try {
+    const url = new URL(src, window.location.origin)
+    return EXTENSIONS_SCHEMES_RE.test(url.protocol)
+  } catch {
+    return false
+  }
+}
+
+function isSameOriginScript(src: string) {
+  try {
+    const url = new URL(src, window.location.origin)
+    return url.origin === window.location.origin
+  } catch {
+    return false
+  }
+}
+
 export default defineNuxtPlugin({
   name: 'nuxt-hints:third-party-scripts',
   setup() {
@@ -27,7 +47,7 @@ export default defineNuxtPlugin({
     nuxtApp.hooks.hookOnce('app:mounted', () => {
       let hasThirdPartyScript = false
       for (const script of document.scripts) {
-        if (script.src && !script.src.startsWith(window.location.origin)) {
+        if (script.src && !isSameOriginScript(script.src) && !isExtensionScript(script.src)) {
           hasThirdPartyScript = true
           onScriptAdded(script)
         }
