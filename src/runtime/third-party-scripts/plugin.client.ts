@@ -1,12 +1,13 @@
 import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
 
-const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension):\/\//
+const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension|ms-browser-extension):/
 
 function isExtensionScript(src: string) {
   try {
     const url = new URL(src, window.location.origin)
     return EXTENSIONS_SCHEMES_RE.test(url.protocol)
-  } catch {
+  }
+  catch {
     return false
   }
 }
@@ -15,9 +16,14 @@ function isSameOriginScript(src: string) {
   try {
     const url = new URL(src, window.location.origin)
     return url.origin === window.location.origin
-  } catch {
+  }
+  catch {
     return false
   }
+}
+
+function isIgnoredScript(src: string) {
+  return isSameOriginScript(src) || isExtensionScript(src)
 }
 
 export default defineNuxtPlugin({
@@ -47,7 +53,7 @@ export default defineNuxtPlugin({
     nuxtApp.hooks.hookOnce('app:mounted', () => {
       let hasThirdPartyScript = false
       for (const script of document.scripts) {
-        if (script.src && !isSameOriginScript(script.src) && !isExtensionScript(script.src)) {
+        if (script.src && !isIgnoredScript(script.src)) {
           hasThirdPartyScript = true
           onScriptAdded(script)
         }
@@ -62,7 +68,7 @@ export default defineNuxtPlugin({
       for (const mutation of mutations) {
         if (mutation.type === 'childList') {
           for (const node of mutation.addedNodes) {
-            if (isScript(node) && node.src && !node.src.startsWith(window.location.origin)) {
+            if (isScript(node) && node.src && !isIgnoredScript(node.src)) {
               onScriptAdded(node)
             }
           }
@@ -76,9 +82,6 @@ export default defineNuxtPlugin({
     })
 
     function onScriptAdded(script: HTMLScriptElement) {
-      if (script.src.startsWith('chrome-extension')) {
-        return
-      }
       if (!script.crossOrigin) {
         console.warn(`[@nuxt/hints]: Third-party script "${script.src}" is missing crossorigin attribute. Consider adding crossorigin="anonymous" for better security and error reporting.`)
       }
