@@ -47,9 +47,6 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "diff": "^8.0.2",
-    "@shikijs/transformers": "^3.15.0",
-    "sass-embedded": "^1.93.3",
     "@nuxt/devtools": "^3.0.0",
     "@nuxt/devtools-ui-kit": "^3.0.0",
     "@nuxt/eslint": "^1.9.0",
@@ -57,11 +54,15 @@
     "@nuxt/module-builder": "^1.0.0",
     "@nuxt/schema": "^4.1.2",
     "@nuxt/test-utils": "^3.19.2",
+    "@shikijs/transformers": "^3.15.0",
     "@types/node": "^24.0.0",
     "changelogen": "^0.6.0",
+    "diff": "^8.0.2",
     "eslint": "^9.36.0",
+    "happy-dom": "^20.0.10",
     "pkg-pr-new": "0.0.60",
     "rimraf": "^6.0.1",
+    "sass-embedded": "^1.93.3",
     "vitest": "^4.0.0"
   },
   "packageManager": "pnpm@10.21.0+sha512.da3337267e400fdd3d479a6c68079ac6db01d8ca4f67572083e722775a796788a7a9956613749e000fac20d424b594f7a791a5f4e2e13581c5ef947f26968a40"
