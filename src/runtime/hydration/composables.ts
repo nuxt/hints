@@ -17,14 +17,14 @@ function formatHTML(html: string | undefined): string {
       formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag
     }
     else if (tag.startsWith('<') && !tag.endsWith('/>') && !tag.includes('<!')) {
-      formatted += '\n' + '  '.repeat(indent) + tag
+      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag
       indent++
     }
     else if (tag.startsWith('<')) {
-      formatted += '\n' + '  '.repeat(indent) + tag
+      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag
     }
     else {
-      formatted += '\n' + '  '.repeat(indent) + tag.trim()
+      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag.trim()
     }
   }
 
