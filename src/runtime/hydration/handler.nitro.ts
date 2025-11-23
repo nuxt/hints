@@ -29,7 +29,6 @@ async function postHandler(event: H3Event) {
   const nitro = useNitroApp()
   const payload = { id: body.id, htmlPreHydration: body.htmlPreHydration, htmlPostHydration: body.htmlPostHydration, componentName: body.componentName, fileLocation: body.fileLocation }
   hydrationMistmatches.push(payload)
-  console.log('Received hydration mismatch:', hydrationMistmatches.length)
   nitro.hooks.callHook('hints:hydration:mismatch', payload)
   setResponseStatus(event, 201)
 }
