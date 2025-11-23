@@ -1,6 +1,3 @@
 {
-    "extends": "./.nuxt/tsconfig.json",
-    "includes": [
-        "../types.d.ts"
-    ]
+    "extends": "./.nuxt/tsconfig.json"
 }

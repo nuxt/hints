@@ -15,7 +15,9 @@ export default defineNuxtPlugin(() => {
   const eventSource = new EventSource(new URL('/__nuxt_hydration/sse', window.location.origin).href)
   eventSource.addEventListener('message', (event) => {
     const mismatch: HydrationMismatchPayload = JSON.parse(event.data)
-    hydrationMismatches.value.push(mismatch)
+    if (!hydrationMismatches.value.some(existing => existing.id === mismatch.id)) {
+      hydrationMismatches.value.push(mismatch)
+    }
   })
 
   return {
