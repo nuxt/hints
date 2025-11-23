@@ -1,4 +1,5 @@
 import type { HydrationMismatchPayload, HydrationMismatchResponse, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
+import { defineNuxtPlugin, useHostNuxt, ref } from '#imports'
 
 export default defineNuxtPlugin(() => {
   const host = useHostNuxt()
