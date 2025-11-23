@@ -3,7 +3,7 @@ definePageMeta({
   title: 'Hydration',
 })
 
-const { hydration } = useHostHydration()
+const hydration = useNuxtApp().$hydrationMismatches
 </script>
 
 <template>

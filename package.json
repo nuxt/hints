@@ -53,6 +53,7 @@
     "@nuxt/icon": "^2.0.0",
     "@nuxt/module-builder": "^1.0.0",
     "@nuxt/schema": "^4.1.2",
+    "@nuxt/hints": "workspace:^",
     "@nuxt/test-utils": "^3.19.2",
     "@shikijs/transformers": "^3.15.0",
     "@types/node": "^24.0.0",

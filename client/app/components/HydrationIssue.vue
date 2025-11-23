@@ -1,18 +1,29 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="Issue extends LocalHydrationMismatch | HydrationMismatchPayload">
 import { codeToHtml } from 'shiki/bundle/web'
-import type { ComponentInternalInstance, VNode } from 'vue'
 import { diffLines, type ChangeObject } from 'diff'
 import { transformerNotationDiff } from '@shikijs/transformers'
+import type { HydrationMismatchPayload, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
 
 const props = defineProps<{
-  issue: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }
+  issue: Issue
 }>()
 
 type MaybeNamed = Partial<Record<'name' | '__name' | '__file', string>>
-const componentName = computed(() => (props.issue.instance.type as MaybeNamed).name ?? (props.issue.instance.type as MaybeNamed).__name ?? 'AnonymousComponent')
-const filePath = computed(() => (props.issue.instance.type as MaybeNamed).__file as string | undefined)
-const rootTag = computed(() => (props.issue.instance.vnode.el as HTMLElement | null)?.tagName?.toLowerCase() || 'unknown')
-const element = computed(() => props.issue.instance.vnode.el as HTMLElement | undefined)
+
+const isLocalIssue = (issue: HydrationMismatchPayload | LocalHydrationMismatch): issue is LocalHydrationMismatch => {
+  return 'instance' in issue && 'vnode' in issue
+}
+
+const componentName = computed(() => props.issue.componentName ?? 'Unknown component')
+const filePath = computed(() => isLocalIssue(props.issue)
+  ? (props.issue.instance.type as MaybeNamed).name
+  ?? (props.issue.instance.type as MaybeNamed).__name
+  ?? (props.issue.instance.type as MaybeNamed).__file
+  ?? 'Unknown component'
+  : (props.issue as HydrationMismatchPayload).fileLocation,
+)
+
+const element = computed(() => isLocalIssue(props.issue) ? props.issue.instance.vnode.el as HTMLElement | undefined : undefined)
 
 const { highlightElement, inspectElementInEditor, clearHighlight } = useElementHighlighter()
 
@@ -66,17 +77,10 @@ function copy(text: string) {
         <div class="text-xs text-neutral-500 truncate">
           {{ filePath }}
         </div>
-        <div class="mt-1 flex flex-wrap gap-2 text-[11px]">
-          <n-tip
-            size="small"
-            title="Root element tag where mismatch was detected."
-          >
-            root: {{ rootTag }}
-          </n-tip>
-        </div>
       </div>
       <div class="shrink-0 flex items-center gap-2">
         <n-button
+          v-if="element"
           size="small"
           quaternary
           title="Open in editor"

@@ -1,36 +1,7 @@
 import { getCurrentInstance, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
-
-function formatHTML(html: string | undefined): string {
-  if (!html) return ''
-
-  // Simple HTML formatting function
-  let formatted = ''
-  let indent = 0
-  const tags = html.split(/(<\/?[^>]+>)/g)
-
-  for (const tag of tags) {
-    if (!tag.trim()) continue
-
-    if (tag.startsWith('</')) {
-      indent--
-      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag
-    }
-    else if (tag.startsWith('<') && !tag.endsWith('/>') && !tag.includes('<!')) {
-      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag
-      indent++
-    }
-    else if (tag.startsWith('<')) {
-      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag
-    }
-    else {
-      formatted += '\n' + '  '.repeat(Math.max(0, indent)) + tag.trim()
-    }
-  }
-
-  return formatted.trim()
-}
-
+import { HYDRATION_ROUTE, formatHTML } from './utils'
+import type { HydrationMismatchPayload } from './types'
 /**
  * prefer implementing onMismatch hook after vue 3.6
  * compare element
@@ -47,17 +18,27 @@ export function useHydrationCheck() {
 
   if (!instance) return
 
-  const htmlPrehydration = formatHTML(instance.vnode.el?.outerHTML)
+  const htmlPreHydration = formatHTML(instance.vnode.el?.outerHTML)
   const vnodePrehydration = instance.vnode
 
   onMounted(() => {
     const htmlPostHydration = formatHTML(instance.vnode.el?.outerHTML)
-    if (htmlPrehydration !== htmlPostHydration) {
+    if (htmlPreHydration !== htmlPostHydration) {
+      const payload: HydrationMismatchPayload = {
+        htmlPreHydration: htmlPreHydration,
+        htmlPostHydration: htmlPostHydration,
+        id: globalThis.crypto.randomUUID(),
+        componentName: instance.type.name ?? instance.type.displayName ?? instance.type.__name,
+        fileLocation: instance.type.__file ?? 'unknown',
+      }
       nuxtApp.__hints.hydration.push({
+        ...payload,
         instance,
         vnode: vnodePrehydration,
-        htmlPreHydration: htmlPrehydration,
-        htmlPostHydration,
+      })
+      $fetch(new URL(HYDRATION_ROUTE, window.location.origin), {
+        method: 'POST',
+        body: payload,
       })
       console.warn(`[nuxt/hints:hydration] Component ${instance.type.name ?? instance.type.displayName ?? instance.type.__name ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
     }
