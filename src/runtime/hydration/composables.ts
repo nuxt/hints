@@ -36,7 +36,7 @@ export function useHydrationCheck() {
         instance,
         vnode: vnodePrehydration,
       })
-      $fetch(new URL(HYDRATION_ROUTE, window.location.origin), {
+      $fetch(new URL(HYDRATION_ROUTE, window.location.origin).href, {
         method: 'POST',
         body: payload,
       })
