@@ -7,9 +7,11 @@ export interface ModuleOptions {
   devtools: boolean
 }
 
+const moduleName = '@nuxt/hints'
+
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@nuxt/hints',
+    name: moduleName,
     configKey: 'hints',
   },
   defaults: {
@@ -48,5 +50,7 @@ export default defineNuxtModule<ModuleOptions>({
       setupDevToolsUI(nuxt, resolver)
       addPlugin(resolver.resolve('./runtime/core/plugins/vue-tracer-state.client'))
     }
+
+    nuxt.options.build.transpile.push(moduleName)
   },
 })
