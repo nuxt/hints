@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addImports } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -22,17 +22,31 @@ export default defineNuxtModule<ModuleOptions>({
 
     const resolver = createResolver(import.meta.url)
 
+    // core
+    addComponent({
+      name: 'NuxtIsland',
+      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
+      priority: 1000,
+    })
+
     // performances
     addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
 
     // hydration
     addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
-    addComponent({
-      name: 'NuxtIsland',
-      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
-      priority: 1000,
-    })
+    addImports([
+      {
+        from: resolver.resolve('./runtime/hydration/component'),
+        name: 'defineNuxtComponent',
+        priority: 1000,
+      },
+      {
+        from: resolver.resolve('./runtime/hydration/component'),
+        name: 'defineComponent',
+        priority: 1000,
+      },
+    ])
 
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
