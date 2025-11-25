@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addImports } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -35,18 +35,6 @@ export default defineNuxtModule<ModuleOptions>({
     // hydration
     addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
-    addImports([
-      {
-        from: resolver.resolve('./runtime/hydration/component'),
-        name: 'defineNuxtComponent',
-        priority: 1000,
-      },
-      {
-        from: resolver.resolve('./runtime/hydration/component'),
-        name: 'defineComponent',
-        priority: 1000,
-      },
-    ])
 
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))

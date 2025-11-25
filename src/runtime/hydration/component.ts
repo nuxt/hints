@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import   { defineComponent as _defineComponent, type DefineComponent } from 'vue'
-
+import { defineComponent as _defineComponent, type DefineComponent } from 'vue'
 import { defineNuxtComponent as _defineNuxtComponent } from 'nuxt/app'
 import { useHydrationCheck } from './composables'
 
