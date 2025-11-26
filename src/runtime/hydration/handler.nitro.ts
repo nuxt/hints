@@ -43,6 +43,8 @@ function assertPayload(body: any): asserts body is HydrationMismatchPayload {
     || typeof body.id !== 'string'
     || (body.htmlPreHydration !== undefined && typeof body.htmlPreHydration !== 'string')
     || (body.htmlPostHydration !== undefined && typeof body.htmlPostHydration !== 'string')
+    || typeof body.componentName !== 'string'
+    || typeof body.fileLocation !== 'string'
   ) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
   }
