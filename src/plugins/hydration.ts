@@ -69,9 +69,6 @@ export const InjectHydrationPlugin = createUnplugin(() => {
     {
       name: '@nuxt/hints:inject-hydration-composable',
       enforce: 'post',
-      transformInclude(id) {
-        return id.endsWith('.vue') && !id.includes('node_modules')
-      },
       transform: {
         filter: {
           id: {
