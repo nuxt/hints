@@ -3,6 +3,7 @@ import { codeToHtml } from 'shiki/bundle/web'
 import { diffLines, type ChangeObject } from 'diff'
 import { transformerNotationDiff } from '@shikijs/transformers'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
+import { HYDRATION_ROUTE } from '../../../src/runtime/hydration/utils'
 
 const props = defineProps<{
   issue: Issue
@@ -62,6 +63,16 @@ watch([fullPre, fullPost], ([newPre, newPost]) => {
 function copy(text: string) {
   navigator.clipboard?.writeText(text).catch(() => { })
 }
+
+function removeSelf() {
+  fetch(HYDRATION_ROUTE, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: [props.issue.id] }),
+  })
+}
 </script>
 
 <template>
@@ -78,7 +89,7 @@ function copy(text: string) {
           {{ filePath }}
         </div>
       </div>
-      <div class="shrink-0 flex items-center gap-2">
+      <div class="flex gap-2">
         <n-button
           v-if="element"
           size="small"
@@ -114,6 +125,17 @@ function copy(text: string) {
             class="text-lg"
           />
           <span class="ml-1">Copy post</span>
+        </n-button>
+        <n-button
+          title="Remove"
+          size="small"
+          quaternary
+          @click="removeSelf"
+        >
+          <Icon
+            name="material-symbols:delete-outline"
+            class="text-lg"
+          />
         </n-button>
       </div>
     </div>

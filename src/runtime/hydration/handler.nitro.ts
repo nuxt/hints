@@ -6,15 +6,16 @@ import { useNitroApp } from 'nitropack/runtime'
 const hydrationMistmatches: HydrationMismatchPayload[] = []
 
 export default defineEventHandler((event) => {
-  if (event.method === 'GET') {
-    console.log('called')
-    return getHandler()
+  switch (event.method) {
+    case 'GET':
+      return getHandler()
+    case 'POST':
+      return postHandler(event)
+    case 'DELETE':
+      return deleteHandler(event)
+    default:
+      throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
   }
-  else if (event.method === 'POST') {
-    return postHandler(event)
-  }
-
-  throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
 })
 
 function getHandler() {
@@ -34,6 +35,22 @@ async function postHandler(event: H3Event) {
   }
   nitro.hooks.callHook('hints:hydration:mismatch', payload)
   setResponseStatus(event, 201)
+}
+
+async function deleteHandler(event: H3Event) {
+  const nitro = useNitroApp()
+  const body = await readBody<{ id: string[] }>(event)
+  if (!body || !Array.isArray(body.id)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
+  }
+  for (const id of body.id) {
+    const index = hydrationMistmatches.findIndex(m => m.id === id)
+    if (index !== -1) {
+      hydrationMistmatches.splice(index, 1)
+    }
+  }
+  nitro.hooks.callHook('hints:hydration:cleared', { id: body.id })
+  setResponseStatus(event, 204)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

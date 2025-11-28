@@ -5,12 +5,20 @@ export default defineEventHandler((event) => {
   const nitro = useNitroApp()
   const eventStream = createEventStream(event)
 
-  const unsub = nitro.hooks.hook('hints:hydration:mismatch', (mismatch) => {
-    eventStream.push(JSON.stringify(mismatch))
-  })
+  const unsubs = [nitro.hooks.hook('hints:hydration:mismatch', (mismatch) => {
+    eventStream.push({
+      data: JSON.stringify(mismatch),
+      event: 'hints:hydration:mismatch',
+    })
+  }), nitro.hooks.hook('hints:hydration:cleared', async (payload) => {
+    eventStream.push({
+      data: JSON.stringify(payload.id),
+      event: 'hints:hydration:cleared',
+    })
+  })]
 
   eventStream.onClosed(async () => {
-    unsub()
+    unsubs.forEach(unsub => unsub())
     await eventStream.close()
   })
 

@@ -1,3 +1,4 @@
+import type { EventStreamMessage } from 'h3'
 import type { ComponentInternalInstance, VNode } from 'vue'
 
 export interface HydrationMismatchPayload {
@@ -17,3 +18,20 @@ export interface LocalHydrationMismatch extends HydrationMismatchPayload {
 export interface HydrationMismatchResponse {
   mismatches: HydrationMismatchPayload[]
 }
+
+export interface HydrationDeleteSSE extends EventStreamMessage {
+  event: 'hydration:cleared'
+  // array of ids
+  data: string
+}
+
+export interface HydrationNewSSE extends EventStreamMessage {
+  event: 'hydration:mismatch'
+  /**
+   * Stringified HydrationMismatchPayload
+   * @see HydrationMismatchPayload
+   */
+  data: string
+}
+
+export type HydrationSSEPayload = HydrationDeleteSSE | HydrationNewSSE

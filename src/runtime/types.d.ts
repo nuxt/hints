@@ -50,6 +50,7 @@ declare module '#app' {
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
     'hints:hydration:mismatch': (payload: HydrationMismatchPayload) => void
+    'hints:hydration:cleared': (payload: { id: string[] }) => void
   }
 }
 

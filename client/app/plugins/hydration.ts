@@ -13,11 +13,15 @@ export default defineNuxtPlugin(() => {
   })
 
   const eventSource = new EventSource(new URL('/__nuxt_hydration/sse', window.location.origin).href)
-  eventSource.addEventListener('message', (event) => {
+  eventSource.addEventListener('hints:hydration:mismatch', (event) => {
     const mismatch: HydrationMismatchPayload = JSON.parse(event.data)
     if (!hydrationMismatches.value.some(existing => existing.id === mismatch.id)) {
       hydrationMismatches.value.push(mismatch)
     }
+  })
+  eventSource.addEventListener('hints:hydration:cleared', (event) => {
+    const clearedIds: string[] = JSON.parse(event.data)
+    hydrationMismatches.value = hydrationMismatches.value.filter(m => !clearedIds.includes(m.id))
   })
 
   return {
