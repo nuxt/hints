@@ -17,10 +17,7 @@ const isLocalIssue = (issue: HydrationMismatchPayload | LocalHydrationMismatch):
 
 const componentName = computed(() => props.issue.componentName ?? 'Unknown component')
 const filePath = computed(() => isLocalIssue(props.issue)
-  ? (props.issue.instance.type as MaybeNamed).name
-  ?? (props.issue.instance.type as MaybeNamed).__name
-  ?? (props.issue.instance.type as MaybeNamed).__file
-  ?? 'Unknown component'
+  ? (props.issue.instance.type as MaybeNamed).__file
   : (props.issue as HydrationMismatchPayload).fileLocation,
 )
 
