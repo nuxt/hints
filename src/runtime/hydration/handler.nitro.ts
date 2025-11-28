@@ -3,7 +3,7 @@ import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3
 import type { HydrationMismatchPayload } from './types'
 import { useNitroApp } from 'nitropack/runtime'
 
-const hydrationMistmatches: HydrationMismatchPayload[] = []
+const hydrationMismatches: HydrationMismatchPayload[] = []
 
 export default defineEventHandler((event) => {
   switch (event.method) {
@@ -20,7 +20,7 @@ export default defineEventHandler((event) => {
 
 function getHandler() {
   return {
-    mismatches: hydrationMistmatches,
+    mismatches: hydrationMismatches,
   }
 }
 
@@ -29,9 +29,9 @@ async function postHandler(event: H3Event) {
   assertPayload(body)
   const nitro = useNitroApp()
   const payload = { id: body.id, htmlPreHydration: body.htmlPreHydration, htmlPostHydration: body.htmlPostHydration, componentName: body.componentName, fileLocation: body.fileLocation }
-  hydrationMistmatches.push(payload)
-  if (hydrationMistmatches.length > 20) {
-    hydrationMistmatches.shift()
+  hydrationMismatches.push(payload)
+  if (hydrationMismatches.length > 20) {
+    hydrationMismatches.shift()
   }
   nitro.hooks.callHook('hints:hydration:mismatch', payload)
   setResponseStatus(event, 201)
@@ -44,9 +44,9 @@ async function deleteHandler(event: H3Event) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
   }
   for (const id of body.id) {
-    const index = hydrationMistmatches.findIndex(m => m.id === id)
+    const index = hydrationMismatches.findIndex(m => m.id === id)
     if (index !== -1) {
-      hydrationMistmatches.splice(index, 1)
+      hydrationMismatches.splice(index, 1)
     }
   }
   nitro.hooks.callHook('hints:hydration:cleared', { id: body.id })
