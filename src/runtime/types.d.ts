@@ -1,5 +1,6 @@
-import type { ComponentInternalInstance, VNode, Ref } from 'vue'
+import type { VNode, Ref } from 'vue'
 import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
+import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
 
 declare global {
   interface Window {
@@ -19,6 +20,7 @@ declare global {
     __vnode?: VNode
   }
 }
+
 declare module '#app' {
   interface RuntimeNuxtHooks {
     'hints:scripts:added': (script: HTMLScriptElement) => void
@@ -33,7 +35,7 @@ declare module '#app' {
   interface NuxtApp {
     __hints_tpc: Ref<{ element: HTMLScriptElement, loaded: boolean }[]>
     __hints: {
-      hydration: { instance: ComponentInternalInstance, vnode: VNode, htmlPreHydration: string | undefined, htmlPostHydration: string | undefined }[]
+      hydration: LocalHydrationMismatch[]
       webvitals: {
         lcp: Ref<LCPMetricWithAttribution[]>
         inp: Ref<INPMetricWithAttribution[]>
@@ -42,6 +44,13 @@ declare module '#app' {
     }
     __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
+  }
+}
+
+declare module 'nitropack' {
+  interface NitroRuntimeHooks {
+    'hints:hydration:mismatch': (payload: HydrationMismatchPayload) => void
+    'hints:hydration:cleared': (payload: { id: string[] }) => void
   }
 }
 
