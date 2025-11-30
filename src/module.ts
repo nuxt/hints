@@ -24,17 +24,19 @@ export default defineNuxtModule<ModuleOptions>({
 
     const resolver = createResolver(import.meta.url)
 
+    // core
+    addComponent({
+      name: 'NuxtIsland',
+      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
+      priority: 1000,
+    })
+
     // performances
     addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
 
     // hydration
     addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
-    addComponent({
-      name: 'NuxtIsland',
-      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
-      priority: 1000,
-    })
 
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
