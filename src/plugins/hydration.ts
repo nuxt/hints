@@ -26,33 +26,37 @@ export const InjectHydrationPlugin = createUnplugin(() => {
           const imports = program.body.filter(node => node.type === 'ImportDeclaration')
           const hasDefineComponent = DEFINE_COMPONENT_RE.test(code)
           const hasDefineNuxtComponent = DEFINE_NUXT_COMPONENT_RE.test(code)
-          const importsToAdd = new Set([
-            hasDefineComponent
-            && genImport(
-              '@nuxt/hints/runtime/hydration/component',
-              ['defineComponent'],
-            ),
-            hasDefineNuxtComponent
-            && genImport(
-              '@nuxt/hints/runtime/hydration/component',
-              ['defineNuxtComponent'],
-            ),
-          ].filter(Boolean))
 
           const defineComponentImport = findImportSpecifier(imports as ImportDeclaration[], 'defineComponent', ['vue', '#imports'])
+          const defineComponentAlias = defineComponentImport?.local.name || 'defineComponent'
           if (defineComponentImport) {
             m.remove(
               defineComponentImport.start,
               defineComponentImport.end,
             )
           }
+
           const defineNuxtComponentImport = findImportSpecifier(imports as ImportDeclaration[], 'defineNuxtComponent', ['#app/composables/component', '#imports', '#app', 'nuxt/app'])
+          const defineNuxtComponentAlias = defineNuxtComponentImport?.local.name || 'defineNuxtComponent'
           if (defineNuxtComponentImport) {
             m.remove(
               defineNuxtComponentImport.start,
               defineNuxtComponentImport.end,
             )
           }
+
+          const importsToAdd = new Set([
+            hasDefineComponent
+            && genImport(
+              '@nuxt/hints/runtime/hydration/component',
+              [defineComponentAlias === 'defineComponent' ? 'defineComponent' : { name: 'defineComponent', as: defineComponentAlias }],
+            ),
+            hasDefineNuxtComponent
+            && genImport(
+              '@nuxt/hints/runtime/hydration/component',
+              [defineNuxtComponentAlias === 'defineNuxtComponent' ? 'defineNuxtComponent' : { name: 'defineNuxtComponent', as: defineNuxtComponentAlias }],
+            ),
+          ].filter(Boolean))
 
           m.prepend([...importsToAdd].join('\n') + '\n')
 
