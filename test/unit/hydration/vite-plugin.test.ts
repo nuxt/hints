@@ -103,6 +103,26 @@ describe('InjectHydrationPlugin', () => {
       const result = await modifyImportPluginTransform(code, 'test.ts')
       expect(result).toBe(undefined)
     })
+
+    it('should handle aliased defineComponent import', async () => {
+      const code = `import { defineComponent as _defineComponent } from 'vue'\nexport default _defineComponent({})`
+      const result = await modifyImportPluginTransform(code, 'test.ts')
+      expect(result.code).toContain(genImport(
+        '@nuxt/hints/runtime/hydration/component',
+        [{ name: 'defineComponent', as: '_defineComponent' }],
+      ))
+      expect(result.code).not.toContain(`import { defineComponent as _defineComponent } from 'vue'`)
+    })
+
+    it('should handle aliased defineNuxtComponent import', async () => {
+      const code = `import { defineNuxtComponent as _defineNuxtComponent } from '#app'\nexport default _defineNuxtComponent({})`
+      const result = await modifyImportPluginTransform(code, 'test.ts')
+      expect(result.code).toContain(genImport(
+        '@nuxt/hints/runtime/hydration/component',
+        [{ name: 'defineNuxtComponent', as: '_defineNuxtComponent' }],
+      ))
+      expect(result.code).not.toContain(`import { defineNuxtComponent as _defineNuxtComponent } from '#app'`)
+    })
   })
 
   describe('inject-hydration-composable', () => {
