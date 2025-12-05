@@ -1,6 +1,6 @@
 import { genImport } from 'knitwork'
 import MagicString from 'magic-string'
-import { parseSync, type ImportDeclaration } from 'oxc-parser'
+import { parseSync, type ImportDeclaration, type ImportDeclarationSpecifier, type ImportSpecifier } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 
 const INCLUDE_VUE_RE = /\.vue$/
@@ -27,23 +27,21 @@ export const InjectHydrationPlugin = createUnplugin(() => {
           const hasDefineComponent = DEFINE_COMPONENT_RE.test(code)
           const hasDefineNuxtComponent = DEFINE_NUXT_COMPONENT_RE.test(code)
 
-          const defineComponentImport = findImportSpecifier(imports as ImportDeclaration[], 'defineComponent', ['vue', '#imports'])
+          const defineComponentImport = findImportSpecifier(imports, 'defineComponent', ['vue', '#imports'], (specifier, next) => {
+            m.remove(
+              specifier.start,
+              next?.start ?? specifier.end,
+            )
+          })
           const defineComponentAlias = defineComponentImport?.local.name || 'defineComponent'
-          if (defineComponentImport) {
-            m.remove(
-              defineComponentImport.start,
-              defineComponentImport.end,
-            )
-          }
 
-          const defineNuxtComponentImport = findImportSpecifier(imports as ImportDeclaration[], 'defineNuxtComponent', ['#app/composables/component', '#imports', '#app', 'nuxt/app'])
-          const defineNuxtComponentAlias = defineNuxtComponentImport?.local.name || 'defineNuxtComponent'
-          if (defineNuxtComponentImport) {
+          const defineNuxtComponentImport = findImportSpecifier(imports, 'defineNuxtComponent', ['#app/composables/component', '#imports', '#app', 'nuxt/app'], (specifier, next) => {
             m.remove(
-              defineNuxtComponentImport.start,
-              defineNuxtComponentImport.end,
+              specifier.start,
+              next?.start ?? specifier.end,
             )
-          }
+          })
+          const defineNuxtComponentAlias = defineNuxtComponentImport?.local.name || 'defineNuxtComponent'
 
           const importsToAdd = new Set([
             hasDefineComponent
@@ -117,9 +115,22 @@ export const InjectHydrationPlugin = createUnplugin(() => {
 /**
  * Finds an import specifier for a given imported name from specified package names.
  */
-function findImportSpecifier(importDecl: ImportDeclaration[], importedName: string, pkgNames: string | string[]) {
+function findImportSpecifier(
+  importDecl: ImportDeclaration[],
+  importedName: string,
+  pkgNames: string | string[],
+  callback?: (specifier: ImportSpecifier, next?: ImportDeclarationSpecifier) => void,
+) {
   const names = Array.isArray(pkgNames) ? pkgNames : [pkgNames]
-  return importDecl.find(imp => names.includes(imp.source.value))?.specifiers.find((specifier) => {
-    return specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier' && specifier.imported.name === importedName
-  })
+  const decl = importDecl.find(imp => names.includes(imp.source.value))
+  if (!decl) {
+    return
+  }
+  for (let i = 0; i < decl.specifiers.length; i++) {
+    const specifier = decl.specifiers[i]!
+    if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier' && specifier.imported.name === importedName) {
+      callback?.(specifier, decl.specifiers[i + 1])
+      return specifier
+    }
+  }
 }
