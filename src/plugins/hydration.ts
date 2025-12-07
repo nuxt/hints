@@ -128,7 +128,6 @@ function findImportSpecifier(importDecl: ImportDeclaration[], importedName: stri
   })
 }
 
-
 function normalizePath(path: string) {
   return path.replace(/\\/g, '/')
 }
