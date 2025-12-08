@@ -27,20 +27,30 @@ export const InjectHydrationPlugin = createUnplugin(() => {
           const hasDefineComponent = DEFINE_COMPONENT_RE.test(code)
           const hasDefineNuxtComponent = DEFINE_NUXT_COMPONENT_RE.test(code)
 
-          const defineComponentImport = findImportSpecifier(imports, 'defineComponent', ['vue', '#imports'], (specifier, next) => {
-            m.remove(
-              specifier.start,
-              next?.start ?? specifier.end,
-            )
-          })
+          const defineComponentImport = findImportSpecifier(
+            imports,
+            'defineComponent',
+            ['vue', '#imports'],
+            (specifier, nextSpecifier) => {
+              m.remove(
+                specifier.start,
+                nextSpecifier?.start ?? specifier.end,
+              )
+            },
+          )
           const defineComponentAlias = defineComponentImport?.local.name || 'defineComponent'
 
-          const defineNuxtComponentImport = findImportSpecifier(imports, 'defineNuxtComponent', ['#app/composables/component', '#imports', '#app', 'nuxt/app'], (specifier, next) => {
-            m.remove(
-              specifier.start,
-              next?.start ?? specifier.end,
-            )
-          })
+          const defineNuxtComponentImport = findImportSpecifier(
+            imports,
+            'defineNuxtComponent',
+            ['#app/composables/component', '#imports', '#app', 'nuxt/app'],
+            (specifier, next) => {
+              m.remove(
+                specifier.start,
+                next?.start ?? specifier.end,
+              )
+            },
+          )
           const defineNuxtComponentAlias = defineNuxtComponentImport?.local.name || 'defineNuxtComponent'
 
           const importsToAdd = new Set([
@@ -119,7 +129,7 @@ function findImportSpecifier(
   importDecl: ImportDeclaration[],
   importedName: string,
   pkgNames: string | string[],
-  callback?: (specifier: ImportSpecifier, next?: ImportDeclarationSpecifier) => void,
+  callback?: (specifier: ImportSpecifier, nextSpecifier?: ImportDeclarationSpecifier) => void,
 ) {
   const names = Array.isArray(pkgNames) ? pkgNames : [pkgNames]
   const decl = importDecl.find(imp => names.includes(imp.source.value))
