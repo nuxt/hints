@@ -88,10 +88,10 @@ export default defineNuxtPlugin({
       nuxtApp.callHook('hints:scripts:added', script)
         .then(() => {
           if (!script.loaded) {
-            script.onload = () => {
+            script.addEventListener('load', () => {
               window.__hints_TPC_saveTime(script, script.__hints_TPC_start_time)
               nuxtApp.callHook('hints:scripts:loaded', script)
-            }
+            })
           }
           else {
             window.__hints_TPC_saveTime(script, script.__hints_TPC_start_time)
