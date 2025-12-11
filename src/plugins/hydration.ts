@@ -1,12 +1,15 @@
 import { genImport } from 'knitwork'
 import MagicString from 'magic-string'
+import { resolve } from 'node:path'
 import { parseSync, type ImportDeclaration, type ImportDeclarationSpecifier, type ImportSpecifier } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
+import { distDir } from '../dirs'
 
 const INCLUDE_VUE_RE = /\.vue$/
 const EXCLUDE_NODE_MODULES = /node_modules/
 const DEFINE_COMPONENT_RE = /defineComponent/
 const DEFINE_NUXT_COMPONENT_RE = /defineNuxtComponent/
+const skipPath = normalizePath(resolve(distDir, 'runtime/hydration/component.ts'))
 export const InjectHydrationPlugin = createUnplugin(() => {
   return [
     {
@@ -16,11 +19,12 @@ export const InjectHydrationPlugin = createUnplugin(() => {
         filter: {
           id: {
             include: /.(vue|ts|js|tsx|jsx)$/,
-            exclude: EXCLUDE_NODE_MODULES,
+            exclude: [skipPath, EXCLUDE_NODE_MODULES],
           },
           code: /defineNuxtComponent|defineComponent/,
         },
-        handler(code, id) {
+        async handler(code, id) {
+          console.log(id)
           const m = new MagicString(code)
           const { program } = parseSync(id, code)
           const imports = program.body.filter(node => node.type === 'ImportDeclaration')
@@ -85,7 +89,7 @@ export const InjectHydrationPlugin = createUnplugin(() => {
         filter: {
           id: {
             include: INCLUDE_VUE_RE,
-            exclude: EXCLUDE_NODE_MODULES,
+            exclude: [skipPath, EXCLUDE_NODE_MODULES],
           },
           code: /(?!defineComponent|defineNuxtComponent)/,
         },
@@ -143,4 +147,8 @@ function findImportSpecifier(
       return specifier
     }
   }
+}
+
+function normalizePath(path: string) {
+  return path.replace(/\\/g, '/')
 }
