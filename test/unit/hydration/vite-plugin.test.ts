@@ -92,6 +92,13 @@ describe('InjectHydrationPlugin', () => {
       expect(result.code).not.toContain('import { defineNuxtComponent } from \'#imports\'')
     })
 
+    it('should replace defineComponent with correct offsets', async () => {
+      const code = `import { useModel, defineComponent, createVNode } from '#imports'\n${exportDefineComponent}`
+      const result = await modifyImportPluginTransform(code, 'test.ts')
+      expect(result.code).toContain(importDefineComponent.trim())
+      expect(result.code).toContain('import { useModel, createVNode } from \'#imports\'')
+    })
+
     it('should inject import if defineComponent is used but not imported', async () => {
       const code = `${exportDefineComponent}`
       const result = await modifyImportPluginTransform(code, 'test.ts')
