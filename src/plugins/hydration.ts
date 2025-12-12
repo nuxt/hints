@@ -24,7 +24,6 @@ export const InjectHydrationPlugin = createUnplugin(() => {
           code: /defineNuxtComponent|defineComponent/,
         },
         async handler(code, id) {
-          console.log(id)
           const m = new MagicString(code)
           const { program } = parseSync(id, code)
           const imports = program.body.filter(node => node.type === 'ImportDeclaration')
