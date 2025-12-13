@@ -127,6 +127,13 @@ export const InjectHydrationPlugin = createUnplugin(() => {
 
 /**
  * Finds an import specifier for a given imported name from specified package names.
+ * Searches through all matching import declarations since there can be multiple imports from the same package.
+ *
+ * Like
+ * ```ts
+ * import { ref } from 'vue'
+ * import { defineComponent } from 'vue'
+ * ```
  */
 function findImportSpecifier(
   importDecl: ImportDeclaration[],
@@ -135,16 +142,18 @@ function findImportSpecifier(
   callback?: (specifier: ImportSpecifier, nextSpecifier?: ImportDeclarationSpecifier) => void,
 ) {
   const names = Array.isArray(pkgNames) ? pkgNames : [pkgNames]
-  const decl = importDecl.find(imp => names.includes(imp.source.value))
-  if (!decl) {
-    return
-  }
-  for (let i = 0; i < decl.specifiers.length; i++) {
-    const specifier = decl.specifiers[i]!
-    if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier' && specifier.imported.name === importedName) {
-      callback?.(specifier, decl.specifiers[i + 1])
-      return specifier
-    }
+
+  const allSpecifiers = importDecl
+    .filter(imp => names.includes(imp.source.value))
+    .flatMap(decl => decl.specifiers.map((spec, i) => ({ spec, next: decl.specifiers[i + 1] })))
+
+  const match = allSpecifiers.find(({ spec }) =>
+    spec.type === 'ImportSpecifier' && spec.imported.type === 'Identifier' && spec.imported.name === importedName,
+  )
+
+  if (match) {
+    callback?.(match.spec as ImportSpecifier, match.next)
+    return match.spec as ImportSpecifier
   }
 }
 
