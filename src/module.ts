@@ -27,6 +27,13 @@ export default defineNuxtModule<ModuleOptions>({
 
     const resolver = createResolver(import.meta.url)
 
+    // core
+    addComponent({
+      name: 'NuxtIsland',
+      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
+      priority: 1000,
+    })
+
     // performances
     addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
 
@@ -42,11 +49,6 @@ export default defineNuxtModule<ModuleOptions>({
       handler: resolver.resolve('./runtime/hydration/sse.nitro'),
     })
 
-    addComponent({
-      name: 'NuxtIsland',
-      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
-      priority: 1000,
-    })
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
     addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))

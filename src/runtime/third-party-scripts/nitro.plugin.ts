@@ -39,9 +39,9 @@ function __hints_TPC_saveTime(script, startTime) {
 for (const script of document.scripts) {
     if (script.src && !script.src.startsWith(window.location.origin)) {
         script.__hints_TPC_start_time = window.__hints_TPC_start_time || Date.now();
-        script.onload = function(_) {
+        script.addEventListener('load', () => {
             __hints_TPC_saveTime(script, script.__hints_TPC_start_time);
-        }
+        })
         __hints_TPC_saveTime(script, script.__hints_TPC_start_time);
     }
 }
