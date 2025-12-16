@@ -21,7 +21,9 @@ export const InjectHydrationPlugin = createUnplugin(() => {
             include: /.(vue|ts|js|tsx|jsx)$/,
             exclude: [skipPath, EXCLUDE_NODE_MODULES],
           },
-          code: /defineNuxtComponent|defineComponent/,
+          code: {
+            include: [DEFINE_COMPONENT_RE, DEFINE_NUXT_COMPONENT_RE],
+          },
         },
         async handler(code, id) {
           const m = new MagicString(code)
@@ -90,7 +92,9 @@ export const InjectHydrationPlugin = createUnplugin(() => {
             include: INCLUDE_VUE_RE,
             exclude: [skipPath, EXCLUDE_NODE_MODULES],
           },
-          code: /(?!defineComponent|defineNuxtComponent)/,
+          code: {
+            exclude: [DEFINE_COMPONENT_RE, DEFINE_NUXT_COMPONENT_RE],
+          }
         },
 
         handler(code, id) {
