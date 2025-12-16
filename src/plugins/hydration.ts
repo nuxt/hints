@@ -94,7 +94,7 @@ export const InjectHydrationPlugin = createUnplugin(() => {
           },
           code: {
             exclude: [DEFINE_COMPONENT_RE, DEFINE_NUXT_COMPONENT_RE],
-          }
+          },
         },
 
         handler(code, id) {
