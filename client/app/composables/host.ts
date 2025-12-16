@@ -50,7 +50,7 @@ export function useHostHydration() {
   return { hydration: host.__hints.hydration }
 }
 
-function useHostNuxt() {
+export function useHostNuxt() {
   const client = useDevtoolsClient().value
 
   if (!client) {

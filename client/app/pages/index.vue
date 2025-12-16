@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const { allMetrics } = useHostWebVitals()
-const { hydration } = useHostHydration()
+const hydration = useNuxtApp().$hydrationMismatches
 
-const hydrationCount = computed(() => hydration.length || 0)
+const hydrationCount = computed(() => hydration.value.length)
 </script>
 
 <template>

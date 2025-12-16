@@ -1,4 +1,5 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler } from '@nuxt/kit'
+import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from './runtime/hydration/utils'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -21,6 +22,8 @@ export default defineNuxtModule<ModuleOptions>({
     if (!nuxt.options.dev) {
       return
     }
+    nuxt.options.nitro.experimental = nuxt.options.nitro.experimental || {}
+    nuxt.options.nitro.experimental.websocket = true
 
     const resolver = createResolver(import.meta.url)
 
@@ -37,6 +40,14 @@ export default defineNuxtModule<ModuleOptions>({
     // hydration
     addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
+    addServerHandler({
+      route: HYDRATION_ROUTE,
+      handler: resolver.resolve('./runtime/hydration/handler.nitro'),
+    })
+    addServerHandler({
+      route: HYDRATION_SSE_ROUTE,
+      handler: resolver.resolve('./runtime/hydration/sse.nitro'),
+    })
 
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
