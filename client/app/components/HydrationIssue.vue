@@ -76,6 +76,8 @@ function removeSelf() {
   <n-card
     p-4
     relative
+    w-full
+    overflow-auto
   >
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
@@ -138,7 +140,7 @@ function removeSelf() {
     </div>
 
     <div
-      class="w-full mt-3 overflow-auto rounded-lg"
+      class="w-full mt-3 overflow-auto rounded-lg w-fit"
       v-html="diffHtml"
     />
   </n-card>
@@ -153,5 +155,9 @@ function removeSelf() {
   &.remove {
     background-color: rgba(220, 38, 38, 0.15); // red-600 at 15% opacity
   }
+}
+
+:deep(.shiki) {
+  width: fit-content;
 }
 </style>

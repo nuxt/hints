@@ -29,9 +29,6 @@ importers:
       oxc-parser:
         specifier: ^0.103.0
         version: 0.103.0
-      shiki:
-        specifier: ^3.13.0
-        version: 3.20.0
       sirv:
         specifier: ^3.0.2
         version: 3.0.2
@@ -96,6 +93,9 @@ importers:
       sass-embedded:
         specifier: ^1.93.3
         version: 1.97.0
+      shiki:
+        specifier: ^3.13.0
+        version: 3.20.0
       vitest:
         specifier: ^4.0.0
         version: 4.0.16(@types/node@24.10.4)(happy-dom@20.0.11)(jiti@2.6.1)(sass-embedded@1.97.0)(sass@1.97.0)(terser@5.44.1)(yaml@2.8.2)
@@ -5759,7 +5759,7 @@ snapshots:
   '@dxup/nuxt@0.2.2(magicast@0.5.1)':
     dependencies:
       '@dxup/unimport': 0.1.2
-      '@nuxt/kit': 4.2.1(magicast@0.5.1)
+      '@nuxt/kit': 4.2.2(magicast@0.5.1)
       chokidar: 4.0.3
       pathe: 2.0.3
       tinyglobby: 0.2.15
