@@ -64,15 +64,19 @@ Analyze all third-party scripts on your page. The dashboard shows loading times,
 ## How It Works
 
 ### Performance Monitoring
-Nuxt Hints uses `web-vitals` to gather Core Web Vitals metrics and automatically logs any metrics that need improvement. It listens for INP, LCP, and CLS and provides detailed attribution for each.
+
+Nuxt Hints uses `web-vitals` to gather Core Web Vitals metrics and automatically logs any msetrics that need improvement. It listens for INP, LCP, and CLS and provides detailed attribution for each.
 
 ### Hydration Mismatch Detection
+
 The module hooks into Vue's hydration process to compare the server-rendered DOM with the client-side DOM. When a mismatch is detected, it captures the pre- and post-hydration HTML for inspection.
 
 ### Third-Party Script Analysis
+
 Using a combination of a Nitro plugin and client-side observers, Nuxt Hints tracks every script loaded on the page, measuring its performance and analyzing its attributes.
 
 ### Example Console Output
+
 When Nuxt Hints detects issues, you'll see clear warnings in your browser console:
 
 ```
@@ -89,29 +93,30 @@ Consider adding crossorigin="anonymous" for better security and error reporting.
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Generate type stubs
-npm run dev:prepare
+pnpm run dev:prepare
 
 # Develop with the playground
-npm run dev
+pnpm run dev
 
 # Build the playground
-npm run dev:build
+pnpm run dev:build
 
 # Run ESLint
-npm run lint
+pnpm run lint
 
 # Run Vitest
-npm run test
-npm run test:watch
+pnpm run test
+pnpm run test:watch
 
 # Release new version
-npm run release
+pnpm run release
 ```
 
 <!-- Badges -->
+
 [npm-version-src]: https://img.shields.io/npm/v/@nuxt/hints/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
 [npm-version-href]: https://npmjs.com/package/@nuxt/hints
 [npm-downloads-src]: https://img.shields.io/npm/dm/@nuxt/hints.svg?style=flat&colorA=18181B&colorB=28CF8D
