@@ -28,26 +28,28 @@ const { highlightElement, inspectElementInEditor, clearHighlight } = useElementH
 const diffHtml = ref('')
 
 async function render(pre: string, post: string) {
-  const diff = diffLines(pre, post, { stripTrailingCr: true, ignoreNewlineAtEof: true })
+  const diff = diffLines(pre, post, { stripTrailingCr: true, ignoreNewlineAtEof: true, newlineIsToken: true, ignoreWhitespace: true })
   diffHtml.value = await codeToHtml(generateDiffHtml(diff), {
     theme: 'github-dark', lang: 'html', transformers: [
       transformerNotationDiff(),
     ],
   })
 }
-
 function generateDiffHtml(change: ChangeObject<string>[]) {
   return change.map((part) => {
+    if (part.value === '\n') {
+      return ''
+    }
     if (part.added) {
-      return `// [!code ++]\n${part.value}`
+      return `\n// [!code ++]\n${part.value}`
     }
     else if (part.removed) {
-      return `// [!code --]\n${part.value} `
+      return `\n// [!code --]\n${part.value} `
     }
     else {
       return part.value
     }
-  }).join('')
+  }).join('').trim()
 }
 
 const fullPre = computed(() => props.issue.htmlPreHydration ?? '')
@@ -140,7 +142,7 @@ function removeSelf() {
     </div>
 
     <div
-      class="w-full mt-3 overflow-auto rounded-lg w-fit"
+      class="w-full mt-3 overflow-auto rounded-lg"
       v-html="diffHtml"
     />
   </n-card>
