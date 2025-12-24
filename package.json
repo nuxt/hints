@@ -57,7 +57,6 @@
     "@nuxt/schema": "^4.1.2",
     "@nuxt/test-utils": "^3.19.2",
     "@shikijs/transformers": "^3.15.0",
-    "shiki": "^3.13.0",
     "@types/node": "^24.0.0",
     "changelogen": "^0.6.0",
     "diff": "^8.0.2",
@@ -66,6 +65,8 @@
     "pkg-pr-new": "0.0.62",
     "rimraf": "^6.0.1",
     "sass-embedded": "^1.93.3",
+    "shiki": "^3.13.0",
+    "shiki-transformer-fold": "^0.1.0",
     "vitest": "^4.0.0"
   },
   "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402"

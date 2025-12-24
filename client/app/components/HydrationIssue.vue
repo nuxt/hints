@@ -4,6 +4,7 @@ import { diffLines, type ChangeObject } from 'diff'
 import { transformerNotationDiff } from '@shikijs/transformers'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
 import { HYDRATION_ROUTE } from '../../../src/runtime/hydration/utils'
+import { transformerRenderHtmlFold, attachFoldToggleListener } from 'shiki-transformer-fold'
 
 const props = defineProps<{
   issue: Issue
@@ -31,6 +32,7 @@ async function render(pre: string, post: string) {
   const diff = diffLines(pre, post, { stripTrailingCr: true, ignoreNewlineAtEof: true, newlineIsToken: true, ignoreWhitespace: true })
   diffHtml.value = await codeToHtml(generateDiffHtml(diff), {
     theme: 'github-dark', lang: 'html', transformers: [
+      transformerRenderHtmlFold(),
       transformerNotationDiff(),
     ],
   })
@@ -72,6 +74,10 @@ function removeSelf() {
     body: JSON.stringify({ id: [props.issue.id] }),
   })
 }
+
+onMounted(() => {
+  attachFoldToggleListener()
+})
 </script>
 
 <template>
