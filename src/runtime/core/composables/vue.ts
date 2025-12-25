@@ -1,0 +1,19 @@
+import { ref as _ref, reactive as _reactive, shallowReactive as _shallowReactive, shallowRef as _shallowRef, getCurrentInstance } from 'vue'
+import { tryUseNuxtApp } from '#app'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function wrapWithWarning<Fn extends (...args: any[]) => any>(fn: Fn, name: string): Fn {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function (this: unknown, ...args: any[]) {
+    const nuxtApp = tryUseNuxtApp()
+    if (!nuxtApp && !getCurrentInstance()) {
+      console.error(new Error(`[@nuxt/hints] ${name}() called outside of setup() or without Nuxt app context. This may lead to Server side memory leaks or data leaks across requests.`))
+    }
+    return fn.call(this, ...args)
+  } as Fn
+}
+
+export const ref = import.meta.server ? wrapWithWarning(_ref, 'ref') : _ref
+export const reactive = import.meta.server ? wrapWithWarning(_reactive, 'reactive') : _reactive
+export const shallowReactive = import.meta.server ? wrapWithWarning(_shallowReactive, 'shallowReactive') : _shallowReactive
+export const shallowRef = import.meta.server ? wrapWithWarning(_shallowRef, 'shallowRef') : _shallowRef
