@@ -1,6 +1,6 @@
 {
   "name": "@nuxt/hints",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Nuxt module that shows hints for aspects of your application such as Performance, Security, and more!",
   "repository": "https://github.com/nuxt/hints",
   "homepage": "https://github.com/nuxt/hints",
