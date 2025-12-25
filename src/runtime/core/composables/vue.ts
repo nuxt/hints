@@ -7,7 +7,7 @@ function wrapWithWarning<Fn extends (...args: any[]) => any>(fn: Fn, name: strin
   return function (this: unknown, ...args: any[]) {
     const nuxtApp = tryUseNuxtApp()
     if (!nuxtApp && !getCurrentInstance()) {
-      console.error(new Error(`[@nuxt/hints] ${name}() called outside of setup() or without Nuxt app context. This may lead to Server side memory leaks.`))
+      console.error(new Error(`[@nuxt/hints] ${name}() called outside of setup() or without Nuxt app context. This may lead to Server side memory leaks or data leaks across requests.`))
     }
     return fn.call(this, ...args)
   } as Fn
