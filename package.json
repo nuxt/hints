@@ -1,8 +1,9 @@
 {
   "name": "@nuxt/hints",
-  "version": "1.0.0",
-  "description": "Nuxt module that shows hints for aspects of your application such as Performance, A11Y, Security, and more!",
-  "repository": "nuxt/hints",
+  "version": "1.0.0-alpha.4",
+  "description": "Nuxt module that shows hints for aspects of your application such as Performance, Security, and more!",
+  "repository": "https://github.com/nuxt/hints",
+  "homepage": "https://github.com/nuxt/hints",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -22,11 +23,11 @@
   "scripts": {
     "client:build": "nuxi generate client",
     "client:dev": "nuxi dev client --port 3300",
-    "prepack": "nuxt-module-build && npm run client:build",
+    "prepack": "nuxt-module-build && pnpm run client:build",
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
+    "dev:prepare": "nuxt-module-build build --stub && nuxi prepare && nuxi prepare playground",
+    "release": "pnpm run lint && pnpm run test && pnpm run prepack && changelogen --release && pnpm publish && git push --follow-tags",
     "lint": "eslint .",
     "test": "vitest run",
     "test:types": "tsc --noEmit",
@@ -34,28 +35,39 @@
     "cleanup": "rimraf **/node_modules **/dist **/.output **/.nuxt --glob"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "^2.6.5",
+    "@nuxt/devtools-kit": "^3.0.0",
     "@nuxt/kit": "^4.1.2",
+    "h3": "^1.15.4",
+    "knitwork": "^1.3.0",
     "magic-string": "^0.30.19",
     "nitropack": "^2.12.6",
-    "shiki": "^3.13.0",
+    "oxc-parser": "^0.105.0",
     "sirv": "^3.0.2",
     "unplugin": "^2.3.10",
-    "vite-plugin-vue-tracer": "^1.0.1"
+    "vite-plugin-vue-tracer": "^1.0.1",
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^2.6.5",
-    "@nuxt/devtools-ui-kit": "^2.6.5",
+    "@nuxt/devtools": "^3.0.0",
+    "@nuxt/devtools-ui-kit": "^3.0.0",
     "@nuxt/eslint": "^1.9.0",
+    "@nuxt/hints": "workspace:^",
     "@nuxt/icon": "^2.0.0",
     "@nuxt/module-builder": "^1.0.0",
     "@nuxt/schema": "^4.1.2",
     "@nuxt/test-utils": "^3.19.2",
-    "@types/node": "^22.18.6",
-    "changelogen": "^0.5.7",
+    "@shikijs/transformers": "^3.15.0",
+    "@types/node": "^24.0.0",
+    "changelogen": "^0.6.0",
+    "diff": "^8.0.2",
     "eslint": "^9.36.0",
+    "happy-dom": "^20.0.10",
+    "pkg-pr-new": "0.0.62",
     "rimraf": "^6.0.1",
-    "vitest": "^3.2.4"
+    "sass-embedded": "^1.93.3",
+    "shiki": "^3.13.0",
+    "shiki-transformer-fold": "^0.1.0",
+    "vitest": "^4.0.0"
   },
-  "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a"
+  "packageManager": "pnpm@10.26.2+sha512.0e308ff2005fc7410366f154f625f6631ab2b16b1d2e70238444dd6ae9d630a8482d92a451144debc492416896ed16f7b114a86ec68b8404b2443869e68ffda6"
 }

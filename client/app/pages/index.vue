@@ -1,80 +1,89 @@
 <script setup lang="ts">
-const { imagePerformances, hydration } = useHostPerformancesData()
+const { allMetrics } = useHostWebVitals()
+const hydration = useNuxtApp().$hydrationMismatches
+
+const hydrationCount = computed(() => hydration.value.length)
 </script>
 
 <template>
-  <div class="relative p-4 n-bg-base flex flex-col gap-4">
-    <NButton
-      n="xl"
-      flex
-      justify-between
-      items-center
-      to="/image-performance"
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-4">
+    <NuxtLink
+      to="/web-vitals"
+      class="block"
     >
-      <span
-        flex
-        flex-col
-        gap-2
+      <n-card
+        class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500"
       >
-        Image performances
-        <span
-          v-if="imagePerformances.length"
-          text-sm
+        <div class="flex items-center gap-3 min-w-0">
+          <Icon
+            name="material-symbols:monitoring"
+            class="text-xl text-blue-500"
+          />
+          <div class="min-w-0">
+            <div class="text-sm font-medium truncate">
+              Web Vitals
+            </div>
+            <div class="text-xs text-neutral-500">
+              LCP / INP / CLS
+            </div>
+          </div>
+        </div>
+        <n-badge
+          v-if="allMetrics.length"
         >
-          {{ imagePerformances.length }} image have issues
-        </span>
-      </span>
+          {{ allMetrics.length }} issues
+        </n-badge>
+      </n-card>
+    </NuxtLink>
 
-      <Icon
-        name="material-symbols:chevron-right-rounded"
-        text-xl
-      />
-    </NButton>
-    <NButton
-      n="xl"
-      flex
-      justify-between
-      items-center
+    <NuxtLink
       to="/hydration"
+      class="block"
     >
-      <span
-        flex
-        flex-col
-        gap-2
-      >
-        Hydration issues
-        <span
-          v-if="hydration.length"
-          text-sm
+      <n-card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
+        <div class="flex items-center gap-3 min-w-0">
+          <Icon
+            name="material-symbols:water-full"
+            class="text-xl text-cyan-500"
+          />
+          <div class="min-w-0">
+            <div class="text-sm font-medium truncate">
+              Hydration
+            </div>
+            <div class="text-xs text-neutral-500">
+              SSR vs client diffs
+            </div>
+          </div>
+        </div>
+        <n-tip
+          v-if="hydrationCount"
+          size="small"
+          type="error"
+          :bordered="false"
         >
-          {{ hydration.length }} hydration issues
-        </span>
-      </span>
+          {{ hydrationCount }} issues
+        </n-tip>
+      </n-card>
+    </NuxtLink>
 
-      <Icon
-        name="material-symbols:chevron-right-rounded"
-        text-xl
-      />
-    </NButton>
-    <NButton
-      n="xl"
-      flex
-      justify-between
-      items-center
+    <NuxtLink
       to="/third-party-scripts"
+      class="block"
     >
-      <span
-        flex
-        flex-col
-        gap-2
-      >
-        Third party scripts
-      </span>
-
-      <Icon
-        name="material-symbols:chevron-right-rounded"
-        text-xl
-      />
-    </NButton>
+      <n-card class="p-4 flex items-center gap-3 hover:border-neutral-400 dark:hover:border-neutral-500">
+        <Icon
+          name="material-symbols:extension"
+          class="text-xl text-violet-500"
+        />
+        <div class="min-w-0">
+          <div class="text-sm font-medium truncate">
+            Third party scripts
+          </div>
+          <div class="text-xs text-neutral-500">
+            Analyze third-party scripts speed.
+          </div>
+        </div>
+      </n-card>
+    </NuxtLink>
   </div>
 </template>

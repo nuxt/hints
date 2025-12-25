@@ -1,7 +1,6 @@
-/// <reference types="nuxt" />
-import type { NitroAppPlugin } from 'nitropack/types'
+import type { NitroApp } from 'nitropack/types'
 
-export default <NitroAppPlugin> function (nitroApp) {
+export default function (nitroApp: NitroApp) {
   nitroApp.hooks.hook('render:html', ({ head }) => {
     head.unshift(`
 <script>
@@ -40,9 +39,9 @@ function __hints_TPC_saveTime(script, startTime) {
 for (const script of document.scripts) {
     if (script.src && !script.src.startsWith(window.location.origin)) {
         script.__hints_TPC_start_time = window.__hints_TPC_start_time || Date.now();
-        script.onload = function(_) {
+        script.addEventListener('load', () => {
             __hints_TPC_saveTime(script, script.__hints_TPC_start_time);
-        }
+        })
         __hints_TPC_saveTime(script, script.__hints_TPC_start_time);
     }
 }

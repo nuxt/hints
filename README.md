@@ -5,75 +5,79 @@
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-Easily detect Performance, Hydration, and Security issues in your Nuxt application !
+**A Nuxt module that provides real-time feedback on your application's performance, accessibility, and security right in your browser.**
 
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
+Nuxt Hints integrates directly into the Nuxt DevTools, giving you actionable insights to improve your web vitals, fix hydration mismatches, and audit third-party scripts without ever leaving your development environment.
+
+- [✨Release Notes](/CHANGELOG.md)
+
+## Getting Started
+
+To install and add the module, you can run the following command:
+
+```bash
+npx nuxt module add hints
+```
+
+The module is now automatically installed and added to your `nuxt.config.ts`.
+Now you can open your Nuxt app, go to the DevTools, and click the Nuxt Hints icon to get started.
 
 ## Features
 
-### 🚀 **Performance Analysis**
-- **LCP (Largest Contentful Paint) Optimization**: Identifies images that could benefit from modern formats (WebP, AVIF), proper sizing, fetch priority, and preloading
-- **CLS (Cumulative Layout Shift) Detection**: Warns about layout shifts caused by images without dimensions
-- **Loading Performance**: Tracks and reports slow-loading elements (>2.5s)
-- **Image Best Practices**: Validates proper `width`, `height`, `loading`, and `fetchPriority` attributes
+- **🚀 Rich DevTools UI**: A dedicated tab in Nuxt DevTools to visualize issues, inspect elements, and get recommendations.
+- **💧 Hydration Mismatch Debugging**: Side-by-side diffing of server-rendered and client-hydrated HTML to pinpoint the exact cause of mismatches.
+- **⚡️ Web Vitals Analysis**: Real-time metrics for LCP, INP, and CLS with detailed attribution and element-specific optimization tips.
+- **📦 Third-Party Script Auditing**: Dashboard to monitor performance, identify render-blocking scripts, and get security recommendations.
+- **🔍 Interactive Diagnostics**:
+  - **Hover to Highlight**: Hover over an issue in the DevTools to highlight the corresponding element on your page.
+  - **Click to Inspect**: Click to open the component source file directly in your code editor.
+- **💡 Actionable Console Warnings**: Clear, concise console messages that guide you to best practices and performance improvements.
 
-### 📦 **Third-Party Script Monitoring**
-- **Script Detection**: Automatically identifies third-party scripts on your pages
-- **Performance Tracking**: Measures load times for external scripts with detailed timing breakdowns
-- **Security Recommendations**: Suggests adding `crossorigin="anonymous"` for better security and error reporting
-- **@nuxt/scripts Integration**: Recommends using `@nuxt/scripts` for better third-party script management
+## Visual Interface within Devtools
 
-### 💧 **Hydration Insights**
-- **SSR/Client Mismatch Detection**: Helps identify hydration issues between server and client rendering
+Nuxt Hints provides a rich, interactive UI inside the Nuxt DevTools panel.
 
-### 🛠️ **Developer Experience**
-- **Nuxt DevTools Integration**: Rich UI for visualizing performance issues and recommendations
-- **Console Warnings**: Clear, actionable messages with links to web.dev documentation
+### Homepage
 
-## Quick Setup
+A central hub to see a summary of all detected issues at a glance.
 
-### Quick install using nuxt CLI
+![hints devtools homepage screenshot](./.github/assets/devtools-homepage.png)
 
-1. run `npx nuxt module add @nuxt/hints`
+### Web Vitals
 
-### Manual install
+Drill down into Core Web Vitals metrics. See detailed attribution for LCP, INP, and CLS, inspect the problematic elements, and get context-aware advice.
 
-1. Add `@nuxt/hints` dependency to your project
+![hints devtools web vitals screenshot](./.github/assets/devtools-webvitals.png)
 
-```bash
-# Using pnpm
-pnpm add -D @nuxt/hints
+### Hydration Inspector
 
-# Using yarn
-yarn add --dev @nuxt/hints
+Debug hydration mismatches with a powerful side-by-side diff viewer. See the exact differences between the server-rendered HTML and the client-side result.
 
-# Using npm
-npm install --save-dev @nuxt/hints
-```
+![hints devtools hydration screenshot](./.github/assets/devtools-hydration.png)
 
-2. Add `@nuxt/hints` to the `modules` section of `nuxt.config.ts`
+### Third-Party Scripts
 
-```js
-export default defineNuxtConfig({
-  modules: ["@nuxt/hints"],
-});
-```
+Analyze all third-party scripts on your page. The dashboard shows loading times, render-blocking status, and security attributes, helping you identify and mitigate performance bottlenecks.
 
-That's it! You can now use Nuxt Hints in your Nuxt app ✨
+![hints devtools third-party screenshot](./.github/assets/devtools-thirdparties.png)
 
 ## How It Works
 
 ### Performance Monitoring
 
-Nuxt Hints uses the **Performance Observer API** to monitor your application.
+Nuxt Hints uses `web-vitals` to gather Core Web Vitals metrics and automatically logs any msetrics that need improvement. It listens for INP, LCP, and CLS and provides detailed attribution for each.
+
+### Hydration Mismatch Detection
+
+The module hooks into Vue's hydration process to compare the server-rendered DOM with the client-side DOM. When a mismatch is detected, it captures the pre- and post-hydration HTML for inspection.
 
 ### Third-Party Script Analysis
 
-The module automatically detects and analyzes third-party scripts.
+Using a combination of a Nitro plugin and client-side observers, Nuxt Hints tracks every script loaded on the page, measuring its performance and analyzing its attributes.
 
 ### Example Console Output
 
-When Nuxt Hints detects issues, you'll see warnings in console like:
+When Nuxt Hints detects issues, you'll see clear warnings in your browser console:
 
 ```
 [@nuxt/hints:performance] LCP Element should not have `loading="lazy"`
@@ -81,13 +85,7 @@ Learn more: https://web.dev/optimize-lcp/#optimize-the-priority-the-resource-is-
 ```
 
 ```
-[@nuxt/hints:performance] LCP Element can be served in a next gen format like `webp` or `avif`
-Learn more: https://web.dev/choose-the-right-image-format/
-Use: https://image.nuxt.com/usage/nuxt-img#format
-```
-
-```
-[@nuxt/hints] Third-party script "https://cdn.example.com/script.js" is missing crossorigin attribute. 
+[@nuxt/hints] Third-party script "https://cdn.example.com/script.js" is missing crossorigin attribute.
 Consider adding crossorigin="anonymous" for better security and error reporting.
 ```
 
@@ -95,26 +93,26 @@ Consider adding crossorigin="anonymous" for better security and error reporting.
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Generate type stubs
-npm run dev:prepare
+pnpm run dev:prepare
 
 # Develop with the playground
-npm run dev
+pnpm run dev
 
 # Build the playground
-npm run dev:build
+pnpm run dev:build
 
 # Run ESLint
-npm run lint
+pnpm run lint
 
 # Run Vitest
-npm run test
-npm run test:watch
+pnpm run test
+pnpm run test:watch
 
 # Release new version
-npm run release
+pnpm run release
 ```
 
 <!-- Badges -->
@@ -125,5 +123,5 @@ npm run release
 [npm-downloads-href]: https://npmjs.com/package/@nuxt/hints
 [license-src]: https://img.shields.io/npm/l/@nuxt/hints.svg?style=flat&colorA=18181B&colorB=28CF8D
 [license-href]: https://npmjs.com/package/@nuxt/hints
-[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt.js
+[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt
 [nuxt-href]: https://nuxt.com

@@ -14,16 +14,17 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
-      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: pnpm/action-setup@1e1c8eafbd745f64b1ef30a7d7ed7965034c486c
         name: Install pnpm
       - name: Install Node.js
-        uses: actions/setup-node@13427813f706a0f6c9b74603b31103c40ab1c35a
+        uses: actions/setup-node@65d868f8d4d85d7d4abb7de0875cde3fcc8798f5
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm dev:prepare
       - run: pnpm prepack
       - run: pnpm test:types
       - run: pnpm lint
+      - run: pnpm test

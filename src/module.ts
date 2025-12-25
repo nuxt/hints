@@ -1,4 +1,5 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addImports } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addImports, addServerHandler } from '@nuxt/kit'
+import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from './runtime/hydration/utils'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -7,9 +8,11 @@ export interface ModuleOptions {
   devtools: boolean
 }
 
+const moduleName = '@nuxt/hints'
+
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@nuxt/hints',
+    name: moduleName,
     configKey: 'hints',
   },
   defaults: {
@@ -19,24 +22,36 @@ export default defineNuxtModule<ModuleOptions>({
     if (!nuxt.options.dev) {
       return
     }
+    nuxt.options.nitro.experimental = nuxt.options.nitro.experimental || {}
+    nuxt.options.nitro.experimental.websocket = true
 
     const resolver = createResolver(import.meta.url)
 
-    // performances
-    addPlugin(resolver.resolve('./runtime/plugins/performance/plugin.client'))
-
-    // hydration
-    addPlugin(resolver.resolve('./runtime/plugins/hydration/plugin.client'))
-    addBuildPlugin(InjectHydrationPlugin)
+    // core
     addComponent({
       name: 'NuxtIsland',
-      filePath: resolver.resolve('./runtime/components/nuxt-island.ts'),
+      filePath: resolver.resolve('./runtime/core/components/nuxt-island'),
       priority: 1000,
     })
 
+    // performances
+    addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
+
+    // hydration
+    addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
+    addBuildPlugin(InjectHydrationPlugin)
+    addServerHandler({
+      route: HYDRATION_ROUTE,
+      handler: resolver.resolve('./runtime/hydration/handler.nitro'),
+    })
+    addServerHandler({
+      route: HYDRATION_SSE_ROUTE,
+      handler: resolver.resolve('./runtime/hydration/sse.nitro'),
+    })
+
     // third-party scripts
-    addPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/plugin.client'))
-    addServerPlugin(resolver.resolve('./runtime/plugins/third-party-scripts/nitro.plugin'))
+    addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
+    addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
 
     // Imports for server side misusage detection
     addImports([
@@ -54,7 +69,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.devtools) {
       setupDevToolsUI(nuxt, resolver)
-      addPlugin(resolver.resolve('./runtime/plugins/vue-tracer-state.client'))
+      addPlugin(resolver.resolve('./runtime/core/plugins/vue-tracer-state.client'))
     }
+
+    nuxt.options.build.transpile.push(moduleName)
   },
 })

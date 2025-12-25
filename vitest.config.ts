@@ -1,0 +1,10 @@
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    projects: [
+      './vitest.runtime.config.ts',
+      './vitest.unit.config.ts',
+    ],
+  },
+})

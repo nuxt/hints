@@ -10,18 +10,21 @@ const pageTitle = computed(() => {
   <header
     flex
     px-4
-    py-2
     border="b base"
-    text-2xl
-    font-bold
-    text-gray-800
+    h-49px
+    items-center
+    font-semibold
+    text-neutral-800
     dark:text-white
-    gap-4
+    gap-1
     n-border-base
   >
-    <NuxtLink to="/">@nuxt/hints</NuxtLink>
+    <NuxtLink
+      to="/"
+      :class="pageTitle ? 'text-neutral-500 dark:text-neutral-400' : 'text-neutral-800 dark:text-white'"
+    >Hints</NuxtLink>
     <template v-if="pageTitle">
-      -
+      <Icon name="carbon:chevron-right" />
       <div>
         {{ pageTitle }}
       </div>
