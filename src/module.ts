@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler, addImports, addImportsSources } from '@nuxt/kit'
 import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from './runtime/hydration/utils'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
@@ -52,6 +52,10 @@ export default defineNuxtModule<ModuleOptions>({
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
     addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
+
+    // prerender
+    addServerPlugin(resolver.resolve('./runtime/prerender/nitro.plugin'))
+    addPlugin(resolver.resolve('./runtime/prerender/plugin.server'))
 
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
