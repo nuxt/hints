@@ -32,7 +32,9 @@ async function render(pre: string, post: string) {
   const diff = diffLines(pre, post, { stripTrailingCr: true, ignoreNewlineAtEof: true, newlineIsToken: true, ignoreWhitespace: true })
   diffHtml.value = await codeToHtml(generateDiffHtml(diff), {
     theme: 'github-dark', lang: 'html', transformers: [
-      transformerRenderHtmlFold(),
+      transformerRenderHtmlFold({
+        foldLevel: diff.length > 20 ? 2 : 0,
+      }),
       transformerNotationDiff(),
     ],
   })

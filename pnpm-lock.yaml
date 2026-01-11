@@ -97,8 +97,8 @@ importers:
         specifier: ^3.13.0
         version: 3.20.0
       shiki-transformer-fold:
-        specifier: ^0.1.0
-        version: 0.1.1
+        specifier: ^0.2.0
+        version: 0.2.0
       vitest:
         specifier: ^4.0.0
         version: 4.0.16(@types/node@24.10.4)(happy-dom@20.0.11)(jiti@2.6.1)(sass-embedded@1.97.1)(sass@1.97.1)(terser@5.44.1)(yaml@2.8.2)
@@ -4686,8 +4686,8 @@ packages:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
 
-  shiki-transformer-fold@0.1.1:
-    resolution: {integrity: sha512-04gmLMf+ugyLwbR6VV8IRZjqTWGCa5TDfg74ypsXBmUX/WnByRQRMZ2P91JUOWiPGEGdXIzjNwjO/4YAX+8Zrg==}
+  shiki-transformer-fold@0.2.0:
+    resolution: {integrity: sha512-JWccezM0h+HzptrTNiDla+nJ8ri3njktLEiGZpRq88brdhlvA4WdLtLMStoA/RzwcjVEioSFwl0RrG6caK8NPw==}
 
   shiki@3.20.0:
     resolution: {integrity: sha512-kgCOlsnyWb+p0WU+01RjkCH+eBVsjL1jOwUYWv0YDWkM2/A46+LDKVs5yZCUXjJG6bj4ndFoAg5iLIIue6dulg==}
@@ -5779,7 +5779,7 @@ snapshots:
   '@dxup/nuxt@0.2.2(magicast@0.5.1)':
     dependencies:
       '@dxup/unimport': 0.1.2
-      '@nuxt/kit': 4.2.1(magicast@0.5.1)
+      '@nuxt/kit': 4.2.2(magicast@0.5.1)
       chokidar: 4.0.3
       pathe: 2.0.3
       tinyglobby: 0.2.15
@@ -10662,7 +10662,7 @@ snapshots:
 
   shell-quote@1.8.3: {}
 
-  shiki-transformer-fold@0.1.1: {}
+  shiki-transformer-fold@0.2.0: {}
 
   shiki@3.20.0:
     dependencies:
