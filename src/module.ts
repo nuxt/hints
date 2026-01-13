@@ -1,7 +1,8 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler, hasNuxtModule } from '@nuxt/kit'
 import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from './runtime/hydration/utils'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
+import { defu } from 'defu'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -65,5 +66,14 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     nuxt.options.build.transpile.push(moduleName)
+
+    if (hasNuxtModule('nuxt-security')) {
+      // https://nuxt-security.vercel.app/middleware/xss-validator
+      nuxt.options.routeRules = defu(nuxt.options.routeRules, {
+        [HYDRATION_ROUTE]: {
+          xssValidator: false,
+        },
+      })
+    }
   },
 })
