@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
+import { logger } from '../logger'
 
 const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension|ms-browser-extension):/
 
@@ -45,7 +46,7 @@ export default defineNuxtPlugin({
         existingScript.loaded = true
       }
       else {
-        console.warn(`[@nuxt/hints]: Script loaded event received for a script not tracked: ${script.src}. Please open an issue with a minimal reproduction if you think this is a bug.`)
+        logger.warn(`Script loaded event received for a script not tracked: ${script.src}. Please open an issue with a minimal reproduction if you think this is a bug.`)
         scripts.value.push({ element: script, loaded: true })
       }
     })
@@ -59,7 +60,7 @@ export default defineNuxtPlugin({
         }
       }
       if (hasThirdPartyScript && !isUsingNuxtScripts) {
-        console.info('ℹ️ [@nuxt/hints]: Third-party scripts detected on page load: consider using @nuxt/scripts')
+        logger.info('Third-party scripts detected on page load: consider using @nuxt/scripts')
       }
     })
 
@@ -83,7 +84,7 @@ export default defineNuxtPlugin({
 
     function onScriptAdded(script: HTMLScriptElement) {
       if (!script.crossOrigin) {
-        console.warn(`[@nuxt/hints]: Third-party script "${script.src}" is missing crossorigin attribute. Consider adding crossorigin="anonymous" for better security and error reporting.`)
+        logger.warn(`Third-party script "${script.src}" is missing crossorigin attribute. Consider adding crossorigin="anonymous" for better security and error reporting.`)
       }
       nuxtApp.callHook('hints:scripts:added', script)
         .then(() => {
@@ -100,7 +101,7 @@ export default defineNuxtPlugin({
           }
         })
 
-      console.info(`ℹ️ [@nuxt/hints]: Dynamically added third-party script detected: ${script.src}`)
+      logger.info(`Dynamically added third-party script detected: ${script.src}`)
     }
   },
 })
