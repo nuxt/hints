@@ -1,6 +1,7 @@
 import { getCurrentInstance, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
 import { HYDRATION_ROUTE, formatHTML } from './utils'
+import { logger } from '../logger'
 import type { HydrationMismatchPayload } from './types'
 /**
  * prefer implementing onMismatch hook after vue 3.6
@@ -40,7 +41,7 @@ export function useHydrationCheck() {
         method: 'POST',
         body: payload,
       })
-      console.warn(`[nuxt/hints:hydration] Component ${instance.type.name ?? instance.type.displayName ?? instance.type.__name ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
+      logger.warn(`[hydration] Component ${instance.type.name ?? instance.type.displayName ?? instance.type.__name ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
     }
   })
 }
