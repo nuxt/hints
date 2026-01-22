@@ -59,6 +59,7 @@
     "@nuxt/test-utils": "^3.19.2",
     "@shikijs/transformers": "^3.15.0",
     "@types/node": "^24.0.0",
+    "@vue/test-utils": "^2.4.6",
     "changelogen": "^0.6.0",
     "diff": "^8.0.2",
     "eslint": "^9.36.0",
