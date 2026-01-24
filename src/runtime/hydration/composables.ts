@@ -10,7 +10,7 @@ export function useHydrationCheck() {
   if (import.meta.server) return
   const nuxtApp = useNuxtApp()
 
-  if (!nuxtApp.isHydrating) {
+  if (!nuxtApp.isHydrating || !nuxtApp.payload.serverRendered) {
     return
   }
 
