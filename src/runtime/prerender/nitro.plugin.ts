@@ -1,7 +1,7 @@
 import type { NitroAppPlugin } from 'nitropack'
 
 export default <NitroAppPlugin> function nitroHintsPlugin(nitroApp) {
-  nitroApp.hooks.hook('render:before', ({ event }) => {
+  nitroApp.hooks.hook('render:before', ({ event }) => { 
     event.context.shouldPrerender = true
   })
 

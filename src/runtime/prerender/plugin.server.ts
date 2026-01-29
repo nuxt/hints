@@ -4,13 +4,14 @@ import { getStackTraceLines } from './utils'
 export default defineNuxtPlugin({
   name: 'hints:prerender-detection',
   setup(nuxtApp) {
-    const event = nuxtApp.ssrContext!.event
-    const originalSsrContext = nuxtApp.ssrContext!
+    const event = nuxtApp.ssrContext!.event 
 
     let watching = true
+
+    const ssrContext = nuxtApp.ssrContext
     // Access to any property on ssrContext will mark the page as non-prerenderable
-    nuxtApp.ssrContext = new Proxy(originalSsrContext, {
-      get(target, prop, receiver) {
+    Object.defineProperty(nuxtApp, 'ssrContext', {
+      get() {
         if (watching && isUserLandCode()) {
           // Mark as non-prerenderable
           // we only want to do this when user-land code is being executed
@@ -18,7 +19,7 @@ export default defineNuxtPlugin({
           // it's better to be slightly overzealous here than miss actual user code
           event.context.shouldPrerender = false
         }
-        return Reflect.get(target, prop, receiver)
+        return ssrContext
       },
     })
 
@@ -37,7 +38,7 @@ export default defineNuxtPlugin({
 function isUserLandCode(offset: number = 1): boolean {
   const stack = getStackTraceLines()
   const lines = stack.slice(2)
-  const line = lines[offset]
+  const line = lines[offset] 
   const isUserLand = !line?.includes('node_modules') && !line?.includes('node:internal')
   return isUserLand
 }
