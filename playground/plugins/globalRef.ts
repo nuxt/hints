@@ -1,7 +1,7 @@
 import { defineNuxtPlugin, ref } from '#imports'
 
-ref('memory-leak-warning-shown')
+ref('globalRef')
 
 export default defineNuxtPlugin(() => {
-  // Show memory leak warning
+
 })
