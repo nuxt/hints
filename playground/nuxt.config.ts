@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   appId: 'playground',
-  modules: ['@nuxt/eslint', '../src/module'],
+  modules: ['@nuxt/eslint', '@nuxt/hints'],
   devtools: { enabled: true },
   compatibilityDate: '2025-02-26',
   eslint: {
