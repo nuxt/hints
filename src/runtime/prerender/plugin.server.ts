@@ -4,7 +4,7 @@ import { getStackTraceLines } from './utils'
 export default defineNuxtPlugin({
   name: 'hints:prerender-detection',
   setup(nuxtApp) {
-    const event = nuxtApp.ssrContext!.event 
+    const event = nuxtApp.ssrContext!.event
 
     let watching = true
 
@@ -38,7 +38,7 @@ export default defineNuxtPlugin({
 function isUserLandCode(offset: number = 1): boolean {
   const stack = getStackTraceLines()
   const lines = stack.slice(2)
-  const line = lines[offset] 
+  const line = lines[offset]
   const isUserLand = !line?.includes('node_modules') && !line?.includes('node:internal')
   return isUserLand
 }
