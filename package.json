@@ -1,6 +1,6 @@
 {
   "name": "@nuxt/hints",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.6",
   "description": "Nuxt module that shows hints for aspects of your application such as Performance, Security, and more!",
   "repository": "https://github.com/nuxt/hints",
   "homepage": "https://github.com/nuxt/hints",
@@ -37,13 +37,14 @@
   "dependencies": {
     "@nuxt/devtools-kit": "^3.0.0",
     "@nuxt/kit": "^4.1.2",
+    "consola": "^3.4.2",
     "h3": "^1.15.4",
     "knitwork": "^1.3.0",
     "magic-string": "^0.30.19",
     "nitropack": "^2.12.6",
-    "oxc-parser": "^0.105.0",
+    "oxc-parser": "^0.111.0",
     "sirv": "^3.0.2",
-    "unplugin": "^2.3.10",
+    "unplugin": "^3.0.0",
     "vite-plugin-vue-tracer": "^1.0.1",
     "web-vitals": "^5.1.0"
   },
@@ -58,6 +59,7 @@
     "@nuxt/test-utils": "^3.19.2",
     "@shikijs/transformers": "^3.15.0",
     "@types/node": "^24.0.0",
+    "@vue/test-utils": "^2.4.6",
     "changelogen": "^0.6.0",
     "diff": "^8.0.2",
     "eslint": "^9.36.0",
@@ -66,8 +68,8 @@
     "rimraf": "^6.0.1",
     "sass-embedded": "^1.93.3",
     "shiki": "^3.13.0",
-    "shiki-transformer-fold": "^0.1.0",
+    "shiki-transformer-fold": "^0.2.0",
     "vitest": "^4.0.0"
   },
-  "packageManager": "pnpm@10.26.2+sha512.0e308ff2005fc7410366f154f625f6631ab2b16b1d2e70238444dd6ae9d630a8482d92a451144debc492416896ed16f7b114a86ec68b8404b2443869e68ffda6"
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
 }
