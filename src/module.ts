@@ -1,5 +1,5 @@
 import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler } from '@nuxt/kit'
-import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from './runtime/hydration/utils'
+import { HINTS_ROUTE, HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 
@@ -37,17 +37,20 @@ export default defineNuxtModule<ModuleOptions>({
     // performances
     addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
 
+    // core handlers
+    addServerHandler({
+      route: `${HINTS_ROUTE}/**`,
+      handler: resolver.resolve('./runtime/core/server/handler'),
+    })
+    addServerHandler({
+      route: HINTS_SSE_ROUTE,
+      handler: resolver.resolve('./runtime/core/server/sse'),
+    })
+
     // hydration
     addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
-    addServerHandler({
-      route: HYDRATION_ROUTE,
-      handler: resolver.resolve('./runtime/hydration/handler.nitro'),
-    })
-    addServerHandler({
-      route: HYDRATION_SSE_ROUTE,
-      handler: resolver.resolve('./runtime/hydration/sse.nitro'),
-    })
+    addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
 
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
