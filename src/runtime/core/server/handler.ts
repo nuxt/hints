@@ -1,4 +1,4 @@
-import { createError, defineEventHandler } from 'h3'
+import { createError, defineEventHandler, setResponseStatus } from 'h3'
 import { useNitroApp } from 'nitropack/runtime'
 import type { HintsApiContext, HintsApiResult } from './types'
 
@@ -17,6 +17,10 @@ export default defineEventHandler(async (event) => {
 
   if (!result.handled) {
     throw createError({ statusCode: 400 })
+  }
+
+  if (result.status) {
+    setResponseStatus(event, result.status)
   }
 
   return result.body
