@@ -2,7 +2,6 @@ import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addCompone
 import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from './runtime/hydration/utils'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
-import { serverFlagPrerenderHint } from './plugins/prerender'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -57,7 +56,6 @@ export default defineNuxtModule<ModuleOptions>({
     // prerender
     addServerPlugin(resolver.resolve('./runtime/prerender/nitro.plugin'))
     addPlugin(resolver.resolve('./runtime/prerender/plugin.server'))
-    addBuildPlugin(serverFlagPrerenderHint)
 
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
