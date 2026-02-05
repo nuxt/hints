@@ -11,9 +11,9 @@ const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 const EXCLUDE_NODE_MODULES = /node_modules/
 const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-hydration'))
 
-export const LazyHydrationPlugin = createUnplugin(() => {
+export const LazyLoadHintPlugin = createUnplugin(() => {
   return {
-    name: '@nuxt/hints:lazy-hydration',
+    name: '@nuxt/hints:lazy-load-plugin',
     enforce: 'post',
     transform: {
       filter: {
