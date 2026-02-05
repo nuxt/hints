@@ -2,6 +2,7 @@ import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addCompone
 import { HINTS_ROUTE, HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
+import { LazyHydrationPlugin } from './plugins/lazy-hydration'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -51,6 +52,12 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
     addBuildPlugin(InjectHydrationPlugin)
     addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
+
+    // lazy-hydration suggestions
+    addPlugin(resolver.resolve('./runtime/lazy-hydration/plugin.client'))
+    nuxt.hook('modules:done', () => {
+      addBuildPlugin(LazyHydrationPlugin)
+    })
 
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
