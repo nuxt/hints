@@ -69,6 +69,9 @@ export const LazyHydrationPlugin = createUnplugin(() => {
         m.prepend(genImport(
           '@nuxt/hints/runtime/lazy-hydration/composables',
           ['__wrapImportedComponent', '__wrapMainComponent'],
+        ) + '\n' + genImport(
+          '@nuxt/hints/runtime/lazy-hydration/composables',
+          ['useLazyComponentTracking'],
         ) + '\n')
 
         // For each direct import, wrap the component to track its usage
@@ -95,6 +98,14 @@ export const LazyHydrationPlugin = createUnplugin(() => {
               newName,
             )
           }
+          else if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier' && specifier.imported.name !== specifier.local.name) {
+            // For aliased imports: `import { X as Y }` or `import { default as X }` → `import { X as __original_Y }` or `import { default as __original_X }`
+            m.overwrite(
+              specifier.local.start,
+              specifier.local.end,
+              newName,
+            )
+          }
           else {
             // For named imports: `import { X }` → `import { X as __original_X }`
             m.overwrite(
@@ -110,7 +121,6 @@ export const LazyHydrationPlugin = createUnplugin(() => {
           m.replace('export default ', `__wrapMainComponent(_sfc_main, [${directComponentImports.map((imp) => {
             return `{ componentName: '${imp.name}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
           }).join(', ')}]);\nexport default `)
-          console.log(m.toString())
         }
         const components = findDefineComponentCalls(program)
 
@@ -120,12 +130,7 @@ export const LazyHydrationPlugin = createUnplugin(() => {
           }
         }
 
-        // Add wrapper statements after imports
-        // Find the last import declaration end position
-        const lastImport = imports[imports.length - 1]
-        if (lastImport) {
-          m.appendRight(lastImport.end, '\n' + wrapperStatements)
-        }
+        m.prepend(wrapperStatements + '\n')
 
         if (m.hasChanged()) {
           return {
