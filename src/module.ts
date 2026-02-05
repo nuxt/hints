@@ -56,9 +56,10 @@ export default defineNuxtModule<ModuleOptions>({
     // lazy-hydration suggestions
     addPlugin(resolver.resolve('./runtime/lazy-hydration/plugin.client'))
     nuxt.hook('modules:done', () => {
-      addBuildPlugin(LazyHydrationPlugin)
+      // hack to ensure the plugins runs after everything else. But before vite:import-analysis
+      addBuildPlugin(LazyHydrationPlugin, { client: false })
+      addBuildPlugin(LazyHydrationPlugin, { server: false })
     })
-
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
     addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
