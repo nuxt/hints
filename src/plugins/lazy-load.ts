@@ -9,7 +9,7 @@ import { findDefineComponentCalls } from './utils'
 const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 // Exclude node_moduels as users can have control over it
 const EXCLUDE_NODE_MODULES = /node_modules/
-const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-hydration'))
+const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-load'))
 
 export const LazyLoadHintPlugin = createUnplugin(() => {
   return {
@@ -67,10 +67,10 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
 
         // Inject the tracking wrapper import
         m.prepend(genImport(
-          '@nuxt/hints/runtime/lazy-hydration/composables',
+          '@nuxt/hints/runtime/lazy-load/composables',
           ['__wrapImportedComponent', '__wrapMainComponent'],
         ) + '\n' + genImport(
-          '@nuxt/hints/runtime/lazy-hydration/composables',
+          '@nuxt/hints/runtime/lazy-load/composables',
           ['useLazyComponentTracking'],
         ) + '\n')
 

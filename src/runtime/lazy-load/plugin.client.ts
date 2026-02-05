@@ -5,7 +5,7 @@ import { useLazyComponentTracking } from './composables'
 import { logger } from '../logger'
 
 export default defineNuxtPlugin({
-  name: '@nuxt/hints:lazy-hydration',
+  name: '@nuxt/hints:lazy-load',
   setup() {
     const nuxtApp = useNuxtApp()
 
