@@ -4,7 +4,10 @@ const isServer = import.meta.server ? 1 : 0
 
 <template>
   <div>
-    <p :data-test="isServer ? 'server' : 'client'" class="fzejkebkzjefbjkzebfkjzebfkjzebfzebfkjzebkfjbzekjjjjjjjjjjjjjjjjjjjjkfzebjkfbzkjebfjkjk">
+    <p
+      :data-test="isServer ? 'server' : 'client'"
+      class="fzejkebkzjefbjkzebfkjzebfkjzebfzebfkjzebkfjbzekjjjjjjjjjjjjjjjjjjjjkfzebjkfbzkjebfjkjk"
+    >
       isServer: {{ isServer }} <span v-if="!isServer">test</span>
     </p>
 
