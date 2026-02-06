@@ -47,8 +47,6 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           for (const specifier of importDecl.specifiers ?? []) {
             if (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportSpecifier') {
               const localName = specifier.local.name
-              // Skip if already using Lazy prefix convention
-              if (localName.startsWith('Lazy')) continue
 
               directComponentImports.push({
                 name: localName,

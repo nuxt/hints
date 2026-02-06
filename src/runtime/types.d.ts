@@ -1,7 +1,7 @@
 import type { VNode, Ref } from 'vue'
 import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
-import type { DirectImportInfo, LazyHydrationState } from './lazy-hydration/composables'
+import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
 
 declare global {
   interface Window {

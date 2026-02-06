@@ -55,6 +55,10 @@ export function __wrapImportedComponent(
   importSource: string,
   importedBy: string,
 ) {
+  if (component && component.name === 'AsyncComponentWrapper') {
+    // already wrapped by defineAsyncComponent
+    return component
+  }
   const wrapper = defineComponent({
     name: `LazyTracker_${componentName}`,
     setup(_, { slots, attrs }) {
