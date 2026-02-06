@@ -7,7 +7,7 @@ import type { ObjectHook } from 'unplugin'
 const plugin = LazyLoadHintPlugin.vite() as Plugin
 const transform = (plugin.transform as ObjectHook<any, any>).handler
 
-describe('LazyLoadHintPlugin', () => { 
+describe('LazyLoadHintPlugin', () => {
   describe('default imports', () => {
     it('should wrap a default import from a .vue file', async () => {
       const code = `import MyComp from './MyComp.vue'\nexport default { components: { MyComp } }`
