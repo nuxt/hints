@@ -43,7 +43,7 @@ export function __wrapMainComponent(
 
   component.setup = (props, ctx) => {
     useLazyComponentTracking(imports)
-    return originalSetup ? originalSetup(props, ctx) : {}
+    return originalSetup ? originalSetup(props, ctx) : undefined
   }
 
   return component
