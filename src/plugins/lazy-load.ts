@@ -116,9 +116,10 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
 
         // Inject useLazyComponentTracking in main component setup if applicable
         if (code.includes('_sfc_main')) {
-          m.replace('export default ', `__wrapMainComponent(_sfc_main, [${directComponentImports.map((imp) => {
+          const wrappedComponents = directComponentImports.map((imp) => {
             return `{ componentName: '${imp.name}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
-          }).join(', ')}]);\nexport default `)
+          }).join(', ')
+          m.replace('export default _sfc_main', `const _sfc_main_wrapped = __wrapMainComponent(_sfc_main, [${wrappedComponents}]);\nexport default _sfc_main_wrapped`)
         }
         const components = findDefineComponentCalls(program)
 

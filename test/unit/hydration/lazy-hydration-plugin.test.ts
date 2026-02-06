@@ -60,7 +60,8 @@ describe('LazyLoadHintPlugin', () => {
         `export default _sfc_main`,
       ].join('\n')
       const result = await transform(code, '/src/Parent.vue')
-      expect(result.code).toContain('__wrapMainComponent(_sfc_main,')
+      expect(result.code).toContain('const _sfc_main_wrapped = __wrapMainComponent(_sfc_main,')
+      expect(result.code).toContain('export default _sfc_main_wrapped')
       expect(result.code).toContain(`componentName: 'ChildComp'`)
       expect(result.code).toContain(`importSource: './ChildComp.vue'`)
     })
