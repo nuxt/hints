@@ -1,6 +1,7 @@
 import type { VNode, Ref } from 'vue'
 import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
+import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
 
 declare global {
   interface Window {
@@ -36,6 +37,7 @@ declare module '#app' {
     __hints_tpc: Ref<{ element: HTMLScriptElement, loaded: boolean }[]>
     __hints: {
       hydration: LocalHydrationMismatch[]
+      lazyComponents: DirectImportInfo[]
       webvitals: {
         lcp: Ref<LCPMetricWithAttribution[]>
         inp: Ref<INPMetricWithAttribution[]>
@@ -44,6 +46,10 @@ declare module '#app' {
     }
     __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
+  }
+
+  interface NuxtPayload {
+    _lazyHydrationState?: LazyHydrationState
   }
 }
 

@@ -2,6 +2,7 @@ import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addCompone
 import { HINTS_ROUTE, HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
+import { LazyLoadHintPlugin } from './plugins/lazy-load'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -52,6 +53,13 @@ export default defineNuxtModule<ModuleOptions>({
     addBuildPlugin(InjectHydrationPlugin)
     addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
 
+    // lazy-load suggestions
+    addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
+    nuxt.hook('modules:done', () => {
+      // hack to ensure the plugins runs after everything else. But before vite:import-analysis
+      addBuildPlugin(LazyLoadHintPlugin, { client: false })
+      addBuildPlugin(LazyLoadHintPlugin, { server: false })
+    })
     // third-party scripts
     addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
     addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
