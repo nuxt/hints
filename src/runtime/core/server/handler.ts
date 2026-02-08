@@ -1,6 +1,6 @@
-import { createError, defineEventHandler, setResponseStatus } from 'h3'
+import { createError, defineEventHandler } from 'h3'
 import { useNitroApp } from 'nitropack/runtime'
-import type { HintsApiContext, HintsApiResult } from './types'
+import type { HintsApiContext } from './types'
 
 export default defineEventHandler(async (event) => {
   const nitro = useNitroApp()
@@ -10,18 +10,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const path = event.context.params._
-  const context: HintsApiContext = { event, path }
-  const result: HintsApiResult = { handled: false }
+  const context: HintsApiContext = { event, path, handler: undefined }
 
-  await nitro.hooks.callHook('hints:api:request', context, result)
+  await nitro.hooks.callHook('hints:api:request', context)
 
-  if (!result.handled) {
-    throw createError({ statusCode: 400 })
+  if (context.handler) {
+    return context.handler(event)
   }
-
-  if (result.status) {
-    setResponseStatus(event, result.status)
-  }
-
-  return result.body
 })
