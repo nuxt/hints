@@ -40,10 +40,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     // core handlers
     addServerHandler({
-      route: `${HINTS_ROUTE}/**`,
-      handler: resolver.resolve('./runtime/core/server/handler'),
-    })
-    addServerHandler({
       route: HINTS_SSE_ROUTE,
       handler: resolver.resolve('./runtime/core/server/sse'),
     })

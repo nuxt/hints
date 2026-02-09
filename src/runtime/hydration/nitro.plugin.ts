@@ -1,32 +1,54 @@
-import type { H3Event } from 'h3'
-import { createError, readBody, setResponseStatus, sendError } from 'h3'
+import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { NitroApp } from 'nitropack/types'
 import type { HydrationMismatchPayload } from './types'
-import type { HintsApiContext, HintsSseContext } from '../core/server/types'
+import type { HintsSseContext } from '../core/server/types'
 
 const hydrationMismatches: HydrationMismatchPayload[] = []
 
 export default function (nitroApp: NitroApp) {
-  // Register API handler for hydration feature
-  nitroApp.hooks.hook('hints:api:request', async (context: HintsApiContext) => {
-    if (context.path !== 'hydration') {
-      return
+  const getHandler = defineEventHandler(() => {
+    return hydrationMismatches
+  })
+
+  const postHandler = defineEventHandler(async (event) => {
+    const body = await readBody<HydrationMismatchPayload>(event)
+    assertPayload(body)
+    const payload: HydrationMismatchPayload = {
+      id: body.id,
+      htmlPreHydration: body.htmlPreHydration,
+      htmlPostHydration: body.htmlPostHydration,
+      componentName: body.componentName,
+      fileLocation: body.fileLocation,
+    }
+    hydrationMismatches.push(payload)
+    if (hydrationMismatches.length > 20) {
+      hydrationMismatches.shift()
+    }
+    nitroApp.hooks.callHook('hints:hydration:mismatch', payload)
+    setResponseStatus(event, 201)
+  })
+
+  const deleteHandler = defineEventHandler(async (event) => {
+    const body = await readBody<{ id: string[] }>(event)
+
+    if (!body || !Array.isArray(body.id)) {
+      throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
     }
 
-    switch (context.event.method) {
-      case 'GET':
-        context.handler = getHandler
-        break
-      case 'POST':
-        context.handler = postHandler
-        break
-      case 'DELETE':
-        context.handler = deleteHandler
-        break
-      default:
-        await sendError(context.event, createError({ statusCode: 405, statusMessage: 'Method Not Allowed' }))
+    for (const id of body.id) {
+      const index = hydrationMismatches.findIndex(m => m.id === id)
+      if (index !== -1) {
+        hydrationMismatches.splice(index, 1)
+      }
     }
+
+    nitroApp.hooks.callHook('hints:hydration:cleared', { id: body.id })
+    setResponseStatus(event, 204)
   })
+
+  nitroApp.router.add('/__nuxt_hints/hydration', getHandler, 'get')
+  nitroApp.router.add('/__nuxt_hints/hydration', postHandler, 'post')
+  nitroApp.router.add('/__nuxt_hints/hydration', deleteHandler, 'delete')
 
   // Register SSE event handlers for hydration
   nitroApp.hooks.hook('hints:sse:setup', (context: HintsSseContext) => {
@@ -45,51 +67,6 @@ export default function (nitroApp: NitroApp) {
       }),
     )
   })
-
-  function getHandler() {
-    return {
-      mismatches: hydrationMismatches,
-    }
-  }
-
-  async function postHandler(event: H3Event) {
-    const body = await readBody<HydrationMismatchPayload>(event)
-    assertPayload(body)
-
-    const payload: HydrationMismatchPayload = {
-      id: body.id,
-      htmlPreHydration: body.htmlPreHydration,
-      htmlPostHydration: body.htmlPostHydration,
-      componentName: body.componentName,
-      fileLocation: body.fileLocation,
-    }
-
-    hydrationMismatches.push(payload)
-    if (hydrationMismatches.length > 20) {
-      hydrationMismatches.shift()
-    }
-
-    nitroApp.hooks.callHook('hints:hydration:mismatch', payload)
-    setResponseStatus(event, 201)
-  }
-
-  async function deleteHandler(event: H3Event) {
-    const body = await readBody<{ id: string[] }>(event)
-
-    if (!body || !Array.isArray(body.id)) {
-      throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
-    }
-
-    for (const id of body.id) {
-      const index = hydrationMismatches.findIndex(m => m.id === id)
-      if (index !== -1) {
-        hydrationMismatches.splice(index, 1)
-      }
-    }
-
-    nitroApp.hooks.callHook('hints:hydration:cleared', { id: body.id })
-    setResponseStatus(event, 204)
-  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function assertPayload(body: any): asserts body is HydrationMismatchPayload {
