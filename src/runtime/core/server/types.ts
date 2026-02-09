@@ -11,4 +11,5 @@ export interface HintsSseContext {
   unsubscribers: (() => void)[]
 }
 
+export const HINTS_ROUTE = '/__nuxt_hints'
 export const HINTS_SSE_ROUTE = '/__nuxt_hints/sse'

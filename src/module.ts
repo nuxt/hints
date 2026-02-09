@@ -1,5 +1,5 @@
 import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler } from '@nuxt/kit'
-import { HINTS_ROUTE, HINTS_SSE_ROUTE } from './runtime/core/server/types'
+import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
