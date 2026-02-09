@@ -1,5 +1,5 @@
 import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler } from '@nuxt/kit'
-import { HINTS_ROUTE, HINTS_SSE_ROUTE } from './runtime/core/server/types'
+import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
@@ -39,10 +39,6 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
 
     // core handlers
-    addServerHandler({
-      route: `${HINTS_ROUTE}/**`,
-      handler: resolver.resolve('./runtime/core/server/handler'),
-    })
     addServerHandler({
       route: HINTS_SSE_ROUTE,
       handler: resolver.resolve('./runtime/core/server/sse'),

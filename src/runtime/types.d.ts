@@ -56,7 +56,6 @@ declare module '#app' {
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
     // Core hints hooks
-    'hints:api:request': (context: import('./core/server/types').HintsApiContext) => void | Promise<void>
     'hints:sse:setup': (context: import('./core/server/types').HintsSseContext) => void
 
     // Hydration hooks
