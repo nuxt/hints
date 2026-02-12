@@ -7,7 +7,9 @@ const hydrationMismatches: HydrationMismatchPayload[] = []
 
 export default function (nitroApp: NitroApp) {
   const getHandler = defineEventHandler(() => {
-    return hydrationMismatches
+    return {
+      mismatches: hydrationMismatches,
+    }
   })
 
   const postHandler = defineEventHandler(async (event) => {
