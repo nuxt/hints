@@ -173,7 +173,8 @@ function injectUseLazyComponentTrackingInComponentSetup(node: CallExpression, ma
           // Inject useLazyComponentTracking call at the start of the setup function body
           const insertPos = (setupFunc.body?.start ?? 0) + 1 // after {
           const componentsArray = directComponentImports.map((imp) => {
-            return `{ componentName: '${imp.name}', importSource: '${imp.source}', importedBy: '${id}', rendered: false }`
+            const componentName = imp.name.startsWith('__nuxt') ? basename(imp.source) : imp.name
+            return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
           }).join(', ')
           const injectionCode = `\nconst lazyHydrationState = useLazyComponentTracking([${componentsArray}]);\n`
           magicString.appendLeft(insertPos, injectionCode)
