@@ -1,11 +1,13 @@
-import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import { defineNuxtPlugin, useNuxtApp, useRoute } from '#imports'
 import { defu } from 'defu'
-import type { DirectImportInfo, LazyHydrationState } from './composables'
+import type { DirectImportInfo, ComponentLazyLoadState, ComponentLazyLoadData } from './schema'
 import { useLazyComponentTracking } from './composables'
 import { logger } from '../logger'
+import { LAZY_LOAD_ROUTE } from './utils'
 
 export default defineNuxtPlugin({
   name: '@nuxt/hints:lazy-load',
+  dependsOn: ['nuxt:router'],
   setup() {
     const nuxtApp = useNuxtApp()
 
@@ -23,14 +25,14 @@ export default defineNuxtPlugin({
 
         // Wait a bit to allow any lazy component to render after page load
         setTimeout(() => {
-          checkAndReport(state, nuxtApp)
+          nuxtApp.runWithContext(() => checkAndReport(state))
         }, 500)
       })
     }
   },
 })
 
-function checkAndReport(state: LazyHydrationState, nuxtApp: ReturnType<typeof useNuxtApp>) {
+function checkAndReport(state: ComponentLazyLoadState) {
   if (state.hasReported) return
   state.hasReported = true
 
@@ -43,11 +45,13 @@ function checkAndReport(state: LazyHydrationState, nuxtApp: ReturnType<typeof us
   }
 
   if (suggestions.length > 0) {
-    reportSuggestions(suggestions, nuxtApp)
+    reportSuggestions(suggestions)
   }
 }
 
-function reportSuggestions(suggestions: DirectImportInfo[], nuxtApp: ReturnType<typeof useNuxtApp>) {
+function reportSuggestions(suggestions: DirectImportInfo[]) {
+  const route = useRoute()
+  const nuxtApp = useNuxtApp()
   nuxtApp.__hints.lazyComponents = suggestions
 
   logger.info(
@@ -61,5 +65,24 @@ function reportSuggestions(suggestions: DirectImportInfo[], nuxtApp: ReturnType<
       + `  Imported from: ${suggestion.importSource}\n`
       + `  Used in: ${suggestion.importedBy}`,
     )
+  }
+
+  if (suggestions.length) {
+    const payload: ComponentLazyLoadData = {
+      id: `${encodeURIComponent(route.path)}-${Date.now()}`,
+      route: route.path,
+      state: {
+        pageLoaded: true,
+        hasReported: true,
+        directImports: suggestions,
+      },
+    }
+
+    $fetch(LAZY_LOAD_ROUTE, {
+      method: 'POST',
+      body: payload,
+    }).catch((err) => {
+      logger.warn('Failed to send lazy-load data to server:', err)
+    })
   }
 }

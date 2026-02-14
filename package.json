@@ -45,6 +45,8 @@
     "oxc-parser": "^0.111.0",
     "sirv": "^3.0.2",
     "unplugin": "^3.0.0",
+    "unstorage": "^1.17.4",
+    "valibot": "^1.2.0",
     "vite-plugin-vue-tracer": "^1.0.1",
     "web-vitals": "^5.1.0"
   },
