@@ -27,6 +27,7 @@ export default function (nitroApp: NitroApp) {
       hydrationMismatches.shift()
     }
     nitroApp.hooks.callHook('hints:hydration:mismatch', payload)
+    setResponseStatus(event, 201)
     return payload
   })
 
