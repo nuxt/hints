@@ -25,23 +25,25 @@ export function useHydrationCheck() {
   onMounted(() => {
     const htmlPostHydration = formatHTML(instance.vnode.el?.outerHTML)
     if (htmlPreHydration !== htmlPostHydration) {
-      const payload: HydrationMismatchPayload = {
-        htmlPreHydration: htmlPreHydration,
-        htmlPostHydration: htmlPostHydration,
-        id: globalThis.crypto.randomUUID(),
-        componentName: instance.type.name ?? instance.type.displayName ?? instance.type.__name,
-        fileLocation: instance.type.__file ?? 'unknown',
+      const componentName = instance.type.name ?? instance.type.displayName ?? instance.type.__name
+      const fileLocation = instance.type.__file ?? 'unknown'
+      const body = {
+        htmlPreHydration,
+        htmlPostHydration,
+        componentName,
+        fileLocation,
       }
-      nuxtApp.__hints.hydration.push({
-        ...payload,
-        instance,
-        vnode: vnodePrehydration,
-      })
-      $fetch(new URL(HYDRATION_ROUTE, window.location.origin).href, {
+      $fetch<HydrationMismatchPayload>(new URL(HYDRATION_ROUTE, window.location.origin).href, {
         method: 'POST',
-        body: payload,
+        body,
+      }).then((payload) => {
+        nuxtApp.__hints.hydration.push({
+          ...payload,
+          instance,
+          vnode: vnodePrehydration,
+        })
       })
-      logger.warn(`[hydration] Component ${instance.type.name ?? instance.type.displayName ?? instance.type.__name ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
+      logger.warn(`[hydration] Component ${componentName ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
     }
   })
 }
