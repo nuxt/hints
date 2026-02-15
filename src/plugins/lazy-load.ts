@@ -1,6 +1,6 @@
 import { genImport } from 'knitwork'
 import MagicString from 'magic-string'
-import { resolve } from 'node:path'
+import { basename, resolve } from 'node:path'
 import { parseSync, type CallExpression, type ImportDeclaration, type ImportDefaultSpecifier, type ImportSpecifier } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 import { distDir } from '../dirs'
@@ -117,6 +117,11 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
         // Inject useLazyComponentTracking in main component setup if applicable
         if (code.includes('_sfc_main')) {
           const wrappedComponents = directComponentImports.map((imp) => {
+            if (imp.name.startsWith('__nuxt')) {
+              // Auto imported components are using __nuxt_component_
+              // See nuxt loadeer plugin
+              return `{ componentName: '${basename(imp.source)}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
+            }
             return `{ componentName: '${imp.name}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
           }).join(', ')
           m.replace('export default _sfc_main', `const _sfc_main_wrapped = __wrapMainComponent(_sfc_main, [${wrappedComponents}]);\nexport default _sfc_main_wrapped`)
@@ -168,7 +173,8 @@ function injectUseLazyComponentTrackingInComponentSetup(node: CallExpression, ma
           // Inject useLazyComponentTracking call at the start of the setup function body
           const insertPos = (setupFunc.body?.start ?? 0) + 1 // after {
           const componentsArray = directComponentImports.map((imp) => {
-            return `{ componentName: '${imp.name}', importSource: '${imp.source}', importedBy: '${id}', rendered: false }`
+            const componentName = imp.name.startsWith('__nuxt') ? basename(imp.source) : imp.name
+            return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
           }).join(', ')
           const injectionCode = `\nconst lazyHydrationState = useLazyComponentTracking([${componentsArray}]);\n`
           magicString.appendLeft(insertPos, injectionCode)
