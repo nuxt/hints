@@ -21,7 +21,7 @@ export default function (nitroApp: NitroApp) {
   })
 
   const deleteHandler = defineEventHandler(async (event) => {
-    const id = event.context.params?.id 
+    const id = event.context.params?.id
     if (!id) {
       throw createError({ statusCode: 400, message: 'ID is required' })
     }
@@ -30,7 +30,8 @@ export default function (nitroApp: NitroApp) {
     console.log('index', index, data, id)
     if (index !== -1) {
       data.splice(index, 1)
-    } else {
+    }
+    else {
       throw createError({ statusCode: 404, message: 'Entry not found' })
     }
     nitroApp.hooks.callHook('hints:lazy-load:cleared', { id })

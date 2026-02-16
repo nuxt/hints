@@ -23,9 +23,10 @@ const showHeavy = ref(false)
       v-if="showHeavy"
       message="I was loaded eagerly but could have been lazy!"
     />
-<!-- auto import test-->
-    <AnotherComponent 
-      v-if="showHeavy"/>
+    <!-- auto import test -->
+    <AnotherComponent
+      v-if="showHeavy"
+    />
   </div>
 </template>
 
