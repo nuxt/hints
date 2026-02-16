@@ -4,6 +4,7 @@ import type { ComponentLazyLoadData } from './schema'
 import { ComponentLazyLoadDataSchema } from './schema'
 import { parse } from 'valibot'
 import type { HintsSseContext } from '../core/server/types'
+import { LAZY_LOAD_ROUTE } from './utils'
 
 const data: ComponentLazyLoadData[] = []
 
@@ -38,9 +39,9 @@ export default function (nitroApp: NitroApp) {
     setResponseStatus(event, 204)
   })
 
-  nitroApp.router.add('/__nuxt_hints/lazy-load', getHandler, 'get')
-  nitroApp.router.add('/__nuxt_hints/lazy-load', postHandler, 'post')
-  nitroApp.router.add('/__nuxt_hints/lazy-load/:id', deleteHandler, 'delete')
+  nitroApp.router.add(LAZY_LOAD_ROUTE, getHandler, 'get')
+  nitroApp.router.add(LAZY_LOAD_ROUTE, postHandler, 'post')
+  nitroApp.router.add(`${LAZY_LOAD_ROUTE}/:id`, deleteHandler, 'delete')
 
   nitroApp.hooks.hook('hints:sse:setup', (context: HintsSseContext) => {
     context.unsubscribers.push(
