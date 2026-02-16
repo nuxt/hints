@@ -31,6 +31,8 @@ export default defineNuxtPlugin(() => {
       oldEventSource.removeEventListener('hints:lazy-load:report', lazyLoadReportHandler)
       oldEventSource.removeEventListener('hints:lazy-load:cleared', lazyLoadClearedHandler)
     }
+  }, {
+    immediate: true,
   })
 
   return {
