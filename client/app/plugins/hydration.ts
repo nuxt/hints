@@ -10,7 +10,6 @@ export default defineNuxtPlugin(() => {
   hydrationMismatches.value = [...host.__hints.hydration]
 
   $fetch<HydrationMismatchResponse>(new URL(HYDRATION_ROUTE, window.location.origin).href).then((data: { mismatches: HydrationMismatchPayload[] }) => {
-    console.log(data)
     hydrationMismatches.value = [...hydrationMismatches.value, ...data.mismatches.filter(m => !hydrationMismatches.value.some(existing => existing.id === m.id))]
   })
 

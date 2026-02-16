@@ -28,7 +28,6 @@ export default function (nitroApp: NitroApp) {
     }
 
     const index = data.findIndex(item => item.id === id)
-    console.log('index', index, data, id)
     if (index !== -1) {
       data.splice(index, 1)
     }
@@ -52,7 +51,6 @@ export default function (nitroApp: NitroApp) {
         })
       }),
       nitroApp.hooks.hook('hints:lazy-load:cleared', (payload) => {
-        console.log('push')
         context.eventStream.push({
           data: JSON.stringify(payload.id),
           event: 'hints:lazy-load:cleared',
