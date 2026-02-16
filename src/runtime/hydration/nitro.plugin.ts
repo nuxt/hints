@@ -13,10 +13,10 @@ export default function (nitroApp: NitroApp) {
   })
 
   const postHandler = defineEventHandler(async (event) => {
-    const body = await readBody<HydrationMismatchPayload>(event)
+    const body = await readBody<Omit<HydrationMismatchPayload, 'id'>>(event)
     assertPayload(body)
     const payload: HydrationMismatchPayload = {
-      id: body.id,
+      id: crypto.randomUUID(),
       htmlPreHydration: body.htmlPreHydration,
       htmlPostHydration: body.htmlPostHydration,
       componentName: body.componentName,
@@ -28,6 +28,7 @@ export default function (nitroApp: NitroApp) {
     }
     nitroApp.hooks.callHook('hints:hydration:mismatch', payload)
     setResponseStatus(event, 201)
+    return payload
   })
 
   const deleteHandler = defineEventHandler(async (event) => {
@@ -71,10 +72,9 @@ export default function (nitroApp: NitroApp) {
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function assertPayload(body: any): asserts body is HydrationMismatchPayload {
+  function assertPayload(body: any): asserts body is Omit<HydrationMismatchPayload, 'id'> {
     if (
       typeof body !== 'object'
-      || typeof body.id !== 'string'
       || (body.htmlPreHydration !== undefined && typeof body.htmlPreHydration !== 'string')
       || (body.htmlPostHydration !== undefined && typeof body.htmlPostHydration !== 'string')
       || typeof body.componentName !== 'string'
