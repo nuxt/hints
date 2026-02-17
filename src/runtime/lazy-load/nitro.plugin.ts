@@ -2,7 +2,7 @@ import { createError, defineEventHandler, setResponseStatus, readBody } from 'h3
 import type { NitroApp } from 'nitropack/types'
 import type { ComponentLazyLoadData } from './schema'
 import { ComponentLazyLoadDataSchema } from './schema'
-import { parse } from 'valibot'
+import { parse, ValiError } from 'valibot'
 import type { HintsSseContext } from '../core/server/types'
 import { LAZY_LOAD_ROUTE } from './utils'
 
@@ -15,7 +15,17 @@ export default function (nitroApp: NitroApp) {
 
   const postHandler = defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const parsed = parse(ComponentLazyLoadDataSchema, body)
+    let parsed: ComponentLazyLoadData
+    try {
+      parsed = parse(ComponentLazyLoadDataSchema, body)
+    }
+    catch (error) {
+      if (error instanceof ValiError) {
+        setResponseStatus(event, 400)
+        return { error: 'Validation failed', message: error.message }
+      }
+      throw error
+    }
     data.push(parsed)
     nitroApp.hooks.callHook('hints:lazy-load:report', parsed)
     setResponseStatus(event, 201)
