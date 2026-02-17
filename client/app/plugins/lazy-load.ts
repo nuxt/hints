@@ -1,5 +1,7 @@
 import type { ComponentLazyLoadData } from '../../../src/runtime/lazy-load/schema'
+import { parse } from 'valibot'
 import { defineNuxtPlugin } from '#imports'
+import { ComponentLazyLoadDataSchema } from '../../../src/runtime/lazy-load/schema'
 import { LAZY_LOAD_ROUTE } from '../../../src/runtime/lazy-load/utils'
 
 export default defineNuxtPlugin(() => {
@@ -11,15 +13,26 @@ export default defineNuxtPlugin(() => {
   })
 
   const lazyLoadReportHandler = (event: MessageEvent) => {
-    const payload: ComponentLazyLoadData = JSON.parse(event.data)
-    if (!lazyLoadHints.value.some(existing => existing.id === payload.id)) {
-      lazyLoadHints.value.push(payload)
+    try {
+      const payload = parse(ComponentLazyLoadDataSchema, JSON.parse(event.data))
+      if (!lazyLoadHints.value.some(existing => existing.id === payload.id)) {
+        lazyLoadHints.value.push(payload)
+      }
+    }
+    catch {
+      console.warn('[hints] Ignoring malformed hints:lazy-load:report event', event.data)
+      return
     }
   }
 
   const lazyLoadClearedHandler = (event: MessageEvent) => {
-    const clearedId: string = JSON.parse(event.data)
-    lazyLoadHints.value = lazyLoadHints.value.filter(entry => entry.id !== clearedId)
+    try {
+      const clearedId = JSON.parse(event.data)
+      lazyLoadHints.value = lazyLoadHints.value.filter(entry => entry.id !== clearedId)
+    }
+    catch {
+      return
+    }
   }
 
   watch(nuxtApp.$sse.eventSource, (newEventSource, oldEventSource) => {
