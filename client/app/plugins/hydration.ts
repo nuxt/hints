@@ -1,10 +1,10 @@
 import type { HydrationMismatchPayload, HydrationMismatchResponse, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
 import { defineNuxtPlugin, useHostNuxt, ref } from '#imports'
-import { HYDRATION_ROUTE, HYDRATION_SSE_ROUTE } from '../../../src/runtime/hydration/utils'
+import { HYDRATION_ROUTE } from '../../../src/runtime/hydration/utils'
 
 export default defineNuxtPlugin(() => {
   const host = useHostNuxt()
-
+  const nuxtApp = useNuxtApp()
   const hydrationMismatches = ref<(HydrationMismatchPayload | LocalHydrationMismatch)[]>([])
 
   hydrationMismatches.value = [...host.__hints.hydration]
@@ -13,16 +13,29 @@ export default defineNuxtPlugin(() => {
     hydrationMismatches.value = [...hydrationMismatches.value, ...data.mismatches.filter(m => !hydrationMismatches.value.some(existing => existing.id === m.id))]
   })
 
-  const eventSource = new EventSource(new URL(HYDRATION_SSE_ROUTE, window.location.origin).href)
-  eventSource.addEventListener('hints:hydration:mismatch', (event) => {
+  const hydrationMismatchHandler = (event: MessageEvent) => {
     const mismatch: HydrationMismatchPayload = JSON.parse(event.data)
     if (!hydrationMismatches.value.some(existing => existing.id === mismatch.id)) {
       hydrationMismatches.value.push(mismatch)
     }
-  })
-  eventSource.addEventListener('hints:hydration:cleared', (event) => {
+  }
+
+  const hydrationClearedHandler = (event: MessageEvent) => {
     const clearedIds: string[] = JSON.parse(event.data)
     hydrationMismatches.value = hydrationMismatches.value.filter(m => !clearedIds.includes(m.id))
+  }
+
+  watch(nuxtApp.$sse.eventSource, (newEventSource, oldEventSource) => {
+    if (newEventSource) {
+      newEventSource.addEventListener('hints:hydration:mismatch', hydrationMismatchHandler)
+      newEventSource.addEventListener('hints:hydration:cleared', hydrationClearedHandler)
+    }
+    if (oldEventSource) {
+      oldEventSource.removeEventListener('hints:hydration:mismatch', hydrationMismatchHandler)
+      oldEventSource.removeEventListener('hints:hydration:cleared', hydrationClearedHandler)
+    }
+  }, {
+    immediate: true,
   })
 
   return {

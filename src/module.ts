@@ -51,6 +51,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     // lazy-load suggestions
     addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
+    addServerPlugin(resolver.resolve('./runtime/lazy-load/nitro.plugin'))
     nuxt.hook('modules:done', () => {
       // hack to ensure the plugins runs after everything else. But before vite:import-analysis
       addBuildPlugin(LazyLoadHintPlugin, { client: false })

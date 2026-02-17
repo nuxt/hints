@@ -1,18 +1,6 @@
 import { defineComponent, h, type DefineComponent } from 'vue'
 import { useNuxtApp } from '#imports'
-
-export interface DirectImportInfo {
-  componentName: string
-  importSource: string
-  importedBy: string
-  rendered: boolean
-}
-
-export interface LazyHydrationState {
-  directImports: Map<string, DirectImportInfo>
-  hasReported: boolean
-  pageLoaded: boolean
-}
+import type { DirectImportInfo } from './schema'
 
 export function useLazyComponentTracking(components: DirectImportInfo[] = []) {
   const nuxtApp = useNuxtApp()
@@ -26,7 +14,6 @@ export function useLazyComponentTracking(components: DirectImportInfo[] = []) {
 
   const state = nuxtApp.payload._lazyHydrationState
 
-  // Register direct imports
   for (const comp of components) {
     state.directImports.set(comp.componentName, comp)
   }
@@ -38,7 +25,6 @@ export function __wrapMainComponent(
   component: DefineComponent,
   imports: DirectImportInfo[] = [],
 ): DefineComponent {
-  // Create a wrapper component that sets up lazy hydration tracking
   const originalSetup = component.setup
 
   component.setup = (props, ctx) => {

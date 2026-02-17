@@ -61,6 +61,10 @@ declare module 'nitropack' {
     // Hydration hooks
     'hints:hydration:mismatch': (payload: HydrationMismatchPayload) => void
     'hints:hydration:cleared': (payload: { id: string[] }) => void
+
+    // Lazy-load hooks
+    'hints:lazy-load:report': (payload: import('./lazy-load/schema').ComponentLazyLoadData) => void
+    'hints:lazy-load:cleared': (payload: { id: string }) => void
   }
 }
 
