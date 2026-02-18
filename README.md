@@ -28,6 +28,7 @@ Now you can open your Nuxt app, go to the DevTools, and click the Nuxt Hints ico
 - **💧 Hydration Mismatch Debugging**: Side-by-side diffing of server-rendered and client-hydrated HTML to pinpoint the exact cause of mismatches.
 - **⚡️ Web Vitals Analysis**: Real-time metrics for LCP, INP, and CLS with detailed attribution and element-specific optimization tips.
 - **📦 Third-Party Script Auditing**: Dashboard to monitor performance, identify render-blocking scripts, and get security recommendations.
+- **🧩 Unused Component Detection**: Detects statically imported components that aren't rendered during SSR or hydration and suggests lazy-loading them to reduce bundle size.
 - **🔍 Interactive Diagnostics**:
   - **Hover to Highlight**: Hover over an issue in the DevTools to highlight the corresponding element on your page.
   - **Click to Inspect**: Click to open the component source file directly in your code editor.
@@ -61,6 +62,12 @@ Analyze all third-party scripts on your page. The dashboard shows loading times,
 
 ![hints devtools third-party screenshot](./.github/assets/devtools-thirdparties.png)
 
+### Unused Imported Component Detection (Lazy Load)
+
+Identify statically imported components that were never rendered during SSR or initial hydration. The module suggests converting them to lazy-loaded components to reduce end-users initial bundle size.
+
+![hints devtools lazy-load screenshot](./.github/assets/devtools-lazy-load.png)
+
 ## How It Works
 
 ### Performance Monitoring
@@ -74,6 +81,12 @@ The module hooks into Vue's hydration process to compare the server-rendered DOM
 ### Third-Party Script Analysis
 
 Using a combination of a Nitro plugin and client-side observers, Nuxt Hints tracks every script loaded on the page, measuring its performance and analyzing its attributes.
+
+### Unused Component Detection (Lazy Load)
+
+At build time, a Vite plugin analyzes your component imports to identify statically imported `.vue` components. At runtime, the module tracks which of those components actually render during SSR and initial hydration. After the page finishes loading, any imported component that was never rendered is flagged as a candidate for lazy loading.
+
+Suggestions are reported to the console and sent to the DevTools UI via Server-Sent Events, where you can review them per route and dismiss entries you've already addressed. The recommended fix is to either prefix the component with `Lazy` (e.g., `<LazyHeavyComponent>`) or use `defineAsyncComponent` so it is only downloaded when needed.
 
 ### Example Console Output
 
