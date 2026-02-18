@@ -4,8 +4,7 @@ import plugin from './../../src/runtime/third-party-scripts/plugin.client'
 
 const triggerFn = vi.fn()
 
-describe('third-party', () => { 
-
+describe('third-party', () => {
   let callHookSpy: ReturnType<typeof vi.spyOn>
   beforeAll(() => {
     const observer = new MutationObserver((mutations) => {
