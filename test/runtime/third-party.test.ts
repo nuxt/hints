@@ -1,35 +1,39 @@
 import { useNuxtApp } from '#imports'
-import { describe, vi, it, expect, beforeEach } from 'vitest'
+import { describe, vi, it, expect, beforeEach, beforeAll } from 'vitest'
 import plugin from './../../src/runtime/third-party-scripts/plugin.client'
 
 const triggerFn = vi.fn()
-const observer = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    if (mutation.type === 'childList') {
-      for (const node of mutation.addedNodes) {
-        if (node.nodeName === 'SCRIPT') {
-          setTimeout(() => {
-            triggerFn()
-          }, 15)
+
+describe('third-party', () => { 
+
+  let callHookSpy: ReturnType<typeof vi.spyOn>
+  beforeAll(() => {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'childList') {
+          for (const node of mutation.addedNodes) {
+            if (node.nodeName === 'SCRIPT') {
+              setTimeout(() => {
+                triggerFn()
+              }, 15)
+            }
+          }
         }
       }
-    }
-  }
-})
-observer.observe(document.documentElement, {
-  childList: true,
-  subtree: true,
-})
+    })
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    })
 
-describe('third-party', () => {
-  const callHookSpy = vi.spyOn(useNuxtApp(), 'callHook')
+    plugin(useNuxtApp())
+    callHookSpy = vi.spyOn(useNuxtApp(), 'callHook')
+  })
 
   beforeEach(() => {
     callHookSpy.mockClear()
     triggerFn.mockClear()
   })
-
-  plugin(useNuxtApp())
 
   it('should call hook on script added', async () => {
     const script = document.createElement('script')
@@ -39,8 +43,8 @@ describe('third-party', () => {
 
     await vi.waitFor(() => expect(triggerFn).toHaveBeenCalled())
 
-    expect(callHookSpy).toHaveBeenCalled()
-    expect(callHookSpy).toHaveBeenCalledWith('hints:scripts:added', script)
+    expect(useNuxtApp().callHook).toHaveBeenCalled()
+    expect(useNuxtApp().callHook).toHaveBeenCalledWith('hints:scripts:added', script)
     document.body.removeChild(script)
   })
 
@@ -51,7 +55,7 @@ describe('third-party', () => {
     // wait for mutation observer to trigger
     await vi.waitFor(() => expect(triggerFn).toHaveBeenCalled())
 
-    expect(callHookSpy).not.toHaveBeenCalledWith('hints:scripts:added', script)
+    expect(useNuxtApp().callHook).not.toHaveBeenCalledWith('hints:scripts:added', script)
     document.body.removeChild(script)
   })
 
@@ -64,7 +68,7 @@ describe('third-party', () => {
     // wait for mutation observer to trigger
     await vi.waitFor(() => expect(triggerFn).toHaveBeenCalled())
 
-    expect(callHookSpy).not.toHaveBeenCalledWith('hints:scripts:added', expect.anything())
+    expect(useNuxtApp().callHook).not.toHaveBeenCalledWith('hints:scripts:added', expect.anything())
     document.body.removeChild(script)
   })
 })
