@@ -1,14 +1,20 @@
-import { getCurrentInstance, onMounted } from 'vue'
+import { getCurrentInstance, inject, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
 import { HYDRATION_ROUTE, formatHTML } from './utils'
 import { logger } from '../logger'
 import type { HydrationMismatchPayload } from './types'
+import { clientOnlySymbol } from '#app/components/client-only'
 /**
  * prefer implementing onMismatch hook after vue 3.6
  * compare element
  */
 export function useHydrationCheck() {
-  if (import.meta.server) return
+  const isClientOnly = inject(clientOnlySymbol, false)
+
+  if (import.meta.server || isClientOnly) {
+    return
+  }
+
   const nuxtApp = useNuxtApp()
 
   if (!nuxtApp.isHydrating || !nuxtApp.payload.serverRendered) {
