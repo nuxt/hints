@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterAll, beforeAll } from 'vitest'
-import { createApp, toPlainHandler, toWebHandler, toNodeListener } from 'h3'
+import { createApp, toWebHandler, toNodeListener } from 'h3'
 import sseEndpoint from '../../../src/runtime/core/server/sse'
 import type { Hookable } from 'hookable'
 import { createHooks } from 'hookable'
