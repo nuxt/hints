@@ -65,6 +65,7 @@
     "changelogen": "^0.6.2",
     "diff": "^8.0.3",
     "eslint": "^10.0.0",
+    "get-port-please": "^3.2.0",
     "happy-dom": "^20.6.1",
     "pkg-pr-new": "0.0.63",
     "rimraf": "^6.1.3",
