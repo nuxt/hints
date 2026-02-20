@@ -21,6 +21,9 @@ export function useLazyComponentTracking(components: DirectImportInfo[] = []) {
   return state
 }
 
+/**
+ * Wrap components definition like with defineComponent or defineNuxtComponent or just sfc exports
+ */
 export function __wrapMainComponent(
   component: DefineComponent,
   imports: DirectImportInfo[] = [],
@@ -35,6 +38,9 @@ export function __wrapMainComponent(
   return component
 }
 
+/**
+ * Wrap imported components to track their usage.
+ */
 export function __wrapImportedComponent(
   component: DefineComponent,
   componentName: string,
@@ -45,11 +51,13 @@ export function __wrapImportedComponent(
     // already wrapped by defineAsyncComponent
     return component
   }
-  const wrapper = defineComponent({
-    name: `LazyTracker_${componentName}`,
-    setup(_, { slots, attrs }) {
+
+  const originalSetup = component.setup
+
+  component.setup = (props, ctx) => {
       const state = useLazyComponentTracking()
       if (state) {
+        console.log(componentName, state.directImports)
         if (!state.directImports.has(componentName)) {
           state.directImports.set(componentName, {
             componentName,
@@ -64,10 +72,8 @@ export function __wrapImportedComponent(
           info.rendered = true
         }
       }
+    return originalSetup ? originalSetup(props, ctx) : undefined
+  }
 
-      return () => h(component as DefineComponent, attrs, slots)
-    },
-  })
-
-  return wrapper
+  return component
 }
