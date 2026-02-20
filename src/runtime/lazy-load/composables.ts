@@ -57,7 +57,6 @@ export function __wrapImportedComponent(
   component.setup = (props, ctx) => {
       const state = useLazyComponentTracking()
       if (state) {
-        console.log(componentName, state.directImports)
         if (!state.directImports.has(componentName)) {
           state.directImports.set(componentName, {
             componentName,
