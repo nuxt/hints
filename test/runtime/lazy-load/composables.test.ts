@@ -105,7 +105,7 @@ describe('lazy-load composables', () => {
     })
 
     it('should return undefined when there is no original setup', () => {
-      const comp = defineComponent({ render: () => h('div') }) as unknown as DefineComponent  
+      const comp = defineComponent({ render: () => h('div') }) as unknown as DefineComponent
       const wrapped = __wrapMainComponent(comp, [])
 
       const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
