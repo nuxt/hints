@@ -6,7 +6,7 @@ import {
   __wrapImportedComponent,
 } from '../../../src/runtime/lazy-load/composables'
 import type { DirectImportInfo } from '../../../src/runtime/lazy-load/schema'
-import { defineComponent, h, type Component, type DefineComponent, type DefineSetupFnComponent, type SetupContext } from 'vue'
+import { defineComponent, h, type DefineComponent, type SetupContext } from 'vue'
 
 function makeComponent(setupFn?: (props: unknown, ctx: SetupContext) => unknown) {
   return defineComponent({
@@ -87,7 +87,7 @@ describe('lazy-load composables', () => {
 
       const wrapped = __wrapMainComponent(comp, imports)
       // Invoke setup to trigger registration
-      wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
 
       const nuxtApp = useNuxtApp()
       const state = nuxtApp.payload._lazyHydrationState
@@ -100,7 +100,7 @@ describe('lazy-load composables', () => {
       const comp = makeComponent(() => setupReturn)
       const wrapped = __wrapMainComponent(comp, [])
 
-      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
       expect(result).toBe(setupReturn)
     })
 
@@ -108,7 +108,7 @@ describe('lazy-load composables', () => {
       const comp = defineComponent({ render: () => h('div') }) as unknown as DefineComponent
       const wrapped = __wrapMainComponent(comp, [])
 
-      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
       expect(result).toBeUndefined()
     })
   })
@@ -118,7 +118,7 @@ describe('lazy-load composables', () => {
       const comp = makeComponent()
       const wrapped = __wrapImportedComponent(comp, 'MyComp', './MyComp.vue', 'page.vue')
 
-      wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
 
       const nuxtApp = useNuxtApp()
       const state = nuxtApp.payload._lazyHydrationState
@@ -139,7 +139,7 @@ describe('lazy-load composables', () => {
 
       const comp = makeComponent()
       const wrapped = __wrapImportedComponent(comp, 'MyComp', './MyComp.vue', 'page.vue')
-      wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
 
       const nuxtApp = useNuxtApp()
       const state = nuxtApp.payload._lazyHydrationState
@@ -161,7 +161,7 @@ describe('lazy-load composables', () => {
       // Should return the same component without modifying setup
       expect(result).toBe(asyncComp)
       // Original setup should still work
-      const setupResult = result.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      const setupResult = result.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
       expect(setupResult).toEqual({ wrapped: true })
     })
 
@@ -170,7 +170,7 @@ describe('lazy-load composables', () => {
       const comp = makeComponent(() => setupReturn)
       const wrapped = __wrapImportedComponent(comp, 'Comp', './Comp.vue', 'page.vue')
 
-      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
       expect(result).toBe(setupReturn)
     })
 
@@ -178,7 +178,7 @@ describe('lazy-load composables', () => {
       const comp = defineComponent({ render: () => h('div') }) as unknown as DefineComponent
       const wrapped = __wrapImportedComponent(comp, 'Comp', './Comp.vue', 'page.vue')
 
-      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
+      const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
       expect(result).toBeUndefined()
     })
   })

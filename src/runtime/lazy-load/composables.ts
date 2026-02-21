@@ -1,4 +1,4 @@
-import { defineComponent, h, type DefineComponent } from 'vue'
+import type { DefineComponent } from 'vue'
 import { useNuxtApp } from '#imports'
 import type { DirectImportInfo } from './schema'
 
