@@ -1,5 +1,5 @@
 import type { InferOutput } from 'valibot'
-import { array, boolean, object, string } from 'valibot'
+import { array, boolean, object, string, omit } from 'valibot'
 
 export const ComponentLazyLoadImportSchema = object({
   componentName: string(),
@@ -27,3 +27,7 @@ export type ComponentLazyLoadState = {
   hasReported: boolean
   pageLoaded: boolean
 }
+
+export const CreateComponentLazyLoadDataSchema = omit(ComponentLazyLoadDataSchema, ['id'])
+
+export type CreateComponentLazyLoadData = InferOutput<typeof CreateComponentLazyLoadDataSchema>

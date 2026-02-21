@@ -1,6 +1,6 @@
 import { defineNuxtPlugin, useNuxtApp, useRoute } from '#imports'
 import { defu } from 'defu'
-import type { DirectImportInfo, ComponentLazyLoadState, ComponentLazyLoadData } from './schema'
+import type { DirectImportInfo, ComponentLazyLoadState, ComponentLazyLoadData, CreateComponentLazyLoadData } from './schema'
 import { useLazyComponentTracking } from './composables'
 import { logger } from '../logger'
 import { LAZY_LOAD_ROUTE } from './utils'
@@ -68,8 +68,7 @@ function reportSuggestions(suggestions: DirectImportInfo[]) {
   }
 
   if (suggestions.length) {
-    const payload: ComponentLazyLoadData = {
-      id: `${encodeURIComponent(route.path)}-${Date.now()}`,
+    const payload: CreateComponentLazyLoadData = {
       route: route.path,
       state: {
         pageLoaded: true,
