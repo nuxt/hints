@@ -8,7 +8,11 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/devtools-ui-kit',
     '@nuxt/icon',
-  ], ssr: false,
+  ],
+
+  ssr: false,
+
+  unocss: {},
 
   devtools: {
     enabled: false,
