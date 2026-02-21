@@ -6,9 +6,9 @@ import {
   __wrapImportedComponent,
 } from '../../../src/runtime/lazy-load/composables'
 import type { DirectImportInfo } from '../../../src/runtime/lazy-load/schema'
-import { defineComponent, h, type DefineComponent } from 'vue'
+import { defineComponent, h, type Component, type DefineComponent, type DefineSetupFnComponent, type SetupContext } from 'vue'
 
-function makeComponent(setupFn?: (props: any, ctx: any) => any): DefineComponent {
+function makeComponent(setupFn?: (props: unknown, ctx: SetupContext) => unknown) {
   return defineComponent({
     setup: setupFn,
     render: () => h('div'),
@@ -105,7 +105,7 @@ describe('lazy-load composables', () => {
     })
 
     it('should return undefined when there is no original setup', () => {
-      const comp = defineComponent({ render: () => h('div') }) as unknown as DefineComponent
+      const comp = defineComponent({ render: () => h('div') }) as unknown as DefineComponent  
       const wrapped = __wrapMainComponent(comp, [])
 
       const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} } as any)
