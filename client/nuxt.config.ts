@@ -12,8 +12,6 @@ export default defineNuxtConfig({
 
   ssr: false,
 
-  unocss: {},
-
   devtools: {
     enabled: false,
   },
@@ -47,4 +45,6 @@ export default defineNuxtConfig({
       })
     },
   },
+
+  unocss: {},
 })
