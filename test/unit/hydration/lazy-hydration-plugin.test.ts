@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import type { Plugin } from 'vite'
 import type { HookFnMap, ObjectHook, UnpluginBuildContext, UnpluginContext } from 'unplugin'
 import { LazyLoadHintPlugin } from '../../../src/plugins/lazy-load'
@@ -19,13 +19,13 @@ vi.mock('@nuxt/kit', () => ({
 const plugin = LazyLoadHintPlugin.vite() as Plugin
 const transform = (plugin.transform as ObjectHook<any, any>).handler
 const unpluginCtx: UnpluginBuildContext & UnpluginContext = {
-  addWatchFile:vi.fn(),
-  emitFile:vi.fn(),
-  getWatchFiles:vi.fn(),
+  addWatchFile: vi.fn(),
+  emitFile: vi.fn(),
+  getWatchFiles: vi.fn(),
   parse: vi.fn(),
   getNativeBuildContext: vi.fn(),
   error: vi.fn(),
-  warn : vi.fn(),
+  warn: vi.fn(),
 }
 describe('LazyLoadHintPlugin', () => {
   describe('default imports', () => {
@@ -144,7 +144,7 @@ describe('LazyLoadHintPlugin', () => {
                 shortPath: '',
                 chunkName: '',
                 prefetch: false,
-                preload: false
+                preload: false,
               },
             ],
           },
@@ -154,7 +154,7 @@ describe('LazyLoadHintPlugin', () => {
 
       const { LazyLoadHintPlugin: PluginWithComponents } = await import('../../../src/plugins/lazy-load')
       const p = PluginWithComponents.vite() as Plugin
-      const t = (p.transform as ObjectHook<HookFnMap['transform'], 'code'|'id'>).handler
+      const t = (p.transform as ObjectHook<HookFnMap['transform'], 'code' | 'id'>).handler
 
       const code = `import MyWidget from './MyWidget.vue'\nexport default { components: { MyWidget } }`
       const result = await t.call(unpluginCtx, code, '/src/Parent.vue') as unknown as { code: string }

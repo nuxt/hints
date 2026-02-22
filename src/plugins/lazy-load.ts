@@ -1,19 +1,19 @@
 import { genImport } from 'knitwork'
 import MagicString from 'magic-string'
-import { parse, resolve, } from 'node:path'
+import { parse, resolve } from 'node:path'
 import { parseSync, type CallExpression, type ImportDeclaration, type ImportDefaultSpecifier, type ImportSpecifier } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 import { distDir } from '../dirs'
 import { findDefineComponentCalls } from './utils'
 import { useNuxt } from '@nuxt/kit'
 import type { Component } from '@nuxt/schema'
+
 const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 // Exclude node_moduels as users can have control over it
 const EXCLUDE_NODE_MODULES = /node_modules/
 const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-load'))
 
 export const LazyLoadHintPlugin = createUnplugin(() => {
-
   const nuxt = useNuxt()
 
   let nuxtComponents: Component[] = nuxt.apps.default!.components
