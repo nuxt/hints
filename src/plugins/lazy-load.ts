@@ -1,10 +1,12 @@
 import { genImport } from 'knitwork'
 import MagicString from 'magic-string'
-import { basename, resolve } from 'node:path'
+import { parse, resolve } from 'node:path'
 import { parseSync, type CallExpression, type ImportDeclaration, type ImportDefaultSpecifier, type ImportSpecifier } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 import { distDir } from '../dirs'
 import { findDefineComponentCalls } from './utils'
+import { useNuxt } from '@nuxt/kit'
+import type { Component } from '@nuxt/schema'
 
 const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 // Exclude node_moduels as users can have control over it
@@ -12,6 +14,13 @@ const EXCLUDE_NODE_MODULES = /node_modules/
 const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-load'))
 
 export const LazyLoadHintPlugin = createUnplugin(() => {
+  const nuxt = useNuxt()
+
+  let nuxtComponents: Component[] = nuxt.apps.default!.components
+  nuxt.hook('components:extend', (extendedComponents) => {
+    nuxtComponents = extendedComponents
+  })
+
   return {
     name: '@nuxt/hints:lazy-load-plugin',
     enforce: 'post',
@@ -77,8 +86,9 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
         const wrapperStatements = directComponentImports
           .map((imp) => {
             const originalName = `__original_${imp.name}`
+            const resolvedName = resolveComponentName(imp, nuxtComponents)
             // Rename the import to __original_X and create a wrapped version as X
-            return `const ${imp.name} = __wrapImportedComponent(${originalName}, '${imp.name}', '${imp.source}', '${normalizePath(id)}')`
+            return `const ${imp.name} = __wrapImportedComponent(${originalName}, '${resolvedName}', '${imp.source}', '${normalizePath(id)}')`
           })
           .join('\n')
 
@@ -117,12 +127,8 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
         // Inject useLazyComponentTracking in main component setup if applicable
         if (code.includes('_sfc_main')) {
           const wrappedComponents = directComponentImports.map((imp) => {
-            if (imp.name.startsWith('__nuxt')) {
-              // Auto imported components are using __nuxt_component_
-              // See nuxt loadeer plugin
-              return `{ componentName: '${basename(imp.source)}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
-            }
-            return `{ componentName: '${imp.name}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
+            const componentName = resolveComponentName(imp, nuxtComponents)
+            return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
           }).join(', ')
           m.replace('export default _sfc_main', `const _sfc_main_wrapped = __wrapMainComponent(_sfc_main, [${wrappedComponents}]);\nexport default _sfc_main_wrapped`)
         }
@@ -130,7 +136,7 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
 
         if (components && components.length > 0) {
           for (const comp of components) {
-            injectUseLazyComponentTrackingInComponentSetup(comp, m, directComponentImports, id)
+            injectUseLazyComponentTrackingInComponentSetup(comp, m, directComponentImports, id, nuxtComponents)
           }
         }
 
@@ -151,13 +157,22 @@ function normalizePath(path: string): string {
   return path.replace(/\\/g, '/')
 }
 
+function resolveComponentName(
+  imp: { name: string, source: string },
+  nuxtComponents: Component[],
+): string {
+  const component = nuxtComponents.find(c => c.filePath === imp.source)
+  if (component) return component.pascalName
+  return imp.name.startsWith('__nuxt') ? parse(imp.source).name : imp.name
+}
+
 function injectUseLazyComponentTrackingInComponentSetup(node: CallExpression, magicString: MagicString, directComponentImports: {
   name: string
   source: string
   start: number
   end: number
   specifier: ImportDefaultSpecifier | ImportSpecifier
-}[], id: string) {
+}[], id: string, nuxtComponents: Component[]) {
   if (node.arguments.length === 1) {
     const arg = node.arguments[0]
     if (arg?.type === 'ObjectExpression') {
@@ -173,7 +188,7 @@ function injectUseLazyComponentTrackingInComponentSetup(node: CallExpression, ma
           // Inject useLazyComponentTracking call at the start of the setup function body
           const insertPos = (setupFunc.body?.start ?? 0) + 1 // after {
           const componentsArray = directComponentImports.map((imp) => {
-            const componentName = imp.name.startsWith('__nuxt') ? basename(imp.source) : imp.name
+            const componentName = resolveComponentName(imp, nuxtComponents)
             return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
           }).join(', ')
           const injectionCode = `\nconst lazyHydrationState = useLazyComponentTracking([${componentsArray}]);\n`

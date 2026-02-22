@@ -1,12 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect } from 'vitest'
-import { LazyLoadHintPlugin } from '../../../src/plugins/lazy-load'
+import { describe, it, expect, vi } from 'vitest'
 import type { Plugin } from 'vite'
-import type { ObjectHook } from 'unplugin'
+import type { HookFnMap, ObjectHook, UnpluginBuildContext, UnpluginContext } from 'unplugin'
+import { LazyLoadHintPlugin } from '../../../src/plugins/lazy-load'
+import { useNuxt } from '@nuxt/kit'
+
+vi.mock('@nuxt/kit', () => ({
+  useNuxt: vi.fn(() => ({
+    apps: {
+      default: {
+        components: [],
+      },
+    },
+    hook: vi.fn(),
+  })),
+}))
 
 const plugin = LazyLoadHintPlugin.vite() as Plugin
 const transform = (plugin.transform as ObjectHook<any, any>).handler
-
+const unpluginCtx: UnpluginBuildContext & UnpluginContext = {
+  addWatchFile: vi.fn(),
+  emitFile: vi.fn(),
+  getWatchFiles: vi.fn(),
+  parse: vi.fn(),
+  getNativeBuildContext: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+}
 describe('LazyLoadHintPlugin', () => {
   describe('default imports', () => {
     it('should wrap a default import from a .vue file', async () => {
@@ -64,6 +84,83 @@ describe('LazyLoadHintPlugin', () => {
       expect(result.code).toContain('export default _sfc_main_wrapped')
       expect(result.code).toContain(`componentName: 'ChildComp'`)
       expect(result.code).toContain(`importSource: './ChildComp.vue'`)
+    })
+  })
+
+  describe('skipped imports', () => {
+    it('should not transform type-only imports', async () => {
+      const code = `import type MyComp from './MyComp.vue'\nexport default {}`
+      const result = await transform(code, '/src/Parent.vue')
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when there are no .vue imports at all', async () => {
+      const code = `const x = 1\nexport default { x }`
+      const result = await transform(code, '/src/Parent.vue')
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('nuxt auto-imported components (__nuxt prefix)', () => {
+    it('should use file basename as componentName for __nuxt prefixed imports in _sfc_main', async () => {
+      const code = [
+        `import __nuxt_component_0 from './ChildComp.vue'`,
+        `const _sfc_main = {}`,
+        `export default _sfc_main`,
+      ].join('\n')
+      const result = await transform(code, '/src/Parent.vue')
+      expect(result.code).toContain(`componentName: 'ChildComp'`)
+      expect(result.code).toContain(`importSource: './ChildComp.vue'`)
+    })
+
+    it('should use file basename as componentName for __nuxt prefixed imports in defineComponent setup', async () => {
+      const code = [
+        `import { defineComponent } from 'vue'`,
+        `import __nuxt_component_0 from './SomeWidget.vue'`,
+        `export default defineComponent({`,
+        `  setup() {`,
+        `    return {}`,
+        `  }`,
+        `})`,
+      ].join('\n')
+      const result = await transform(code, '/src/Parent.ts')
+      expect(result.code).toContain(`componentName: 'SomeWidget'`)
+      expect(result.code).toContain('useLazyComponentTracking(')
+    })
+  })
+
+  describe('nuxtComponents matching (pascalName)', () => {
+    it('should use pascalName from nuxtComponents when component filePath matches', async () => {
+      vi.mocked(useNuxt).mockReturnValueOnce({
+        apps: {
+          // @ts-expect-error partial mock
+          default: {
+            components: [
+              {
+                filePath: './MyWidget.vue',
+                pascalName: 'MyWidgetPascal',
+                kebabName: '',
+                export: '',
+                shortPath: '',
+                chunkName: '',
+                prefetch: false,
+                preload: false,
+              },
+            ],
+          },
+        },
+        hook: vi.fn(),
+      })
+
+      const { LazyLoadHintPlugin: PluginWithComponents } = await import('../../../src/plugins/lazy-load')
+      const p = PluginWithComponents.vite() as Plugin
+      const t = (p.transform as ObjectHook<HookFnMap['transform'], 'code' | 'id'>).handler
+
+      const code = `import MyWidget from './MyWidget.vue'\nexport default { components: { MyWidget } }`
+      const result = await t.call(unpluginCtx, code, '/src/Parent.vue') as unknown as { code: string }
+      expect(result.code).toContain(
+        `__wrapImportedComponent(__original_MyWidget, 'MyWidgetPascal', './MyWidget.vue'`,
+      )
     })
   })
 
