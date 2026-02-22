@@ -5,7 +5,7 @@ export default defineVitestProject({
   test: {
     name: 'runtime',
     include: [
-      './test/runtime/*.test.ts',
+      './test/runtime/**/*.test.ts',
     ],
     environment: 'nuxt',
     environmentOptions: {

@@ -1,4 +1,4 @@
-import { defineComponent, h, type DefineComponent } from 'vue'
+import type { DefineComponent } from 'vue'
 import { useNuxtApp } from '#imports'
 import type { DirectImportInfo } from './schema'
 
@@ -21,6 +21,9 @@ export function useLazyComponentTracking(components: DirectImportInfo[] = []) {
   return state
 }
 
+/**
+ * Wrap components definition like with defineComponent or defineNuxtComponent or just sfc exports
+ */
 export function __wrapMainComponent(
   component: DefineComponent,
   imports: DirectImportInfo[] = [],
@@ -35,6 +38,9 @@ export function __wrapMainComponent(
   return component
 }
 
+/**
+ * Wrap imported components to track their usage.
+ */
 export function __wrapImportedComponent(
   component: DefineComponent,
   componentName: string,
@@ -45,29 +51,28 @@ export function __wrapImportedComponent(
     // already wrapped by defineAsyncComponent
     return component
   }
-  const wrapper = defineComponent({
-    name: `LazyTracker_${componentName}`,
-    setup(_, { slots, attrs }) {
-      const state = useLazyComponentTracking()
-      if (state) {
-        if (!state.directImports.has(componentName)) {
-          state.directImports.set(componentName, {
-            componentName,
-            importSource,
-            importedBy,
-            rendered: false,
-          })
-        }
 
-        const info = state.directImports.get(componentName)
-        if (info) {
-          info.rendered = true
-        }
+  const originalSetup = component.setup
+
+  component.setup = (props, ctx) => {
+    const state = useLazyComponentTracking()
+    if (state) {
+      if (!state.directImports.has(componentName)) {
+        state.directImports.set(componentName, {
+          componentName,
+          importSource,
+          importedBy,
+          rendered: false,
+        })
       }
 
-      return () => h(component as DefineComponent, attrs, slots)
-    },
-  })
+      const info = state.directImports.get(componentName)
+      if (info) {
+        info.rendered = true
+      }
+    }
+    return originalSetup ? originalSetup(props, ctx) : undefined
+  }
 
-  return wrapper
+  return component
 }
