@@ -10,7 +10,7 @@ export function useHostThirdPartyScripts() {
   }
 
   return {
-    scripts: client.host.nuxt.__hints_tpc,
+    scripts: client.host.nuxt.payload.__hints.thirdPartyScripts,
     isUsingNuxtScripts: Boolean(client.host.nuxt.$scripts),
   }
 }
@@ -47,7 +47,7 @@ export function useHostWebVitals() {
 export function useHostHydration() {
   const host = useHostNuxt()
 
-  return { hydration: host.__hints.hydration }
+  return { hydration: host.payload.__hints.hydration }
 }
 
 export function useHostNuxt() {

@@ -19,7 +19,7 @@ describe('lazy-load composables', () => {
   beforeEach(() => {
     const nuxtApp = useNuxtApp()
     // Reset lazy hydration state between tests
-    delete nuxtApp.payload._lazyHydrationState
+    delete nuxtApp.payload.__hints?.lazyHydrationState
   })
 
   describe('useLazyComponentTracking', () => {
@@ -90,7 +90,7 @@ describe('lazy-load composables', () => {
       wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
 
       const nuxtApp = useNuxtApp()
-      const state = nuxtApp.payload._lazyHydrationState
+      const state = nuxtApp.payload.__hints?.lazyHydrationState
       expect(state).toBeDefined()
       expect(state.directImports.get('Child')).toEqual(imports[0])
     })
@@ -121,7 +121,7 @@ describe('lazy-load composables', () => {
       wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
 
       const nuxtApp = useNuxtApp()
-      const state = nuxtApp.payload._lazyHydrationState
+      const state = nuxtApp.payload.__hints?.lazyHydrationState
       expect(state).toBeDefined()
       expect(state.directImports.get('MyComp')).toEqual({
         componentName: 'MyComp',
@@ -142,7 +142,7 @@ describe('lazy-load composables', () => {
       wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
 
       const nuxtApp = useNuxtApp()
-      const state = nuxtApp.payload._lazyHydrationState
+      const state = nuxtApp.payload.__hints?.lazyHydrationState
       // Should keep original import source since entry already existed
       expect(state.directImports.get('MyComp')!.importSource).toBe('./Original.vue')
       // But rendered should be true

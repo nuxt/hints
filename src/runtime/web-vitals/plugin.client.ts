@@ -28,7 +28,7 @@ export default defineNuxtPlugin({
   name: 'nuxt-hints:performance',
   setup() {
     const nuxtApp = useNuxtApp()
-    nuxtApp.__hints = defu(nuxtApp.__hints, {
+    nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
       webvitals: {
         lcp: ref([]),
         inp: ref([]),
@@ -37,9 +37,9 @@ export default defineNuxtPlugin({
     })
 
     nuxtApp.hook('hints:webvitals:sync', (webvitals) => {
-      webvitals.lcp.value = [...nuxtApp.__hints.webvitals.lcp.value]
-      webvitals.inp.value = [...nuxtApp.__hints.webvitals.inp.value]
-      webvitals.cls.value = [...nuxtApp.__hints.webvitals.cls.value]
+      webvitals.lcp.value = [...nuxtApp.payload.__hints.webvitals.lcp.value]
+      webvitals.inp.value = [...nuxtApp.payload.__hints.webvitals.inp.value]
+      webvitals.cls.value = [...nuxtApp.payload.__hints.webvitals.cls.value]
     })
 
     nuxtApp.hook('app:mounted', () => {
@@ -51,7 +51,7 @@ export default defineNuxtPlugin({
           '[web-vitals] INP Metric: ',
           metric,
         )
-        nuxtApp.__hints.webvitals.inp.value.push(metric)
+        nuxtApp.payload.__hints.webvitals.inp.value.push(metric)
         nuxtApp.callHook('hints:webvitals:inp', metric)
       }, {
         reportAllChanges: true,
@@ -65,7 +65,7 @@ export default defineNuxtPlugin({
           `[web-vitals] LCP Metric: `,
           metric,
         )
-        nuxtApp.__hints.webvitals.lcp.value.push(metric)
+        nuxtApp.payload.__hints.webvitals.lcp.value.push(metric)
         nuxtApp.callHook('hints:webvitals:lcp', metric)
 
         for (const performanceEntry of metric.entries) {
@@ -130,7 +130,7 @@ export default defineNuxtPlugin({
           metric,
         )
         // Push the metric as-is; components will access entries[0] directly for element
-        nuxtApp.__hints.webvitals.cls.value.push(metric)
+        nuxtApp.payload.__hints.webvitals.cls.value.push(metric)
 
         for (const entry of metric.entries) {
           const performanceEntry = entry

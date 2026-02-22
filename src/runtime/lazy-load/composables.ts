@@ -1,18 +1,21 @@
 import type { DefineComponent } from 'vue'
 import { useNuxtApp } from '#imports'
+import { defu } from 'defu'
 import type { DirectImportInfo } from './schema'
 
 export function useLazyComponentTracking(components: DirectImportInfo[] = []) {
   const nuxtApp = useNuxtApp()
-  if (!nuxtApp.payload._lazyHydrationState) {
-    nuxtApp.payload._lazyHydrationState = {
-      directImports: new Map(),
-      hasReported: false,
-      pageLoaded: false,
-    }
+  if (!nuxtApp.payload.__hints?.lazyHydrationState) {
+    nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
+      lazyHydrationState: {
+        directImports: new Map(),
+        hasReported: false,
+        pageLoaded: false,
+      },
+    })
   }
 
-  const state = nuxtApp.payload._lazyHydrationState
+  const state = nuxtApp.payload.__hints.lazyHydrationState
 
   for (const comp of components) {
     state.directImports.set(comp.componentName, comp)
