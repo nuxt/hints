@@ -96,6 +96,10 @@ export default defineNuxtModule<ModuleOptions>({
         addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
       }
     }
+    // html-validator
+    addServerPlugin(resolver.resolve('./runtime/html-validator/nitro.plugin'))
+    addPlugin(resolver.resolve('./runtime/html-validator/plugin.client'))
+
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
         types: resolver.resolve('./runtime/types.d.ts'),
