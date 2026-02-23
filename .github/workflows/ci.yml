@@ -18,7 +18,7 @@ jobs:
       - uses: pnpm/action-setup@1e1c8eafbd745f64b1ef30a7d7ed7965034c486c
         name: Install pnpm
       - name: Install Node.js
-        uses: actions/setup-node@d02c89dce7e1ba9ef629ce0680989b3a1cc72edb
+        uses: actions/setup-node@774c1d62961e73038a114d59c8847023c003194d
         with:
           node-version: 24
           cache: 'pnpm'
