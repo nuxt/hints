@@ -11,7 +11,7 @@ export default defineNuxtPlugin({
   setup() {
     const nuxtApp = useNuxtApp()
 
-    nuxtApp.__hints = defu(nuxtApp.__hints, {
+    nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
       lazyComponents: [],
     })
 
@@ -52,7 +52,7 @@ function checkAndReport(state: ComponentLazyLoadState) {
 function reportSuggestions(suggestions: DirectImportInfo[]) {
   const route = useRoute()
   const nuxtApp = useNuxtApp()
-  nuxtApp.__hints.lazyComponents = suggestions
+  nuxtApp.payload.__hints.lazyComponents = suggestions
 
   logger.info(
     `${suggestions.length} component has not been rendered in SSR nor rendered at hydration time. Consider lazy loading it:\n`,

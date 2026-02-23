@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
+import { defu } from 'defu'
 import { logger } from '../logger'
 
 const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension|ms-browser-extension):/
@@ -32,7 +33,10 @@ export default defineNuxtPlugin({
   setup() {
     const nuxtApp = useNuxtApp()
 
-    const scripts = nuxtApp.__hints_tpc = ref<{ element: HTMLScriptElement, loaded: boolean }[]>([])
+    nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
+      thirdPartyScripts: ref<{ element: HTMLScriptElement, loaded: boolean }[]>([]),
+    })
+    const scripts = nuxtApp.payload.__hints.thirdPartyScripts
 
     const isUsingNuxtScripts = !!nuxtApp.$scripts
 

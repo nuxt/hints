@@ -5,7 +5,7 @@ export default defineNuxtPlugin({
   name: '@nuxt/hints:hydration',
   setup() {
     const nuxtApp = useNuxtApp()
-    nuxtApp.__hints = defu(nuxtApp.__hints, {
+    nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
       hydration: [],
     })
   },

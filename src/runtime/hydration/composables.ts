@@ -43,7 +43,7 @@ export function useHydrationCheck() {
         method: 'POST',
         body,
       }).then((payload) => {
-        nuxtApp.__hints.hydration.push({
+        nuxtApp.payload.__hints.hydration.push({
           ...payload,
           instance,
           vnode: vnodePrehydration,

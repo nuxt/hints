@@ -27,15 +27,20 @@ declare module '#app' {
     'hints:scripts:added': (script: HTMLScriptElement) => void
     'hints:scripts:loaded': (script: HTMLScriptElement) => void
 
-    'hints:webvitals:sync': (webvitals: NuxtApp['__hints']['webvitals']) => void
+    'hints:webvitals:sync': (webvitals: NuxtPayload['__hints']['webvitals']) => void
     'hints:webvitals:lcp': (metric: LCPMetricWithAttribution) => void
     'hints:webvitals:inp': (metric: INPMetricWithAttribution) => void
     'hints:webvitals:cls': (metric: CLSMetricWithAttribution) => void
   }
 
   interface NuxtApp {
-    __hints_tpc: Ref<{ element: HTMLScriptElement, loaded: boolean }[]>
+    __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
+    __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
+  }
+
+  interface NuxtPayload {
     __hints: {
+      lazyHydrationState?: LazyHydrationState
       hydration: LocalHydrationMismatch[]
       lazyComponents: DirectImportInfo[]
       webvitals: {
@@ -43,13 +48,11 @@ declare module '#app' {
         inp: Ref<INPMetricWithAttribution[]>
         cls: Ref<CLSMetricWithAttribution[]>
       }
+      thirdPartyScripts: Ref<{
+        element: HTMLScriptElement
+        loaded: boolean
+      }[]>
     }
-    __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
-    __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
-  }
-
-  interface NuxtPayload {
-    _lazyHydrationState?: LazyHydrationState
   }
 }
 
