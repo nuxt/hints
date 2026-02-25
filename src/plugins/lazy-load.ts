@@ -141,7 +141,7 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
         }
 
         const lastImport = imports[imports.length - 1]
-        // See 
+        // See https://github.com/nuxt/hints/issues/241
         if (lastImport) {
           m.appendRight(lastImport.end, '\n' + wrapperStatements)
         }
