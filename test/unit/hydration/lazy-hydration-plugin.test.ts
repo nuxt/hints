@@ -179,8 +179,8 @@ describe('LazyLoadHintPlugin', () => {
       expect(result.code).toContain('useLazyComponentTracking(')
       expect(result.code).toContain(`componentName: 'ChildComp'`)
       expect(result.code).toMatchInlineSnapshot(`
-        "import { __wrapImportedComponent, __wrapMainComponent } from \"@nuxt/hints/runtime/lazy-load/composables\";
-        import { useLazyComponentTracking } from \"@nuxt/hints/runtime/lazy-load/composables\";
+        "import { __wrapImportedComponent, __wrapMainComponent } from "@nuxt/hints/runtime/lazy-load/composables";
+        import { useLazyComponentTracking } from "@nuxt/hints/runtime/lazy-load/composables";
         import { defineComponent } from 'vue'
         import __original_ChildComp from './ChildComp.vue'
         const ChildComp = __wrapImportedComponent(__original_ChildComp, 'ChildComp', './ChildComp.vue', '/src/Parent.ts')
@@ -207,8 +207,8 @@ describe('LazyLoadHintPlugin', () => {
       const result = await transform(code, '/src/Parent.ts')
       expect(result.code).toContain('useLazyComponentTracking(')
       expect(result.code).toMatchInlineSnapshot(`
-        "import { __wrapImportedComponent, __wrapMainComponent } from \"@nuxt/hints/runtime/lazy-load/composables\";
-        import { useLazyComponentTracking } from \"@nuxt/hints/runtime/lazy-load/composables\";
+        "import { __wrapImportedComponent, __wrapMainComponent } from "@nuxt/hints/runtime/lazy-load/composables";
+        import { useLazyComponentTracking } from "@nuxt/hints/runtime/lazy-load/composables";
         import { defineComponent } from 'vue'
         import __original_ChildComp from './ChildComp.vue'
         const ChildComp = __wrapImportedComponent(__original_ChildComp, 'ChildComp', './ChildComp.vue', '/src/Parent.ts')
