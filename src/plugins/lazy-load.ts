@@ -140,7 +140,14 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           }
         }
 
-        m.prepend(wrapperStatements + '\n')
+        const lastImport = imports[imports.length - 1]
+        // See 
+        if (lastImport) {
+          m.appendRight(lastImport.end, '\n' + wrapperStatements)
+        }
+        else {
+          m.prepend(wrapperStatements + '\n')
+        }
 
         if (m.hasChanged()) {
           return {
