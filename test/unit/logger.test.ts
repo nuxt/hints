@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { createHintsLogger } from '../../src/runtime/logger'
 
 const mockFeatures = vi.hoisted(() => ({
@@ -38,7 +38,7 @@ describe('createHintsLogger', () => {
     it('logs messages when enabled', () => {
       const logger = createHintsLogger('hydration')
       logger.info('Test message')
-        expect(process.stdout.write).toHaveBeenCalledWith(expect.stringContaining('Test message'))
+      expect(process.stdout.write).toHaveBeenCalledWith(expect.stringContaining('Test message'))
     })
 
     it('does not log messages when disabled', () => {

@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler, addTemplate } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler, addTemplate, addServerTemplate } from '@nuxt/kit'
 import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
@@ -10,7 +10,7 @@ export interface ModuleOptions {
   devtools: boolean
   features: Record<'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts', boolean | FeatureFlags>
 }
-  
+
 const moduleName = '@nuxt/hints'
 
 export default defineNuxtModule<ModuleOptions>({
@@ -36,11 +36,17 @@ export default defineNuxtModule<ModuleOptions>({
 
     const resolver = createResolver(import.meta.url)
 
-    addTemplate({
-      filename: 'hints.config.mjs',
-      getContents() {
-        return `export const features = ${JSON.stringify(booleanToFeatureFlags(options.features))};`
-      }
+    const hintsConfigContent = `export const features = ${JSON.stringify(booleanToFeatureFlags(options.features))}`
+    const hintsConfig = addTemplate({
+      filename: '#hints-config',
+      getContents: () => hintsConfigContent,
+    })
+
+    nuxt.options.alias['#hints-config'] = hintsConfig.dst
+
+    addServerTemplate({
+      filename: '#hints-config',
+      getContents: () => hintsConfigContent,
     })
 
     // core
@@ -98,5 +104,5 @@ function booleanToFeatureFlags(input: Record<string, boolean | FeatureFlags>): R
     const value = input[key]
     output[key] = typeof value === 'object' ? value : { logs: Boolean(value), devtools: Boolean(value) }
   }
-  return output 
+  return output
 }

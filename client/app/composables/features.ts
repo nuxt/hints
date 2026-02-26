@@ -1,12 +1,12 @@
-import type { FeatureFlags, Features } from "../../../src/runtime/core/types"
+import type { FeatureFlags, Features } from '../../../src/runtime/core/types'
 
 export function useHintsConfig() {
-    const hostNuxt = useHostNuxt()
+  const hostNuxt = useHostNuxt()
 
-    return hostNuxt.hints.config
+  return hostNuxt.hints.config
 }
 
 export function useHintsFeature(feature: Features): FeatureFlags {
-    const config = useHintsConfig()
-    return config.features[feature]
+  const config = useHintsConfig()
+  return config.features[feature]
 }
