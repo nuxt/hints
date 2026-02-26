@@ -11,6 +11,9 @@ export default defineVitestProject({
     environmentOptions: {
       nuxt: {
         rootDir: fileURLToPath(new URL('./test/fixtures/basic', import.meta.url)),
+        overrides: {
+          dev: true,
+        }
       },
     },
   },
