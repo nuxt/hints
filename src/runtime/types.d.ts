@@ -3,6 +3,17 @@ import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithA
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
 import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
 
+export type Features = 'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts'
+
+/**
+ * FF used by modules options and to expose in the payload for devtools
+ */
+export type FeatureFlags = {
+  logs: boolean
+  devtools: boolean
+}
+
+
 declare global {
   interface Window {
     __hints_TPC_start_time: number
@@ -36,6 +47,11 @@ declare module '#app' {
   interface NuxtApp {
     __tracerOverlay: typeof import('vite-plugin-vue-tracer/client/overlay')
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
+    hints: {
+      config: {
+        features: Record<Features, FeatureFlags>
+      }
+    }
   }
 
   interface NuxtPayload {
