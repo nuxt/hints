@@ -3,7 +3,7 @@ import { codeToHtml } from 'shiki/bundle/web'
 import { diffLines, type ChangeObject } from 'diff'
 import { transformerNotationDiff } from '@shikijs/transformers'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
-import { HYDRATION_ROUTE } from '../../../src/runtime/hydration/utils'
+import { HYDRATION_ROUTE } from '../utils/routes'
 import { transformerRenderHtmlFold, attachFoldToggleListener } from 'shiki-transformer-fold'
 
 const props = defineProps<{

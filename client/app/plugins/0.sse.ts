@@ -1,4 +1,4 @@
-import { HINTS_SSE_ROUTE } from '../../../src/runtime/core/server/types'
+import { HINTS_SSE_ROUTE } from '../utils/routes'
 
 export default defineNuxtPlugin(() => {
   const eventSource = useEventSource(HINTS_SSE_ROUTE, undefined, {

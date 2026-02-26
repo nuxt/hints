@@ -2,7 +2,7 @@ import type { ComponentLazyLoadData } from '../../../src/runtime/lazy-load/schem
 import { parse } from 'valibot'
 import { defineNuxtPlugin } from '#imports'
 import { ComponentLazyLoadDataSchema } from '../../../src/runtime/lazy-load/schema'
-import { LAZY_LOAD_ROUTE } from '../../../src/runtime/lazy-load/utils'
+import { LAZY_LOAD_ROUTE } from '../utils/routes'
 
 export default defineNuxtPlugin(() => {
   const nuxtApp = useNuxtApp()

@@ -1,6 +1,6 @@
 import type { HydrationMismatchPayload, HydrationMismatchResponse, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
 import { defineNuxtPlugin, useHostNuxt, ref } from '#imports'
-import { HYDRATION_ROUTE } from '../../../src/runtime/hydration/utils'
+import { HYDRATION_ROUTE } from '../utils/routes'
 
 export default defineNuxtPlugin(() => {
   const host = useHostNuxt()
