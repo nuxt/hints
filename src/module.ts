@@ -3,7 +3,7 @@ import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
-import type { FeatureFlags } from './runtime/types'
+import type { FeatureFlags } from './runtime/core/types'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -87,7 +87,6 @@ export default defineNuxtModule<ModuleOptions>({
       setupDevToolsUI(nuxt, resolver)
       addPlugin(resolver.resolve('./runtime/core/plugins/vue-tracer-state.client'))
     }
-
 
     nuxt.options.build.transpile.push(moduleName)
   },

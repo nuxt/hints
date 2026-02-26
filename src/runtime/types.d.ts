@@ -2,17 +2,7 @@ import type { VNode, Ref } from 'vue'
 import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
 import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
-
-export type Features = 'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts'
-
-/**
- * FF used by modules options and to expose in the payload for devtools
- */
-export type FeatureFlags = {
-  logs: boolean
-  devtools: boolean
-}
-
+import type { Features, FeatureFlags } from './core/types'
 
 declare global {
   interface Window {

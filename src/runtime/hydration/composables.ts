@@ -1,7 +1,6 @@
 import { getCurrentInstance, inject, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
-import { HYDRATION_ROUTE, formatHTML } from './utils'
-import { logger } from '../logger'
+import { HYDRATION_ROUTE, formatHTML, logger } from './utils'
 import type { HydrationMismatchPayload } from './types'
 import { clientOnlySymbol } from '#app/components/client-only'
 /**

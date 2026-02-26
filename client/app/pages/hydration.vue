@@ -1,6 +1,8 @@
 <script setup lang="ts">
 definePageMeta({
   title: 'Hydration',
+  middleware: 'feature-gate',
+  feature: 'hydration',
 })
 
 const hydration = useNuxtApp().$hydrationMismatches

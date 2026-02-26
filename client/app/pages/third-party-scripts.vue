@@ -276,6 +276,8 @@
 <script lang="ts" setup>
 definePageMeta({
   title: 'Third-Party Scripts',
+  middleware: 'feature-gate',
+  feature: 'thirdPartyScripts',
 })
 
 const { scripts, isUsingNuxtScripts } = useHostThirdPartyScripts()

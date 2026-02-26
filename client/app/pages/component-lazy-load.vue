@@ -4,6 +4,8 @@ import { LAZY_LOAD_ROUTE } from '../../../src/runtime/lazy-load/utils'
 
 definePageMeta({
   title: 'Component Lazy Load',
+  middleware: 'feature-gate',
+  feature: 'lazyLoad',
 })
 
 const nuxtApp = useNuxtApp()
