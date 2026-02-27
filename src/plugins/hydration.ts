@@ -6,7 +6,7 @@ import { createUnplugin } from 'unplugin'
 import { distDir } from '../dirs'
 
 const INCLUDE_VUE_RE = /\.vue$/
-const EXCLUDE_NODE_MODULES = /node_modules/
+const EXCLUDE_NODE_MODULES = /node_modules|dist/
 const DEFINE_COMPONENT_RE = /defineComponent/
 const DEFINE_NUXT_COMPONENT_RE = /defineNuxtComponent/
 const skipPath = normalizePath(resolve(distDir, 'runtime/hydration/component.ts'))
