@@ -13,7 +13,7 @@ export default defineVitestProject({
         rootDir: fileURLToPath(new URL('./test/fixtures/basic', import.meta.url)),
         overrides: {
           dev: true,
-        }
+        },
       },
     },
   },
