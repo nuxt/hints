@@ -12,7 +12,7 @@ export function useEnabledHintsFeatures(): Record<FeaturesName, boolean> {
     Object.entries(config.features).map(([feature, flags]) => [
       feature,
       typeof flags === 'object' ? flags.devtools : Boolean(flags),
-    ] as [FeaturesName, boolean])
+    ] as [FeaturesName, boolean]),
   ) as Record<FeaturesName, boolean>
 }
 

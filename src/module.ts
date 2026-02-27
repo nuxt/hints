@@ -65,19 +65,19 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // performances
-    if(isFeatureEnabled(options, 'webVitals')) {
+    if (isFeatureEnabled(options, 'webVitals')) {
       addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
     }
 
     // hydration
-    if(isFeatureEnabled(options, 'hydration')) {
+    if (isFeatureEnabled(options, 'hydration')) {
       addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
       addBuildPlugin(InjectHydrationPlugin)
       addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
     }
 
     // lazy-load suggestions
-    if(isFeatureEnabled(options, 'lazyLoad')) {
+    if (isFeatureEnabled(options, 'lazyLoad')) {
       addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
       if (isFeatureDevtoolsEnabled(options, 'lazyLoad')) {
         addServerPlugin(resolver.resolve('./runtime/lazy-load/nitro.plugin'))
