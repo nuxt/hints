@@ -1,0 +1,13 @@
+diff --git a/dist/config.mjs b/dist/config.mjs
+index 41a73e237a7ecd0c63985421737f3cf0782391ee..ddc205b22b6912a8770bb9a93dff7abc0f503d29 100644
+--- a/dist/config.mjs
++++ b/dist/config.mjs
+@@ -33,7 +33,7 @@ async function startNuxtAndGetViteConfig(rootDir = process.cwd(), options = {})
+   const { buildNuxt, loadNuxt } = await loadKit(rootDir);
+   const nuxt = await loadNuxt({
+     cwd: rootDir,
+-    dev: false,
++    dev: options.overrides?.dev ?? false,
+     dotenv: defu(options.dotenv, {
+       cwd: rootDir,
+       fileName: ".env.test"
