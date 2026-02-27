@@ -1,6 +1,6 @@
 // @ts-expect-error virtual file
 import { features } from '#hints-config'
-import type { FeatureFlags, FeaturesName } from './types'
+import type { FeaturesName } from './types'
 
 export function isFeatureDevtoolsEnabled(feature: FeaturesName): boolean {
   return typeof features[feature] === 'object' ? features[feature].devtools : !!features[feature]
