@@ -5,6 +5,7 @@ import { ComponentLazyLoadDataSchema } from '../../../src/runtime/lazy-load/sche
 import { LAZY_LOAD_ROUTE } from '../utils/routes'
 
 export default defineNuxtPlugin(() => {
+  if(!useHintsFeature('lazyLoad')) return
   const nuxtApp = useNuxtApp()
 
   const { data: lazyLoadHints } = useLazyFetch<ComponentLazyLoadData[]>(new URL(LAZY_LOAD_ROUTE, window.location.origin).href, {

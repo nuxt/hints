@@ -58,16 +58,16 @@ export default defineNuxtModule<ModuleOptions>({
       priority: 1000,
     })
 
-    // performances
-    if(isFeatureEnabled(options, 'webVitals')) {
-      addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
-    }
-
     // core handlers
     addServerHandler({
       route: HINTS_SSE_ROUTE,
       handler: resolver.resolve('./runtime/core/server/sse'),
     })
+
+    // performances
+    if(isFeatureEnabled(options, 'webVitals')) {
+      addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
+    }
 
     // hydration
     if(isFeatureEnabled(options, 'hydration')) {
@@ -75,6 +75,7 @@ export default defineNuxtModule<ModuleOptions>({
       addBuildPlugin(InjectHydrationPlugin)
       addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
     }
+
     // lazy-load suggestions
     if(isFeatureEnabled(options, 'lazyLoad')) {
       addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
