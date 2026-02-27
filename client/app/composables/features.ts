@@ -1,4 +1,4 @@
-import type { FeatureFlags, Features } from '../../../src/runtime/core/types'
+import type { FeaturesName } from '../../../src/runtime/core/types'
 
 export function useHintsConfig() {
   const hostNuxt = useHostNuxt()
@@ -6,7 +6,7 @@ export function useHintsConfig() {
   return hostNuxt.hints.config
 }
 
-export function useHintsFeature(feature: Features): FeatureFlags {
+export function useHintsFeature(feature: FeaturesName): boolean {
   const config = useHintsConfig()
-  return config.features[feature]
+  return typeof config.features[feature] === 'object' ? config.features[feature].devtools : Boolean(config.features[feature])
 }

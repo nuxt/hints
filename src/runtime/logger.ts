@@ -1,12 +1,11 @@
 import { createConsola } from 'consola'
 
-// @ts-expect-error virtual file
-import { features } from '#hints-config'
-import type { Features, FeatureFlags } from './core/types'
+import { isFeatureLogsEnabled } from './core/features'
+import type { FeaturesName } from './core/types'
 
-export function createHintsLogger(feature: Features) {
+export function createHintsLogger(feature: FeaturesName) {
   return createConsola({
-    level: (features as Record<Features, FeatureFlags>)[feature]?.logs ? undefined : 0,
+    level: isFeatureLogsEnabled(feature) ? undefined : 0,
   }).withTag(`hints:${feature}`)
 }
 

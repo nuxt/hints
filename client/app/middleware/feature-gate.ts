@@ -1,8 +1,8 @@
-import type { Features } from '../../../src/runtime/core/types'
+import type { FeaturesName } from '../../../src/runtime/core/types'
 
 declare module 'nuxt/app' {
   interface PageMeta {
-    feature?: Features
+    feature?: FeaturesName
   }
 }
 
@@ -11,9 +11,9 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (!feature) return
 
-  const config = useHintsConfig()
+  const isFeatureEnabled = useHintsFeature(feature)
 
-  if (!config.features[feature]?.devtools) {
-    return navigateTo('/')
+  if (!isFeatureEnabled) {
+    return navigateTo('/', { replace: true })
   }
 })

@@ -3,12 +3,13 @@ import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
-import type { FeatureFlags } from './runtime/core/types'
+import type { FeatureFlags, FeaturesName } from './runtime/core/types'
+import { isFeatureDevtoolsEnabled, isFeatureEnabled } from './features'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
   devtools: boolean
-  features: Record<'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts', boolean | FeatureFlags>
+  features: Record<FeaturesName, boolean | FeatureFlags>
 }
 
 const moduleName = '@nuxt/hints'
@@ -36,7 +37,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     const resolver = createResolver(import.meta.url)
 
-    const hintsConfigContent = `export const features = ${JSON.stringify(booleanToFeatureFlags(options.features))}`
+    const hintsConfigContent = `export const features = ${JSON.stringify(options.features)}`
     const hintsConfig = addTemplate({
       filename: '#hints-config',
       getContents: () => hintsConfigContent,
@@ -58,7 +59,9 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // performances
-    addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
+    if(isFeatureEnabled(options, 'webVitals')) {
+      addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
+    }
 
     // core handlers
     addServerHandler({
@@ -67,22 +70,31 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     // hydration
-    addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
-    addBuildPlugin(InjectHydrationPlugin)
-    addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
-
+    if(isFeatureEnabled(options, 'hydration')) {
+      addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
+      addBuildPlugin(InjectHydrationPlugin)
+      addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
+    }
     // lazy-load suggestions
-    addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
-    addServerPlugin(resolver.resolve('./runtime/lazy-load/nitro.plugin'))
-    nuxt.hook('modules:done', () => {
-      // hack to ensure the plugins runs after everything else. But before vite:import-analysis
-      addBuildPlugin(LazyLoadHintPlugin, { client: false })
-      addBuildPlugin(LazyLoadHintPlugin, { server: false })
-    })
-    // third-party scripts
-    addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
-    addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
+    if(isFeatureEnabled(options, 'lazyLoad')) {
+      addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
+      if (isFeatureDevtoolsEnabled(options, 'lazyLoad')) {
+        addServerPlugin(resolver.resolve('./runtime/lazy-load/nitro.plugin'))
+      }
+      nuxt.hook('modules:done', () => {
+        // hack to ensure the plugins runs after everything else. But before vite:import-analysis
+        addBuildPlugin(LazyLoadHintPlugin, { client: false })
+        addBuildPlugin(LazyLoadHintPlugin, { server: false })
+      })
+    }
 
+    // third-party scripts
+    if (isFeatureEnabled(options, 'thirdPartyScripts')) {
+      addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
+      if (isFeatureDevtoolsEnabled(options, 'thirdPartyScripts')) {
+        addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
+      }
+    }
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
         types: resolver.resolve('./runtime/types.d.ts'),
@@ -97,12 +109,3 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.build.transpile.push(moduleName)
   },
 })
-
-function booleanToFeatureFlags(input: Record<string, boolean | FeatureFlags>): Record<string, FeatureFlags> {
-  const output: Record<string, FeatureFlags> = {}
-  for (const key in input) {
-    const value = input[key]
-    output[key] = typeof value === 'object' ? value : { logs: Boolean(value), devtools: Boolean(value) }
-  }
-  return output
-}
