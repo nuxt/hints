@@ -14,10 +14,10 @@ export default defineVitestProject({
         overrides: {
           unocss: {
             // TODO: investigate why unocss cause file:///__uno.css not found error in test
-            autoImport: false,  
-          }
-        }
-      }, 
+            autoImport: false,
+          },
+        },
+      },
     },
   },
 })
