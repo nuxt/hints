@@ -131,10 +131,10 @@ pnpm run release
 <!-- Badges -->
 
 [npm-version-src]: https://img.shields.io/npm/v/@nuxt/hints/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-version-href]: https://npmjs.com/package/@nuxt/hints
+[npm-version-href]: https://npmx.dev/package/@nuxt/hints
 [npm-downloads-src]: https://img.shields.io/npm/dm/@nuxt/hints.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-downloads-href]: https://npmjs.com/package/@nuxt/hints
+[npm-downloads-href]: https://npmx.dev/package/@nuxt/hints
 [license-src]: https://img.shields.io/npm/l/@nuxt/hints.svg?style=flat&colorA=18181B&colorB=28CF8D
-[license-href]: https://npmjs.com/package/@nuxt/hints
+[license-href]: https://npmx.dev/package/@nuxt/hints
 [nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt
 [nuxt-href]: https://nuxt.com
