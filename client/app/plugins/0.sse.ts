@@ -1,6 +1,7 @@
 import { HINTS_SSE_ROUTE } from '../utils/routes'
 
 export default defineNuxtPlugin(() => {
+  if(import.meta.test) return;
   const eventSource = useEventSource(HINTS_SSE_ROUTE, undefined, {
     autoReconnect: {
       retries: 5,

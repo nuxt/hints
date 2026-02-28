@@ -1,1 +1,2 @@
 imports.autoImport=true
+setups.@nuxt/test-utils="4.0.0"
