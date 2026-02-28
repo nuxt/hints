@@ -2,7 +2,7 @@ import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { onINP, onLCP, onCLS } from 'web-vitals/attribution'
 import { defu } from 'defu'
 import { ref } from 'vue'
-import { logger } from '../logger'
+import { logger } from './utils'
 
 type ElementNode = ChildNode & { attributes: { href: { value: string } } }
 

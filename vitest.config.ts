@@ -5,6 +5,7 @@ export default defineConfig({
     projects: [
       './vitest.runtime.config.ts',
       './vitest.unit.config.ts',
+      './client/vitest.runtime.config.ts',
     ],
   },
 })

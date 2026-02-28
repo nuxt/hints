@@ -6,6 +6,8 @@ import WebVitalsCLSMetric from '../components/WebVitals/CLSMetric.vue'
 
 definePageMeta({
   title: 'Web Vitals',
+  middleware: 'feature-gate',
+  feature: 'webVitals',
 })
 
 const headers = [

@@ -1,2 +1,3 @@
 imports.autoImport=false
 typescript.includeWorkspace=true
+setups.@nuxt/test-utils="4.0.0"

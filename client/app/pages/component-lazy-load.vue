@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { ComponentLazyLoadData, DirectImportInfo } from '../../../src/runtime/lazy-load/schema'
-import { LAZY_LOAD_ROUTE } from '../../../src/runtime/lazy-load/utils'
+import { LAZY_LOAD_ROUTE } from '../utils/routes'
 
 definePageMeta({
   title: 'Component Lazy Load',
+  middleware: 'feature-gate',
+  feature: 'lazyLoad',
 })
 
 const nuxtApp = useNuxtApp()

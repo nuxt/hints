@@ -1,3 +1,7 @@
+import { createHintsLogger } from '../logger'
+
+export const logger = createHintsLogger('webVitals')
+
 export enum ImagePerformanceIssueType {
   LazyAttrOnLCPElement,
   ImgFormat,

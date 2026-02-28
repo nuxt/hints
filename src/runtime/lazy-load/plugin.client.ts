@@ -2,8 +2,8 @@ import { defineNuxtPlugin, useNuxtApp, useRoute } from '#imports'
 import { defu } from 'defu'
 import type { DirectImportInfo, ComponentLazyLoadState, ComponentLazyLoadData } from './schema'
 import { useLazyComponentTracking } from './composables'
-import { logger } from '../logger'
-import { LAZY_LOAD_ROUTE } from './utils'
+import { logger, LAZY_LOAD_ROUTE } from './utils'
+import { isFeatureDevtoolsEnabled } from '../core/features'
 
 export default defineNuxtPlugin({
   name: '@nuxt/hints:lazy-load',
@@ -67,7 +67,7 @@ function reportSuggestions(suggestions: DirectImportInfo[]) {
     )
   }
 
-  if (suggestions.length) {
+  if (suggestions.length && isFeatureDevtoolsEnabled('lazyLoad')) {
     const payload: ComponentLazyLoadData = {
       id: `${encodeURIComponent(route.path)}-${Date.now()}`,
       route: route.path,
@@ -77,7 +77,6 @@ function reportSuggestions(suggestions: DirectImportInfo[]) {
         directImports: suggestions,
       },
     }
-
     $fetch(LAZY_LOAD_ROUTE, {
       method: 'POST',
       body: payload,

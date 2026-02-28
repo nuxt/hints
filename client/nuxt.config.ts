@@ -45,6 +45,7 @@ export default defineNuxtConfig({
       })
     },
   },
-
-  unocss: {},
+  unocss: {
+    autoImport: false,
+  },
 })

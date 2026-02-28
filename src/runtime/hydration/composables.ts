@@ -1,9 +1,9 @@
 import { getCurrentInstance, inject, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
-import { HYDRATION_ROUTE, formatHTML } from './utils'
-import { logger } from '../logger'
+import { HYDRATION_ROUTE, formatHTML, logger } from './utils'
 import type { HydrationMismatchPayload } from './types'
 import { clientOnlySymbol } from '#app/components/client-only'
+import { isFeatureDevtoolsEnabled } from '../core/features'
 /**
  * prefer implementing onMismatch hook after vue 3.6
  * compare element
@@ -39,16 +39,18 @@ export function useHydrationCheck() {
         componentName,
         fileLocation,
       }
-      $fetch<HydrationMismatchPayload>(new URL(HYDRATION_ROUTE, window.location.origin).href, {
-        method: 'POST',
-        body,
-      }).then((payload) => {
-        nuxtApp.payload.__hints.hydration.push({
-          ...payload,
-          instance,
-          vnode: vnodePrehydration,
+      if (isFeatureDevtoolsEnabled('hydration')) {
+        $fetch<HydrationMismatchPayload>(new URL(HYDRATION_ROUTE, window.location.origin).href, {
+          method: 'POST',
+          body,
+        }).then((payload) => {
+          nuxtApp.payload.__hints.hydration.push({
+            ...payload,
+            instance,
+            vnode: vnodePrehydration,
+          })
         })
-      })
+      }
       logger.warn(`[hydration] Component ${componentName ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
     }
   })

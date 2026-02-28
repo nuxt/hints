@@ -1,6 +1,6 @@
 import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
 import { defu } from 'defu'
-import { logger } from '../logger'
+import { logger } from './utils'
 
 const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension|ms-browser-extension):/
 
