@@ -26,6 +26,7 @@ export default defineNuxtModule<ModuleOptions>({
       lazyLoad: true,
       webVitals: true,
       thirdPartyScripts: true,
+      htmlValidate: true,
     },
   },
   setup(options, nuxt) {
@@ -96,6 +97,16 @@ export default defineNuxtModule<ModuleOptions>({
         addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
       }
     }
+
+    // html-validate
+    if (isFeatureEnabled(options, 'htmlValidate')) {
+      addPlugin(resolver.resolve('./runtime/html-validate/plugin.client'))
+      addServerPlugin(resolver.resolve('./runtime/html-validate/nitro.plugin'))
+      if (isFeatureDevtoolsEnabled(options, 'htmlValidate')) {
+        addServerPlugin(resolver.resolve('./runtime/html-validate/handlers/nitro-handlers.plugin'))
+      }
+    }
+
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
         types: resolver.resolve('./runtime/types.d.ts'),

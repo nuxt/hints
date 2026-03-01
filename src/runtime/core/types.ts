@@ -1,4 +1,4 @@
-export type FeaturesName = 'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts'
+export type FeaturesName = 'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts' | 'htmlValidate'
 
 /**
  * FF used by modules options and to expose in the payload for devtools
