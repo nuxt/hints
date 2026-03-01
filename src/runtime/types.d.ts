@@ -70,7 +70,8 @@ declare module 'nitropack' {
     'hints:sse:setup': (context: import('./core/server/types').HintsSseContext) => void
 
     // html-validate hooks
-    'hints:html-validate:report': (report:  import('./html-validator/types').HtmlValidateReport) => void
+    'hints:html-validate:report': (report: import('./html-validator/types').HtmlValidateReport) => void
+    'hints:html-validate:deleted': (id: string) => void
 
     // Hydration hooks
     'hints:hydration:mismatch': (payload: HydrationMismatchPayload) => void

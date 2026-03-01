@@ -45,6 +45,7 @@
     "magic-string": "^0.30.21",
     "nitropack": "^2.13.1",
     "oxc-parser": "^0.115.0",
+    "prettier": "^3.8.1",
     "sirv": "^3.0.2",
     "unplugin": "^3.0.0",
     "unstorage": "^1.17.4",

@@ -1,5 +1,8 @@
-import { join } from "pathe"
-import { HINTS_ROUTE } from "../core/server/types"
+import { join } from 'pathe'
+import { HINTS_ROUTE } from '../core/server/types'
+import { createHintsLogger } from '../logger'
+
+export const logger = createHintsLogger('htmlValidate')
 
 export const HTMLVALIDATE_ROUTE = join(HINTS_ROUTE, 'html-validate')
 

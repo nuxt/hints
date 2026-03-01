@@ -8,5 +8,6 @@ const features = useEnabledHintsFeatures()
     <FeatureCardsHydrationCard v-if="features.hydration" />
     <FeatureCardsThirdPartyScriptsCard v-if="features.thirdPartyScripts" />
     <FeatureCardsLazyLoadCard v-if="features.lazyLoad" />
+    <FeatureCardsHtmlValidateCard v-if="features.htmlValidate" />
   </div>
 </template>

@@ -9,8 +9,5 @@ export default defineNuxtConfig({
     },
   },
   hints: { devtools: true,
-    features: {
-      lazyLoad: false,
-    },
   },
 })
