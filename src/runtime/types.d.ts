@@ -8,7 +8,7 @@ declare global {
   interface Window {
     __hints_TPC_start_time: number
     __hints_TPC_saveTime: (script: HTMLScriptElement, startTime?: number) => void
-    __hints_html_validation?: import('./html-validator/types').HtmlValidateReport
+    __hints_html_validation?: import('./html-validate/types').HtmlValidateReport
   }
   interface HTMLScriptElement {
     __hints_TPC_start_time?: number
@@ -59,7 +59,7 @@ declare module '#app' {
         element: HTMLScriptElement
         loaded: boolean
       }[]>
-      htmlValidateResult?: import('./html-validator/types').HtmlValidateReport
+      htmlValidateResult?: import('./html-validate/types').HtmlValidateReport
     }
   }
 }
@@ -70,7 +70,7 @@ declare module 'nitropack' {
     'hints:sse:setup': (context: import('./core/server/types').HintsSseContext) => void
 
     // html-validate hooks
-    'hints:html-validate:report': (report: import('./html-validator/types').HtmlValidateReport) => void
+    'hints:html-validate:report': (report: import('./html-validate/types').HtmlValidateReport) => void
     'hints:html-validate:deleted': (id: string) => void
 
     // Hydration hooks
