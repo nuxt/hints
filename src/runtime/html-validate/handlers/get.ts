@@ -3,7 +3,7 @@ import { storage } from '../storage'
 import type { HtmlValidateReport } from '../types'
 
 export const getAllHandler = defineEventHandler(() => {
-  return storage.getKeys().then(
-    keys => Promise.all(keys.map(key => storage.getItem<HtmlValidateReport>(key))),
-  )
+  return storage.getKeys()
+    .then(keys => Promise.all(keys.map(key => storage.getItem<HtmlValidateReport>(key))))
+    .then(items => items.filter((item): item is HtmlValidateReport => item !== null))
 })
