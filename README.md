@@ -88,6 +88,12 @@ At build time, a Vite plugin analyzes your component imports to identify statica
 
 Suggestions are reported to the console and sent to the DevTools UI via Server-Sent Events, where you can review them per route and dismiss entries you've already addressed. The recommended fix is to either prefix the component with `Lazy` (e.g., `<LazyHeavyComponent>`) or use `defineAsyncComponent` so it is only downloaded when needed.
 
+### HTML Validate integration
+
+Nuxt Hints includes a built-in HTML validation feature powered by [`html-validate`](https://html-validate.org/). On every server-rendered response, the module intercepts the HTML output and runs it through `html-validate`.
+
+![hints html-validate screenshot](./.github/assets/devtools-html-validate.png)
+
 ### Example Console Output
 
 When Nuxt Hints detects issues, you'll see clear warnings in your browser console:
