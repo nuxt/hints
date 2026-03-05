@@ -2,7 +2,7 @@ import type { VNode, Ref } from 'vue'
 import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
 import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
-import type { FeaturesName, FeatureFlags } from './core/types'
+import type { FeaturesName, Features } from './core/types'
 
 declare global {
   interface Window {
@@ -40,7 +40,7 @@ declare module '#app' {
     __tracerRecord: typeof import('vite-plugin-vue-tracer/client/record')
     hints: {
       config: {
-        features: Record<FeaturesName, FeatureFlags | boolean>
+        features: Features
       }
     }
   }
