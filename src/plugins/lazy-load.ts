@@ -11,6 +11,8 @@ import type { Component } from '@nuxt/schema'
 const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 // Exclude node_moduels as users can have control over it
 const EXCLUDE_NODE_MODULES = /node_modules/
+
+const VITE_GLOB_RE = /^__glob_\d+_\d+$/
 const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-load'))
 
 export const LazyLoadHintPlugin = createUnplugin(() => {
@@ -56,6 +58,10 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           for (const specifier of importDecl.specifiers ?? []) {
             if (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportSpecifier') {
               const localName = specifier.local.name
+
+              // skip vite glob-generated imports
+              // https://github.com/nuxt/hints/issues/262
+              if (VITE_GLOB_RE.test(localName)) continue
 
               directComponentImports.push({
                 name: localName,
