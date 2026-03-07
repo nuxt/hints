@@ -135,9 +135,6 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           }
         }
 
-        // Place each wrapper statement immediately after its corresponding import
-        // to avoid TDZ issues when other plugins (e.g. Nuxt's createClientOnly)
-        // insert statements that reference the original import name between imports
         for (const imp of directComponentImports) {
           const originalName = `__original_${imp.name}`
           const resolvedName = resolveComponentName(imp, nuxtComponents)
