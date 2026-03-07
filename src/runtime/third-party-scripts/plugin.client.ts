@@ -1,13 +1,19 @@
 import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
 import { defu } from 'defu'
 import { logger } from './utils'
+import { getFeatureOptions } from '../core/features'
+import type { ThirdPartyScriptsFeatureOptions } from './types'
 
-const EXTENSIONS_SCHEMES_RE = /^(chrome-extension|moz-extension|safari-extension|ms-browser-extension):/
+const DEFAULT_EXTENSION_SCHEMES = ['chrome-extension', 'moz-extension', 'safari-extension', 'ms-browser-extension']
 
-function isExtensionScript(src: string) {
+function buildExtensionSchemesRegex(schemes: string[]) {
+  return new RegExp(`^(${schemes.join('|')}):`)
+}
+
+function isExtensionScript(src: string, schemesRegex: RegExp) {
   try {
     const url = new URL(src, window.location.origin)
-    return EXTENSIONS_SCHEMES_RE.test(url.protocol)
+    return schemesRegex.test(url.protocol)
   }
   catch {
     return false
@@ -24,14 +30,30 @@ function isSameOriginScript(src: string) {
   }
 }
 
-function isIgnoredScript(src: string) {
-  return isSameOriginScript(src) || isExtensionScript(src)
+function isIgnoredDomain(src: string, ignoredDomains: string[]) {
+  if (ignoredDomains.length === 0) return false
+  try {
+    const url = new URL(src, window.location.origin)
+    return ignoredDomains.some(domain => url.hostname === domain || url.hostname.endsWith(`.${domain}`))
+  }
+  catch {
+    return false
+  }
 }
 
 export default defineNuxtPlugin({
   name: 'nuxt-hints:third-party-scripts',
   setup() {
     const nuxtApp = useNuxtApp()
+    const opts = getFeatureOptions('thirdPartyScripts') ?? {}
+
+    const extensionSchemes = [...DEFAULT_EXTENSION_SCHEMES, ...(opts.ignoredSchemes ?? [])]
+    const schemesRegex = buildExtensionSchemesRegex(extensionSchemes)
+    const ignoredDomains = opts.ignoredDomains ?? []
+
+    function isIgnoredScript(src: string) {
+      return isSameOriginScript(src) || isExtensionScript(src, schemesRegex) || isIgnoredDomain(src, ignoredDomains)
+    }
 
     nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
       thirdPartyScripts: ref<{ element: HTMLScriptElement, loaded: boolean }[]>([]),
