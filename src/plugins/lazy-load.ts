@@ -87,17 +87,6 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           ['useLazyComponentTracking'],
         ) + '\n')
 
-        // For each direct import, wrap the component to track its usage
-        // We do this after the imports by adding wrapper statements
-        const wrapperStatements = directComponentImports
-          .map((imp) => {
-            const originalName = `__original_${imp.name}`
-            const resolvedName = resolveComponentName(imp, nuxtComponents)
-            // Rename the import to __original_X and create a wrapped version as X
-            return `const ${imp.name} = __wrapImportedComponent(${originalName}, '${resolvedName}', '${imp.source}', '${normalizePath(id)}')`
-          })
-          .join('\n')
-
         // Rename original imports by modifying the import specifiers
         for (const imp of directComponentImports) {
           const specifier = imp.specifier
@@ -146,13 +135,11 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           }
         }
 
-        const lastImport = imports[imports.length - 1]
-        // See https://github.com/nuxt/hints/issues/241
-        if (lastImport) {
-          m.appendRight(lastImport.end, '\n' + wrapperStatements)
-        }
-        else {
-          m.prepend(wrapperStatements + '\n')
+        for (const imp of directComponentImports) {
+          const originalName = `__original_${imp.name}`
+          const resolvedName = resolveComponentName(imp, nuxtComponents)
+          const wrapperStatement = `\nconst ${imp.name} = __wrapImportedComponent(${originalName}, '${resolvedName}', '${imp.source}', '${normalizePath(id)}')`
+          m.appendRight(imp.end, wrapperStatement)
         }
 
         if (m.hasChanged()) {
