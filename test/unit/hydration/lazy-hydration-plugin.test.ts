@@ -188,6 +188,87 @@ describe('LazyLoadHintPlugin', () => {
     })
   })
 
+  describe('TDZ safety (wrapper placement)', () => {
+    it('should place wrapper immediately after its import when createClientOnly references it later', async () => {
+      const code = [
+        `import __nuxt_component_0_client from './MyComp.client.vue'`,
+        `import { createClientOnly } from '#app/components/client-only'`,
+        `const __nuxt_component_0_client_wrapped = createClientOnly(__nuxt_component_0_client)`,
+        `const _sfc_main = {}`,
+        `export default _sfc_main`,
+      ].join('\n')
+      const result = await transform(code, '/src/Page.vue')
+      const lines = result.code.split('\n')
+
+      const importLine = lines.findIndex((l: string) => l.includes('__original___nuxt_component_0_client') && l.startsWith('import'))
+      const wrapperLine = lines.findIndex((l: string) => l.includes('const __nuxt_component_0_client = __wrapImportedComponent('))
+      const createClientOnlyLine = lines.findIndex((l: string) => l.includes('createClientOnly(__nuxt_component_0_client)'))
+
+      expect(importLine).toBeGreaterThanOrEqual(0)
+      expect(wrapperLine).toBeGreaterThanOrEqual(0)
+      expect(createClientOnlyLine).toBeGreaterThanOrEqual(0)
+      expect(wrapperLine).toBeGreaterThan(importLine)
+      expect(wrapperLine).toBeLessThan(createClientOnlyLine)
+    })
+
+    it('should place each wrapper after its own import with multiple components', async () => {
+      const code = [
+        `import CompA from './CompA.vue'`,
+        `const wrappedA = someWrapper(CompA)`,
+        `import CompB from './CompB.vue'`,
+        `const wrappedB = someWrapper(CompB)`,
+        `export default {}`,
+      ].join('\n')
+      const result = await transform(code, '/src/Page.vue')
+      const lines = result.code.split('\n')
+
+      const importALine = lines.findIndex((l: string) => l.includes('import __original_CompA'))
+      const wrapperALine = lines.findIndex((l: string) => l.includes('const CompA = __wrapImportedComponent(__original_CompA'))
+      const someWrapperALine = lines.findIndex((l: string) => l.includes('someWrapper(CompA)'))
+
+      const importBLine = lines.findIndex((l: string) => l.includes('import __original_CompB'))
+      const wrapperBLine = lines.findIndex((l: string) => l.includes('const CompB = __wrapImportedComponent(__original_CompB'))
+      const someWrapperBLine = lines.findIndex((l: string) => l.includes('someWrapper(CompB)'))
+
+      expect(wrapperALine).toBeGreaterThan(importALine)
+      expect(wrapperALine).toBeLessThan(someWrapperALine)
+      expect(wrapperBLine).toBeGreaterThan(importBLine)
+      expect(wrapperBLine).toBeLessThan(someWrapperBLine)
+    })
+
+    it('should handle .client.vue auto-imported component with createClientOnly', async () => {
+      const code = [
+        `import { createClientOnly } from '#app/components/client-only'`,
+        `import __nuxt_component_1_client from './ClientOnlyComp.client.vue'`,
+        `const __nuxt_component_1_client_wrapped = createClientOnly(__nuxt_component_1_client)`,
+        `const _sfc_main = {}`,
+        `export default _sfc_main`,
+      ].join('\n')
+      const result = await transform(code, '/src/Page.vue')
+
+      const wrapperIdx = result.code.indexOf('const __nuxt_component_1_client = __wrapImportedComponent(')
+      const createClientOnlyIdx = result.code.indexOf('createClientOnly(__nuxt_component_1_client)')
+      expect(wrapperIdx).toBeGreaterThan(-1)
+      expect(createClientOnlyIdx).toBeGreaterThan(-1)
+      expect(wrapperIdx).toBeLessThan(createClientOnlyIdx)
+    })
+
+    it('should not introduce TDZ when import is followed by immediate usage', async () => {
+      const code = [
+        `import Widget from './Widget.vue'`,
+        `const enhanced = Object.assign({}, Widget)`,
+        `export default enhanced`,
+      ].join('\n')
+      const result = await transform(code, '/src/Page.vue')
+
+      const wrapperIdx = result.code.indexOf('const Widget = __wrapImportedComponent(')
+      const usageIdx = result.code.indexOf('Object.assign({}, Widget)')
+      expect(wrapperIdx).toBeGreaterThan(-1)
+      expect(usageIdx).toBeGreaterThan(-1)
+      expect(wrapperIdx).toBeLessThan(usageIdx)
+    })
+  })
+
   describe('defineComponent setup injection', () => {
     it('should inject useLazyComponentTracking in defineComponent setup', async () => {
       const code = [
