@@ -99,6 +99,30 @@ describe('LazyLoadHintPlugin', () => {
       const result = await transform(code, '/src/Parent.vue')
       expect(result).toBeUndefined()
     })
+
+    // https://github.com/nuxt/hints/issues/262
+    it('should not transform Vite glob-generated imports (__glob_N_N pattern)', async () => {
+      const code = [
+        `import { default as __glob_0_0 } from './components/A.vue'`,
+        `import { default as __glob_0_1 } from './components/B.vue'`,
+        `const modules = { './components/A.vue': __glob_0_0, './components/B.vue': __glob_0_1 }`,
+        `export default {}`,
+      ].join('\n')
+      const result = await transform(code, '/src/composables/useComponent.ts')
+      expect(result).toBeUndefined()
+    })
+
+    it('should only wrap non-glob imports when mixed with glob-generated imports', async () => {
+      const code = [
+        `import { default as __glob_0_0 } from './components/A.vue'`,
+        `import MyComp from './MyComp.vue'`,
+        `export default { components: { MyComp } }`,
+      ].join('\n')
+      const result = await transform(code, '/src/Parent.vue')
+      expect(result.code).toContain(`import { default as __glob_0_0 } from './components/A.vue'`)
+      expect(result.code).toContain('import __original_MyComp from \'./MyComp.vue\'')
+      expect(result.code).toContain(`__wrapImportedComponent(__original_MyComp, 'MyComp'`)
+    })
   })
 
   describe('nuxt auto-imported components (__nuxt prefix)', () => {
