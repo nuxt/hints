@@ -82,14 +82,24 @@ async function dismiss(id: string) {
                 <span class="text-xs text-neutral-400 ml-1">→ Lazy{{ imp.componentName }}</span>
               </td>
               <td class="py-2 text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-48">
-                <a href="" title="open in editor" @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importSource)">
+                <button
+                  type="button"
+                  title="open in editor"
+                  class="cursor-pointer text-inherit underline bg-transparent border-0 p-0"
+                  @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importSource)"
+                >
                   {{ imp.importSource }}
-                </a>
+                </button>
               </td>
               <td class="py-2 text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-48">
-                <a href="" title="open in editor" @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importedBy)">
+                <button
+                  type="button"
+                  title="open in editor"
+                  class="cursor-pointer text-inherit underline bg-transparent border-0 p-0"
+                  @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importedBy)"
+                >
                   {{ imp.importedBy }}
-                </a>
+                </button>
               </td>
             </tr>
           </tbody>
