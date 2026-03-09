@@ -51,7 +51,7 @@ export function useHydrationCheck() {
           })
         })
       }
-      logger.warn(`[hydration] Component ${componentName ?? instance.type.__file} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
+      logger.warn(`[hydration] Component ${componentName} at ${fileLocation} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
     }
   })
 }
