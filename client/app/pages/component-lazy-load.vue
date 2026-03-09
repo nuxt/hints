@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
 import type { ComponentLazyLoadData, DirectImportInfo } from '../../../src/runtime/lazy-load/schema'
 import { LAZY_LOAD_ROUTE } from '../utils/routes'
 
@@ -9,6 +10,7 @@ definePageMeta({
 })
 
 const nuxtApp = useNuxtApp()
+const devtoolsClient = useDevtoolsClient()
 
 const entries = computed(() =>
   nuxtApp.$lazyLoadHints.value.filter(
@@ -80,10 +82,14 @@ async function dismiss(id: string) {
                 <span class="text-xs text-neutral-400 ml-1">→ Lazy{{ imp.componentName }}</span>
               </td>
               <td class="py-2 text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-48">
-                {{ imp.importSource }}
+                <a href="" @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importSource)">
+                  {{ imp.importSource }}
+                </a>
               </td>
               <td class="py-2 text-xs text-neutral-500 dark:text-neutral-400 truncate max-w-48">
-                {{ imp.importedBy }}
+                <a href="" @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importedBy)">
+                  {{ imp.importedBy }}
+                </a>
               </td>
             </tr>
           </tbody>
