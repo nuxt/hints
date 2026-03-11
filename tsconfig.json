@@ -1,11 +1,9 @@
 {
-  // Remove "extends": "./.nuxt/tsconfig.json" if present
-  "files": [],
-  "references": [
-    { "path": "./.nuxt/tsconfig.app.json" },
-    { "path": "./.nuxt/tsconfig.server.json" },
-    { "path": "./.nuxt/tsconfig.shared.json" },
-    { "path": "./.nuxt/tsconfig.node.json" },
-    { "path": "./playground/.nuxt/tsconfig.json" }
+  "extends": "./.nuxt/tsconfig.json",
+  "exclude": [
+    "playground",
+    "client",
+    "dist",
+    ".output"
   ]
 }
