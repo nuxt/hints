@@ -117,8 +117,8 @@ export default defineNuxtPlugin({
               )
             }
             if (
-              !performanceEntry.element.src.includes('webp')
-              && !performanceEntry.element.src.includes('avif')
+              !performanceEntry.element.hasAttribute('width')
+              || !performanceEntry.element.hasAttribute('height')
             ) {
               logger.warn(
                 '[performance] Images should have `width` and `height` sizes set  \n\n Learn more: https://web.dev/optimize-cls/#images-without-dimensions \n\n Use: https://image.nuxt.com/usage/nuxt-img#width-height',
@@ -198,7 +198,14 @@ export default defineNuxtPlugin({
 const IMAGE_FORMATS = ['avif', 'jpg', 'jpeg', 'png', 'webp']
 
 const hasImageFormat = (src: string) => {
-  return IMAGE_FORMATS.some(format => src.includes(format))
+  let pathname: string
+  try {
+    pathname = new URL(src, window.location.href).pathname
+  }
+  catch {
+    pathname = src
+  }
+  return IMAGE_FORMATS.some(format => pathname.includes(format))
 }
 
 const isElementPreloaded = (src: string) => {
