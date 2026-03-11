@@ -187,6 +187,8 @@ export default defineNuxtPlugin({
               )
             }
           }
+        }, {
+          reportAllChanges: true,
         })
       }
     })

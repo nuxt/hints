@@ -11,6 +11,8 @@ import type { Component } from '@nuxt/schema'
 const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 // Exclude node_moduels as users can have control over it
 const EXCLUDE_NODE_MODULES = /node_modules/
+
+const VITE_GLOB_RE = /^__glob_\d+_\d+$/
 const skipPath = normalizePath(resolve(distDir, 'runtime/lazy-load'))
 
 export const LazyLoadHintPlugin = createUnplugin(() => {
@@ -57,6 +59,10 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
             if (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportSpecifier') {
               const localName = specifier.local.name
 
+              // skip vite glob-generated imports
+              // https://github.com/nuxt/hints/issues/262
+              if (VITE_GLOB_RE.test(localName)) continue
+
               directComponentImports.push({
                 name: localName,
                 source,
@@ -80,17 +86,6 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           '@nuxt/hints/runtime/lazy-load/composables',
           ['useLazyComponentTracking'],
         ) + '\n')
-
-        // For each direct import, wrap the component to track its usage
-        // We do this after the imports by adding wrapper statements
-        const wrapperStatements = directComponentImports
-          .map((imp) => {
-            const originalName = `__original_${imp.name}`
-            const resolvedName = resolveComponentName(imp, nuxtComponents)
-            // Rename the import to __original_X and create a wrapped version as X
-            return `const ${imp.name} = __wrapImportedComponent(${originalName}, '${resolvedName}', '${imp.source}', '${normalizePath(id)}')`
-          })
-          .join('\n')
 
         // Rename original imports by modifying the import specifiers
         for (const imp of directComponentImports) {
@@ -140,13 +135,11 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           }
         }
 
-        const lastImport = imports[imports.length - 1]
-        // See https://github.com/nuxt/hints/issues/241
-        if (lastImport) {
-          m.appendRight(lastImport.end, '\n' + wrapperStatements)
-        }
-        else {
-          m.prepend(wrapperStatements + '\n')
+        for (const imp of directComponentImports) {
+          const originalName = `__original_${imp.name}`
+          const resolvedName = resolveComponentName(imp, nuxtComponents)
+          const wrapperStatement = `\nconst ${imp.name} = __wrapImportedComponent(${originalName}, '${resolvedName}', '${imp.source}', '${normalizePath(id)}')`
+          m.appendRight(imp.end, wrapperStatement)
         }
 
         if (m.hasChanged()) {
