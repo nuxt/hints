@@ -159,12 +159,12 @@ export default defineNuxtPlugin({
           for (const entry of metric.entries) {
             const performanceEntry = entry
 
-            if (!performanceEntry.sources?.[0]) return
+            if (!performanceEntry.sources?.[0]) continue
 
             const sourceElement = performanceEntry.sources?.[0].node
 
             // Nuxt DevTools button causes small layout shift so we ignore it
-            if (!sourceElement || sourceElement.parentElement?.className.includes('nuxt-devtools')) return
+            if (!sourceElement || sourceElement.parentElement?.className.includes('nuxt-devtools')) continue
 
             logger.info(
               '[performance] Potential CLS Element: ',

@@ -5,8 +5,12 @@ import { getFeatureOptions } from '../core/features'
 
 const DEFAULT_EXTENSION_SCHEMES = ['chrome-extension', 'moz-extension', 'safari-extension', 'ms-browser-extension']
 
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 function buildExtensionSchemesRegex(schemes: string[]) {
-  return new RegExp(`^(${schemes.join('|')}):`)
+  return new RegExp(`^(${schemes.map(escapeRegExp).join('|')}):`)
 }
 
 function isExtensionScript(src: string, schemesRegex: RegExp) {
