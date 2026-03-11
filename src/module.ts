@@ -3,13 +3,13 @@ import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
-import type { FeatureFlags, FeaturesName } from './runtime/core/types'
+import type { Features } from './runtime/core/types'
 import { isFeatureDevtoolsEnabled, isFeatureEnabled } from './features'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
   devtools: boolean
-  features: Record<FeaturesName, boolean | FeatureFlags>
+  features: Features
 }
 
 const moduleName = '@nuxt/hints'
