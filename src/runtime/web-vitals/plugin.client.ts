@@ -81,7 +81,7 @@ export default defineNuxtPlugin({
           if (hasImageFormat(performanceEntry.element.src)) {
             if (
               !performanceEntry.element.src.includes('webp')
-              || !performanceEntry.element.src.includes('avif')
+              && !performanceEntry.element.src.includes('avif')
             ) {
               logger.warn(
                 '[performance] LCP Element can be served in a next gen format like `webp` or `avif` \n\n Learn more: https://web.dev/choose-the-right-image-format/ \n\n Use: https://image.nuxt.com/usage/nuxt-img#format',
