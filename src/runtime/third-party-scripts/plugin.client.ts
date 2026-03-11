@@ -2,7 +2,6 @@ import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
 import { defu } from 'defu'
 import { logger } from './utils'
 import { getFeatureOptions } from '../core/features'
-import type { ThirdPartyScriptsFeatureOptions } from './types'
 
 const DEFAULT_EXTENSION_SCHEMES = ['chrome-extension', 'moz-extension', 'safari-extension', 'ms-browser-extension']
 

@@ -2,6 +2,7 @@ import type { FeatureOptionsMap } from '../feature-options'
 
 export type FeaturesName = 'hydration' | 'lazyLoad' | 'webVitals' | 'thirdPartyScripts' | 'htmlValidate'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FeatureFlags<T extends Record<string, any> = Record<string, never>> = {
   logs?: boolean
   devtools?: boolean

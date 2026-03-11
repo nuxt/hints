@@ -30,7 +30,7 @@ const DEFAULT_RULES: RuleConfig = {
 }
 
 export default <NitroAppPlugin> function (nitro) {
-  const opts: ConfigData = defu({ 
+  const opts: ConfigData = defu({
     extends: DEFAULT_EXTENDS,
     rules: DEFAULT_RULES,
   }, getFeatureOptions('htmlValidate') ?? {})

@@ -4,11 +4,11 @@ import type { FeaturesName } from './types'
 import type { FeatureOptionsMap } from '../feature-options'
 
 export function isFeatureDevtoolsEnabled(feature: FeaturesName): boolean {
-  return typeof features[feature] === 'object' ? features[feature].devtools !== false : !!features[feature]
+  return features[feature] != null && typeof features[feature] === 'object' ? features[feature].devtools !== false : !!features[feature]
 }
 
 export function isFeatureLogsEnabled(feature: FeaturesName): boolean {
-  return typeof features[feature] === 'object' ? features[feature].logs !== false : !!features[feature]
+  return features[feature] != null && typeof features[feature] === 'object' ? features[feature].logs !== false : !!features[feature]
 }
 
 export function isFeatureEnabled(feature: FeaturesName): boolean {
