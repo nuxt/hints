@@ -166,8 +166,4 @@ onMounted(() => {
     background-color: rgba(220, 38, 38, 0.15); // red-600 at 15% opacity
   }
 }
-
-:deep(.shiki) {
-  width: fit-content;
-}
 </style>

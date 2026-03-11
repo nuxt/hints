@@ -1,3 +1,4 @@
+import { addCustomTab } from '@nuxt/devtools-kit'
 import { existsSync } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
 import { addDevServerHandler, type Resolver } from '@nuxt/kit'
@@ -30,16 +31,14 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
     })
   }
 
-  nuxt.hook('devtools:customTabs', (tabs) => {
-    tabs.push({
-      name: 'hints',
-      title: 'Hints',
-      icon: 'carbon:idea',
-      category: 'analyze',
-      view: {
-        type: 'iframe',
-        src: DEVTOOLS_UI_ROUTE,
-      },
-    })
-  })
+  addCustomTab({
+    name: 'hints',
+    title: 'Hints',
+    icon: 'carbon:idea',
+    category: 'analyze',
+    view: {
+      type: 'iframe',
+      src: DEVTOOLS_UI_ROUTE,
+    },
+  }, nuxt)
 }

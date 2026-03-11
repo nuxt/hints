@@ -117,8 +117,8 @@ export default defineNuxtPlugin({
               )
             }
             if (
-              !performanceEntry.element.attributes.getNamedItem('height')
-              || !performanceEntry.element.attributes.getNamedItem('width')
+              !performanceEntry.element.src.includes('webp')
+              && !performanceEntry.element.src.includes('avif')
             ) {
               logger.warn(
                 '[performance] Images should have `width` and `height` sizes set  \n\n Learn more: https://web.dev/optimize-cls/#images-without-dimensions \n\n Use: https://image.nuxt.com/usage/nuxt-img#width-height',
