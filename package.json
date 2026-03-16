@@ -39,19 +39,19 @@
     "@nuxt/kit": "^4.3.1",
     "consola": "^3.4.2",
     "defu": "^6.1.4",
-    "devalue": "^5.6.3",
+    "devalue": "^5.6.4",
     "h3": "^1.15.6",
-    "html-validate": "^10.11.1",
+    "html-validate": "^10.11.2",
     "knitwork": "^1.3.0",
     "magic-string": "^0.30.21",
     "nitropack": "^2.13.1",
-    "oxc-parser": "^0.117.0",
+    "oxc-parser": "^0.120.0",
     "prettier": "^3.8.1",
     "sirv": "^3.0.2",
     "unplugin": "^3.0.0",
     "unstorage": "^1.17.4",
     "valibot": "^1.2.0",
-    "vite-plugin-vue-tracer": "^1.2.0",
+    "vite-plugin-vue-tracer": "^1.3.0",
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
@@ -70,13 +70,13 @@
     "diff": "^8.0.3",
     "eslint": "^10.0.3",
     "get-port-please": "^3.2.0",
-    "happy-dom": "^20.8.3",
-    "pkg-pr-new": "0.0.65",
+    "happy-dom": "^20.8.4",
+    "pkg-pr-new": "0.0.66",
     "rimraf": "^6.1.3",
     "sass-embedded": "^1.98.0",
     "shiki": "^3.23.0",
     "shiki-transformer-fold": "^0.2.0",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }
