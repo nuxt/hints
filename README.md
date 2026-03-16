@@ -108,6 +108,47 @@ Learn more: https://web.dev/optimize-lcp/#optimize-the-priority-the-resource-is-
 Consider adding crossorigin="anonymous" for better security and error reporting.
 ```
 
+## Module Options
+
+Configure the module in your `nuxt.config.ts` under the `hints` key:
+
+```typescript
+export default defineNuxtConfig({
+  hints: {
+    devtools: true,
+
+    // Enable or configure individual features
+    // if you feel overwhelmed by logs, you can disable some features and fix things step by step.
+    features: {
+      // Defaults to true for each feature
+      hydration: true,
+    },
+  },
+})
+```
+
+### Feature toggles
+
+Each feature accepts either a **boolean** or an **object** for finer control:
+
+| Key | Description |
+|-----|-------------|
+| `hydration` | Detect and inspect hydration mismatches |
+| `lazyLoad` | Flag unused imported components that could be lazy-loaded |
+| `webVitals` | Track LCP, INP, and CLS metrics |
+| `thirdPartyScripts` | Audit third-party scripts for performance and security |
+| `htmlValidate` | Validate server-rendered HTML with [html-validate](https://html-validate.org/) |
+
+When using the object syntax, the following flags are available:
+
+```typescript
+{
+  logs: true,       // Print warnings to the browser console
+  devtools: true,   // Show this feature in the DevTools panel
+  options: { ... }, // Feature-specific options
+}
+```
+
 ## Development
 
 ```bash
