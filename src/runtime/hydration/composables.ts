@@ -1,4 +1,4 @@
-import { getCurrentInstance, inject, onMounted } from 'vue'
+import { getCurrentInstance, inject, markRaw, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
 import { HYDRATION_ROUTE, formatHTML, logger } from './utils'
 import type { HydrationMismatchPayload } from './types'
@@ -46,8 +46,8 @@ export function useHydrationCheck() {
         }).then((payload) => {
           nuxtApp.payload.__hints.hydration.push({
             ...payload,
-            instance,
-            vnode: vnodePrehydration,
+            instance: markRaw(instance),
+            vnode: markRaw(vnodePrehydration),
           })
         })
       }
