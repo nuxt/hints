@@ -1,7 +1,7 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { onINP, onLCP, onCLS } from 'web-vitals/attribution'
 import { defu } from 'defu'
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { logger } from './utils'
 import { getFeatureOptions } from '../core/features'
 
@@ -46,9 +46,9 @@ export default defineNuxtPlugin({
 
     nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
       webvitals: {
-        lcp: ref([]),
-        inp: ref([]),
-        cls: ref([]),
+        lcp: shallowRef([]),
+        inp: shallowRef([]),
+        cls: shallowRef([]),
       },
     })
 

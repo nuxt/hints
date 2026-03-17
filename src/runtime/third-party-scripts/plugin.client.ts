@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, ref, useNuxtApp } from '#imports'
+import { defineNuxtPlugin, shallowRef, useNuxtApp } from '#imports'
 import { defu } from 'defu'
 import { logger } from './utils'
 import { getFeatureOptions } from '../core/features'
@@ -59,7 +59,7 @@ export default defineNuxtPlugin({
     }
 
     nuxtApp.payload.__hints = defu(nuxtApp.payload.__hints, {
-      thirdPartyScripts: ref<{ element: HTMLScriptElement, loaded: boolean }[]>([]),
+      thirdPartyScripts: shallowRef<{ element: HTMLScriptElement, loaded: boolean }[]>([]),
     })
     const scripts = nuxtApp.payload.__hints.thirdPartyScripts
 
