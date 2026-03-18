@@ -1,6 +1,6 @@
 import { defineNuxtPlugin } from '#imports'
 // @ts-expect-error virtual file
-import { features } from '#hints-config'
+import { features } from '#shared/hints-config'
 
 export default defineNuxtPlugin({
   name: 'hints:features',

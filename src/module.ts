@@ -40,16 +40,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     const hintsConfigContent = `export const features = ${JSON.stringify(options.features)}`
     const hintsConfig = addTemplate({
-      filename: '#hints-config',
+      filename: 'hints-config.mjs',
       getContents: () => hintsConfigContent,
     })
 
-    nuxt.options.alias['#hints-config'] = hintsConfig.dst
-
-    addServerTemplate({
-      filename: '#hints-config',
-      getContents: () => hintsConfigContent,
-    })
+    nuxt.options.alias['#shared/hints-config'] = hintsConfig.dst
 
     // core
     addPlugin(resolver.resolve('./runtime/core/plugins/features.client'))

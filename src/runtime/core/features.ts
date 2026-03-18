@@ -1,5 +1,5 @@
 // @ts-expect-error virtual file
-import { features } from '#hints-config'
+import { features } from '#shared/hints-config'
 import type { FeaturesName } from './types'
 import type { FeatureOptionsMap } from '../feature-options'
 

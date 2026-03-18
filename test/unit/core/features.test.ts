@@ -24,7 +24,7 @@ const mockFeatures = vi.hoisted(() => ({
   },
 }))
 
-vi.mock('#hints-config', () => ({
+vi.mock('#shared/hints-config', () => ({
   features: mockFeatures,
 }))
 
