@@ -8,7 +8,7 @@ const mockFeatures = vi.hoisted(() => ({
   thirdPartyScripts: { logs: false, devtools: false },
 }))
 
-vi.mock('#hints-config', () => ({
+vi.mock('#shared/hints-config', () => ({
   features: mockFeatures,
 }))
 
