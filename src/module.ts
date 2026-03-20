@@ -42,6 +42,7 @@ export default defineNuxtModule<ModuleOptions>({
     const hintsConfig = addTemplate({
       filename: 'hints-config.mjs',
       getContents: () => hintsConfigContent,
+      write: true,
     })
 
     nuxt.options.alias['#shared/hints-config'] = hintsConfig.dst
