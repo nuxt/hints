@@ -115,7 +115,7 @@ export default defineNuxtPlugin({
       if (!script.crossOrigin) {
         logger.warn(`Third-party script "${script.src}" is missing crossorigin attribute. Consider adding crossorigin="anonymous" for better security and error reporting.`)
       }
-      nuxtApp.callHook('hints:scripts:added', script)
+      Promise.resolve(nuxtApp.callHook('hints:scripts:added', script))
         .then(() => {
           if (!script.loaded) {
             script.addEventListener('load', () => {
