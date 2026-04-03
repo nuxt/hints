@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDevtoolsClient, onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
-import type { HintsServerFunctions, HintsClientFunctions } from '../../src/runtime/core/rpc-types'
+import type { HintsClientFunctions } from '../../src/runtime/core/rpc-types'
 import { RPC_NAMESPACE } from '../../src/runtime/core/rpc-types'
 import type { HydrationMismatchPayload, HydrationMismatchResponse, LocalHydrationMismatch } from '../../src/runtime/hydration/types'
 import type { ComponentLazyLoadData } from '../../src/runtime/lazy-load/schema'
@@ -44,7 +44,7 @@ onDevtoolsClientConnected((client) => {
   }
 
   // Register client RPC functions for real-time push notifications
-  client.devtools.extendClientRpc<HintsServerFunctions, HintsClientFunctions>(RPC_NAMESPACE, {
+  client.devtools.extendClientRpc<undefined, HintsClientFunctions>(RPC_NAMESPACE, {
     onHydrationMismatch(mismatch: HydrationMismatchPayload) {
       if (!hydrationMismatches.value.some(existing => existing.id === mismatch.id)) {
         hydrationMismatches.value.push(mismatch)

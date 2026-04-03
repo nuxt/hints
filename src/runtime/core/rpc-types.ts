@@ -11,8 +11,6 @@ export interface HintsClientFunctions {
   onHtmlValidateDeleted: (id: string) => void
 }
 
-export interface HintsServerFunctions {}
-
 export const RPC_NAMESPACE = 'nuxt-hints'
 
 declare global {
