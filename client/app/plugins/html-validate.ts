@@ -11,30 +11,15 @@ export default defineNuxtPlugin(() => {
     deep: true,
   })
 
-  function htmlValidateReportHandler(event: MessageEvent) {
-    try {
-      const payload: HtmlValidateReport = JSON.parse(event.data)
-      if (!htmlValidateReports.value.some(existing => existing.id === payload.id)) {
-        htmlValidateReports.value = [...htmlValidateReports.value, payload]
-      }
+  nuxtApp.hook('hints:rpc:html-validate:report', (report) => {
+    if (!htmlValidateReports.value.some(existing => existing.id === report.id)) {
+      htmlValidateReports.value = [...htmlValidateReports.value, report]
     }
-    catch {
-      console.warn('[hints] Ignoring malformed hints:html-validate:report event', event.data)
-    }
-  }
+  })
 
-  function htmlValidateDeletedHandler(event: MessageEvent) {
-    try {
-      const deletedId = JSON.parse(event.data)
-      htmlValidateReports.value = htmlValidateReports.value.filter(report => report.id !== deletedId)
-    }
-    catch {
-      console.warn('[hints] Ignoring malformed hints:html-validate:deleted event', event.data)
-    }
-  }
-
-  useEventListener(nuxtApp.$sse.eventSource, 'hints:html-validate:report', htmlValidateReportHandler)
-  useEventListener(nuxtApp.$sse.eventSource, 'hints:html-validate:deleted', htmlValidateDeletedHandler)
+  nuxtApp.hook('hints:rpc:html-validate:deleted', (deletedId) => {
+    htmlValidateReports.value = htmlValidateReports.value.filter(report => report.id !== deletedId)
+  })
 
   return {
     provide: {

@@ -1,5 +1,4 @@
 import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler, addTemplate } from '@nuxt/kit'
-import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
@@ -55,12 +54,6 @@ export default defineNuxtModule<ModuleOptions>({
       priority: 1000,
     })
 
-    // core handlers
-    addServerHandler({
-      route: HINTS_SSE_ROUTE,
-      handler: resolver.resolve('./runtime/core/server/sse'),
-    })
-
     // performances
     if (isFeatureEnabled(options, 'webVitals')) {
       addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
@@ -111,6 +104,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.devtools) {
       setupDevToolsUI(nuxt, resolver)
+      addServerPlugin(resolver.resolve('./runtime/core/server/rpc-bridge'))
       addPlugin(resolver.resolve('./runtime/core/plugins/vue-tracer-state.client'))
     }
 

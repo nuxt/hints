@@ -33,6 +33,13 @@ declare module '#app' {
     'hints:webvitals:lcp': (metric: LCPMetricWithAttribution) => void
     'hints:webvitals:inp': (metric: INPMetricWithAttribution) => void
     'hints:webvitals:cls': (metric: CLSMetricWithAttribution) => void
+
+    'hints:rpc:hydration:mismatch': (mismatch: HydrationMismatchPayload) => void
+    'hints:rpc:hydration:cleared': (ids: string[]) => void
+    'hints:rpc:lazy-load:report': (report: import('./lazy-load/schema').ComponentLazyLoadData) => void
+    'hints:rpc:lazy-load:cleared': (id: string) => void
+    'hints:rpc:html-validate:report': (report: import('./html-validate/types').HtmlValidateReport) => void
+    'hints:rpc:html-validate:deleted': (id: string) => void
   }
 
   interface NuxtApp {
@@ -66,9 +73,6 @@ declare module '#app' {
 
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
-    // Core hints hooks
-    'hints:sse:setup': (context: import('./core/server/types').HintsSseContext) => void
-
     // html-validate hooks
     'hints:html-validate:report': (report: import('./html-validate/types').HtmlValidateReport) => void
     'hints:html-validate:deleted': (id: string) => void
