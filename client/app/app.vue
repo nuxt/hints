@@ -16,6 +16,9 @@ const lazyLoadHints = ref<ComponentLazyLoadData[]>([])
 const htmlValidateReports = ref<HtmlValidateReport[]>([])
 
 const nuxtApp = useNuxtApp()
+nuxtApp.provide('hydrationMismatches', hydrationMismatches)
+nuxtApp.provide('lazyLoadHints', lazyLoadHints)
+nuxtApp.provide('htmlValidateReports', htmlValidateReports)
 
 onDevtoolsClientConnected((client) => {
   // Hydration: seed from host payload and fetch from server
@@ -32,14 +35,20 @@ onDevtoolsClientConnected((client) => {
   // Lazy load: fetch from server
   if (useHintsFeature('lazyLoad')) {
     $fetch<ComponentLazyLoadData[]>(new URL(LAZY_LOAD_ROUTE, window.location.origin).href).then((data) => {
-      lazyLoadHints.value = data ?? []
+      lazyLoadHints.value = [
+        ...lazyLoadHints.value,
+        ...(data ?? []).filter(d => !lazyLoadHints.value.some(existing => existing.id === d.id)),
+      ]
     })
   }
 
   // HTML validate: fetch from server
   if (useHintsFeature('htmlValidate')) {
     $fetch<HtmlValidateReport[]>(new URL(HTML_VALIDATE_ROUTE, window.location.origin).href).then((data) => {
-      htmlValidateReports.value = data ?? []
+      htmlValidateReports.value = [
+        ...htmlValidateReports.value,
+        ...(data ?? []).filter(d => !htmlValidateReports.value.some(existing => existing.id === d.id)),
+      ]
     })
   }
 
@@ -76,10 +85,6 @@ onDevtoolsClientConnected((client) => {
       htmlValidateReports.value = htmlValidateReports.value.filter(report => report.id !== id)
     },
   })
-
-  nuxtApp.provide('hydrationMismatches', hydrationMismatches)
-  nuxtApp.provide('lazyLoadHints', lazyLoadHints)
-  nuxtApp.provide('htmlValidateReports', htmlValidateReports)
 })
 </script>
 
