@@ -1,8 +1,10 @@
-import { addCustomTab } from '@nuxt/devtools-kit'
+import { addCustomTab, extendServerRpc, onDevToolsInitialized } from '@nuxt/devtools-kit'
 import { existsSync } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
 import { addDevServerHandler, type Resolver } from '@nuxt/kit'
 import { proxyRequest, eventHandler } from 'h3'
+import type { HintsClientFunctions } from './runtime/core/rpc-types'
+import { RPC_NAMESPACE } from './runtime/core/rpc-types'
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-hints'
 const DEVTOOLS_UI_LOCAL_PORT = 3300
@@ -40,5 +42,10 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
       type: 'iframe',
       src: DEVTOOLS_UI_ROUTE,
     },
+  }, nuxt)
+
+  onDevToolsInitialized(() => {
+    const rpc = extendServerRpc<HintsClientFunctions>(RPC_NAMESPACE, {})
+    globalThis.__nuxtHintsRpcBroadcast = rpc.broadcast
   }, nuxt)
 }

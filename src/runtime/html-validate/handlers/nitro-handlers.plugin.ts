@@ -16,26 +16,4 @@ export default <NitroAppPlugin> function (nitro) {
     deleteHandler,
     'delete',
   )
-
-  // sse
-  nitro.hooks.hook('hints:sse:setup', (context) => {
-    context.unsubscribers.push(
-      nitro.hooks.hook('hints:html-validate:report', (report) => {
-        context.eventStream.push(
-          {
-            data: JSON.stringify(report),
-            event: 'hints:html-validate:report',
-          },
-        )
-      }),
-      nitro.hooks.hook('hints:html-validate:deleted', (id) => {
-        context.eventStream.push(
-          {
-            data: id,
-            event: 'hints:html-validate:deleted',
-          },
-        )
-      }),
-    )
-  })
 }
