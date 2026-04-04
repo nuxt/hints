@@ -3,6 +3,7 @@ import type { NitroApp } from 'nitropack/types'
 import type { ComponentLazyLoadData } from './schema'
 import { ComponentLazyLoadDataSchema } from './schema'
 import { parse, ValiError } from 'valibot'
+import type { HintsSseContext } from '../core/server/types'
 import { LAZY_LOAD_ROUTE } from './utils'
 
 const data: ComponentLazyLoadData[] = []
@@ -50,4 +51,21 @@ export default function (nitroApp: NitroApp) {
   nitroApp.router.add(LAZY_LOAD_ROUTE, getHandler, 'get')
   nitroApp.router.add(LAZY_LOAD_ROUTE, postHandler, 'post')
   nitroApp.router.add(`${LAZY_LOAD_ROUTE}/:id`, deleteHandler, 'delete')
+
+  nitroApp.hooks.hook('hints:sse:setup', (context: HintsSseContext) => {
+    context.unsubscribers.push(
+      nitroApp.hooks.hook('hints:lazy-load:report', (payload) => {
+        context.eventStream.push({
+          data: JSON.stringify(payload),
+          event: 'hints:lazy-load:report',
+        })
+      }),
+      nitroApp.hooks.hook('hints:lazy-load:cleared', (payload) => {
+        context.eventStream.push({
+          data: JSON.stringify(payload.id),
+          event: 'hints:lazy-load:cleared',
+        })
+      }),
+    )
+  })
 }

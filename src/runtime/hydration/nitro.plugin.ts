@@ -1,6 +1,7 @@
 import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { NitroApp } from 'nitropack/types'
 import type { HydrationMismatchPayload } from './types'
+import type { HintsSseContext } from '../core/server/types'
 
 const hydrationMismatches: HydrationMismatchPayload[] = []
 
@@ -51,6 +52,24 @@ export default function (nitroApp: NitroApp) {
   nitroApp.router.add('/__nuxt_hints/hydration', getHandler, 'get')
   nitroApp.router.add('/__nuxt_hints/hydration', postHandler, 'post')
   nitroApp.router.add('/__nuxt_hints/hydration', deleteHandler, 'delete')
+
+  // Register SSE event handlers for hydration
+  nitroApp.hooks.hook('hints:sse:setup', (context: HintsSseContext) => {
+    context.unsubscribers.push(
+      nitroApp.hooks.hook('hints:hydration:mismatch', (mismatch) => {
+        context.eventStream.push({
+          data: JSON.stringify(mismatch),
+          event: 'hints:hydration:mismatch',
+        })
+      }),
+      nitroApp.hooks.hook('hints:hydration:cleared', (payload) => {
+        context.eventStream.push({
+          data: JSON.stringify(payload.id),
+          event: 'hints:hydration:cleared',
+        })
+      }),
+    )
+  })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function assertPayload(body: any): asserts body is Omit<HydrationMismatchPayload, 'id'> {
