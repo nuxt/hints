@@ -66,6 +66,9 @@ declare module '#app' {
 
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
+    // Core hints hooks
+    'hints:sse:setup': (context: import('./core/server/types').HintsSseContext) => void
+
     // html-validate hooks
     'hints:html-validate:report': (report: import('./html-validate/types').HtmlValidateReport) => void
     'hints:html-validate:deleted': (id: string) => void

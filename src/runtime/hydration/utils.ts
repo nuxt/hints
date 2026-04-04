@@ -1,9 +1,10 @@
-import { HINTS_ROUTE } from '../core/server/types'
+import { HINTS_ROUTE, HINTS_SSE_ROUTE } from '../core/server/types'
 import { createHintsLogger } from '../logger'
 
 export const logger = createHintsLogger('hydration')
 
 export const HYDRATION_ROUTE = `${HINTS_ROUTE}/hydration`
+export const HYDRATION_SSE_ROUTE = HINTS_SSE_ROUTE
 
 export function formatHTML(html: string | undefined): string {
   if (!html) return ''
