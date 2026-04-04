@@ -53,7 +53,7 @@ onDevtoolsClientConnected((client) => {
   }
 
   // Register client RPC functions for real-time push notifications
-  client.devtools.extendClientRpc<undefined, HintsClientFunctions>(RPC_NAMESPACE, {
+  client.devtools.extendClientRpc<Record<string, unknown>, HintsClientFunctions>(RPC_NAMESPACE, {
     onHydrationMismatch(mismatch: HydrationMismatchPayload) {
       if (!hydrationMismatches.value.some(existing => existing.id === mismatch.id)) {
         hydrationMismatches.value.push(mismatch)
