@@ -1,7 +1,6 @@
 import type { NitroAppPlugin } from 'nitropack/types'
 import { HtmlValidate, type ConfigData, type RuleConfig } from 'html-validate'
 import { addBeforeBodyEndTag } from './utils'
-import { storage } from './storage'
 import { randomUUID } from 'crypto'
 import { stringify } from 'devalue'
 import type { HtmlValidateReport } from './types'
@@ -9,6 +8,7 @@ import { format } from 'prettier/standalone'
 import html from 'prettier/parser-html'
 import { getFeatureOptions } from '../core/features'
 import { defu } from 'defu'
+import { getRequestURL } from 'h3'
 
 const DEFAULT_EXTENDS = [
   'html-validate:standard',
@@ -50,12 +50,16 @@ export default <NitroAppPlugin> function (nitro) {
           html: formattedBody,
           results: results.results,
         }
-        storage.setItem(id, data)
         response.body = addBeforeBodyEndTag(
           response.body,
           `<script id="hints-html-validate" type="application/json">${stringify(data)}</script>`,
         )
-        nitro.hooks.callHook('hints:html-validate:report', data)
+        const origin = getRequestURL(event).origin
+        globalThis.fetch(`${origin}/__nuxt_hints/html-validate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }).catch(() => {})
       }
     }
   })
