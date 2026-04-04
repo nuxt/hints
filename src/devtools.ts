@@ -6,7 +6,7 @@ import { proxyRequest, eventHandler } from 'h3'
 import type { HintsClientFunctions, HintsServerFunctions } from './runtime/core/rpc-types'
 import { RPC_NAMESPACE } from './runtime/core/rpc-types'
 import {
-  hintsRouter,
+  createHintsRouter,
   setBroadcast,
   getHydrationMismatches,
   clearHydrationMismatches,
@@ -56,7 +56,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
 
   addDevServerHandler({
     route: '/__nuxt_hints',
-    handler: hintsRouter.handler,
+    handler: createHintsRouter().handler,
   })
 
   onDevToolsInitialized(() => {
