@@ -1,18 +1,8 @@
 import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { HtmlValidateReport } from './types'
+import { getRPC } from '../core/rpc'
 
 export const htmlValidateReports: HtmlValidateReport[] = []
-
-let onReport: ((report: HtmlValidateReport) => void) | undefined
-let onDeleted: ((id: string) => void) | undefined
-
-export function setHtmlValidateNotify(callbacks: {
-  onReport: (report: HtmlValidateReport) => void
-  onDeleted: (id: string) => void
-}) {
-  onReport = callbacks.onReport
-  onDeleted = callbacks.onDeleted
-}
 
 export function getHtmlValidateReports() {
   return htmlValidateReports
@@ -23,7 +13,7 @@ export function clearHtmlValidateReport(id: string) {
   if (index !== -1) {
     htmlValidateReports.splice(index, 1)
   }
-  onDeleted?.(id)
+  getRPC()?.onHtmlValidateDeleted(id)
 }
 
 export const getHandler = defineEventHandler(() => getHtmlValidateReports())
@@ -35,7 +25,7 @@ export const postHandler = defineEventHandler(async (event) => {
   }
   if (!htmlValidateReports.some(r => r.id === body.id)) {
     htmlValidateReports.push(body)
-    onReport?.(body)
+    getRPC()?.onHtmlValidateReport(body)
   }
   setResponseStatus(event, 201)
 })

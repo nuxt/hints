@@ -3,8 +3,11 @@ import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithA
 import type { LocalHydrationMismatch } from './hydration/types'
 import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
 import type { Features } from './core/types'
+import type { HintsClientFunctions } from './core/rpc-types'
 
 declare global {
+  var __nuxtHintsRpcBroadcast: HintsClientFunctions | undefined
+
   interface Window {
     __hints_TPC_start_time: number
     __hints_TPC_saveTime: (script: HTMLScriptElement, startTime?: number) => void

@@ -1,18 +1,8 @@
 import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { HydrationMismatchPayload } from './types'
+import { getRPC } from '../core/rpc'
 
 export const hydrationMismatches: HydrationMismatchPayload[] = []
-
-let onMismatch: ((payload: HydrationMismatchPayload) => void) | undefined
-let onCleared: ((ids: string[]) => void) | undefined
-
-export function setHydrationNotify(callbacks: {
-  onMismatch: (payload: HydrationMismatchPayload) => void
-  onCleared: (ids: string[]) => void
-}) {
-  onMismatch = callbacks.onMismatch
-  onCleared = callbacks.onCleared
-}
 
 export function getHydrationMismatches() {
   return { mismatches: hydrationMismatches }
@@ -25,7 +15,7 @@ export function clearHydrationMismatches(ids: string[]) {
       hydrationMismatches.splice(index, 1)
     }
   }
-  onCleared?.(ids)
+  getRPC()?.onHydrationCleared(ids)
 }
 
 export const getHandler = defineEventHandler(() => getHydrationMismatches())
@@ -42,9 +32,12 @@ export const postHandler = defineEventHandler(async (event) => {
   }
   hydrationMismatches.push(payload)
   if (hydrationMismatches.length > 20) {
-    hydrationMismatches.shift()
+    const evicted = hydrationMismatches.shift()
+    if (evicted) {
+      getRPC()?.onHydrationCleared([evicted.id])
+    }
   }
-  onMismatch?.(payload)
+  getRPC()?.onHydrationMismatch(payload)
   setResponseStatus(event, 201)
   return payload
 })
@@ -61,7 +54,8 @@ export const deleteHandler = defineEventHandler(async (event) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function assertPayload(body: any): asserts body is Omit<HydrationMismatchPayload, 'id'> {
   if (
-    typeof body !== 'object'
+    !body
+    || typeof body !== 'object'
     || (body.htmlPreHydration !== undefined && typeof body.htmlPreHydration !== 'string')
     || (body.htmlPostHydration !== undefined && typeof body.htmlPostHydration !== 'string')
     || typeof body.componentName !== 'string'

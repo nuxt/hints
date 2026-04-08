@@ -53,8 +53,8 @@ export function useHostHydration() {
 export function useHostNuxt() {
   const client = useDevtoolsClient().value
 
-  if (!client) {
-    throw new Error('`useHostNuxt` must be used when the devtools client is connected')
+  if (!client?.host?.nuxt) {
+    throw new Error('`useHostNuxt` must be used when the devtools client is connected to a host app')
   }
 
   return client.host.nuxt

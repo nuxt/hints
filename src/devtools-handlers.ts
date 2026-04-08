@@ -1,9 +1,7 @@
 import { createRouter } from 'h3'
-import type { HintsClientFunctions } from './runtime/core/rpc-types'
 import {
   getHydrationMismatches,
   clearHydrationMismatches,
-  setHydrationNotify,
   getHandler as hydrationGet,
   postHandler as hydrationPost,
   deleteHandler as hydrationDelete,
@@ -11,7 +9,6 @@ import {
 import {
   getLazyLoadHints,
   clearLazyLoadHint,
-  setLazyLoadNotify,
   getHandler as lazyLoadGet,
   postHandler as lazyLoadPost,
   deleteHandler as lazyLoadDelete,
@@ -19,7 +16,6 @@ import {
 import {
   getHtmlValidateReports,
   clearHtmlValidateReport,
-  setHtmlValidateNotify,
   getHandler as htmlValidateGet,
   postHandler as htmlValidatePost,
   deleteHandler as htmlValidateDelete,
@@ -32,21 +28,6 @@ export {
   clearLazyLoadHint,
   getHtmlValidateReports,
   clearHtmlValidateReport,
-}
-
-export function setBroadcast(b: HintsClientFunctions) {
-  setHydrationNotify({
-    onMismatch: p => b.onHydrationMismatch(p),
-    onCleared: ids => b.onHydrationCleared(ids),
-  })
-  setLazyLoadNotify({
-    onReport: d => b.onLazyLoadReport(d),
-    onCleared: id => b.onLazyLoadCleared(id),
-  })
-  setHtmlValidateNotify({
-    onReport: r => b.onHtmlValidateReport(r),
-    onDeleted: id => b.onHtmlValidateDeleted(id),
-  })
 }
 
 export function createHintsRouter() {

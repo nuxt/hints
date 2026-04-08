@@ -7,7 +7,6 @@ import type { HintsClientFunctions, HintsServerFunctions } from './runtime/core/
 import { RPC_NAMESPACE } from './runtime/core/rpc-types'
 import {
   createHintsRouter,
-  setBroadcast,
   getHydrationMismatches,
   clearHydrationMismatches,
   getLazyLoadHints,
@@ -68,6 +67,6 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
       getHtmlValidateReports,
       clearHtmlValidateReport,
     })
-    setBroadcast(rpc.broadcast)
+    globalThis.__nuxtHintsRpcBroadcast = rpc.broadcast
   }, nuxt)
 }
