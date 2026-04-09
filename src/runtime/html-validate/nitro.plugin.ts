@@ -1,6 +1,7 @@
 import type { NitroAppPlugin } from 'nitropack/types'
 import { HtmlValidate, type ConfigData, type RuleConfig } from 'html-validate'
 import { addBeforeBodyEndTag } from './utils'
+import { storeHtmlValidateReport } from './api-handlers'
 import { randomUUID } from 'crypto'
 import { stringify } from 'devalue'
 import type { HtmlValidateReport } from './types'
@@ -8,7 +9,8 @@ import { format } from 'prettier/standalone'
 import html from 'prettier/parser-html'
 import { getFeatureOptions } from '../core/features'
 import { defu } from 'defu'
-import { getRequestURL } from 'h3'
+
+const HTML_VALIDATE_REPORT_HOOK = 'hints:html-validate:report' as const
 
 const DEFAULT_EXTENDS = [
   'html-validate:standard',
@@ -37,6 +39,8 @@ export default <NitroAppPlugin> function (nitro) {
 
   const validator = new HtmlValidate(opts)
 
+  nitro.hooks.hook(HTML_VALIDATE_REPORT_HOOK, storeHtmlValidateReport)
+
   nitro.hooks.hook('render:response', async (response, { event }) => {
     if (typeof response.body === 'string' && (response.headers?.['Content-Type'] || response.headers?.['content-type'])?.includes('html')) {
       const formattedBody = await format(response.body, { plugins: [html], parser: 'html' })
@@ -54,12 +58,9 @@ export default <NitroAppPlugin> function (nitro) {
           response.body,
           `<script id="hints-html-validate" type="application/json">${stringify(data)}</script>`,
         )
-        const origin = getRequestURL(event).origin
-        globalThis.fetch(`${origin}/__nuxt_hints/html-validate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        }).catch(() => {})
+        nitro.hooks.callHook(HTML_VALIDATE_REPORT_HOOK, data).catch((error) => {
+          nitro.captureError(error instanceof Error ? error : new Error(String(error)), { event })
+        })
       }
     }
   })

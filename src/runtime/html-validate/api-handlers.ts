@@ -4,6 +4,17 @@ import { getRPC } from '../core/rpc'
 
 export const htmlValidateReports: HtmlValidateReport[] = []
 
+export function storeHtmlValidateReport(report: HtmlValidateReport) {
+  if (htmlValidateReports.some(existing => existing.id === report.id)) {
+    return false
+  }
+
+  htmlValidateReports.push(report)
+  getRPC()?.onHtmlValidateReport(report)
+
+  return true
+}
+
 export function getHtmlValidateReports() {
   return htmlValidateReports
 }
@@ -23,10 +34,7 @@ export const postHandler = defineEventHandler(async (event) => {
   if (!body || typeof body.id !== 'string') {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
   }
-  if (!htmlValidateReports.some(r => r.id === body.id)) {
-    htmlValidateReports.push(body)
-    getRPC()?.onHtmlValidateReport(body)
-  }
+  storeHtmlValidateReport(body)
   setResponseStatus(event, 201)
 })
 
