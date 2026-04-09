@@ -75,7 +75,9 @@ describe('html-validate nitro plugin', () => {
   })
 
   it('dispatches reports through a nitro hook without a loopback fetch', async () => {
+    // eslint-disable-next-line  @typescript-eslint/no-unsafe-function-type
     const hookHandlers = new Map<string, Function>()
+    // eslint-disable-next-line  @typescript-eslint/no-unsafe-function-type
     const hook = vi.fn((name: string, handler: Function) => {
       hookHandlers.set(name, handler)
     })
