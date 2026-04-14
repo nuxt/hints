@@ -1,5 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addServerHandler, addTemplate } from '@nuxt/kit'
-import { HINTS_SSE_ROUTE } from './runtime/core/server/types'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addTemplate } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
@@ -55,12 +54,6 @@ export default defineNuxtModule<ModuleOptions>({
       priority: 1000,
     })
 
-    // core handlers
-    addServerHandler({
-      route: HINTS_SSE_ROUTE,
-      handler: resolver.resolve('./runtime/core/server/sse'),
-    })
-
     // performances
     if (isFeatureEnabled(options, 'webVitals')) {
       addPlugin(resolver.resolve('./runtime/web-vitals/plugin.client'))
@@ -70,15 +63,11 @@ export default defineNuxtModule<ModuleOptions>({
     if (isFeatureEnabled(options, 'hydration')) {
       addPlugin(resolver.resolve('./runtime/hydration/plugin.client'))
       addBuildPlugin(InjectHydrationPlugin)
-      addServerPlugin(resolver.resolve('./runtime/hydration/nitro.plugin'))
     }
 
     // lazy-load suggestions
     if (isFeatureEnabled(options, 'lazyLoad')) {
       addPlugin(resolver.resolve('./runtime/lazy-load/plugin.client'))
-      if (isFeatureDevtoolsEnabled(options, 'lazyLoad')) {
-        addServerPlugin(resolver.resolve('./runtime/lazy-load/nitro.plugin'))
-      }
       nuxt.hook('modules:done', () => {
         // hack to ensure the plugins runs after everything else. But before vite:import-analysis
         addBuildPlugin(LazyLoadHintPlugin, { client: false })
@@ -98,9 +87,6 @@ export default defineNuxtModule<ModuleOptions>({
     if (isFeatureEnabled(options, 'htmlValidate')) {
       addPlugin(resolver.resolve('./runtime/html-validate/plugin.client'))
       addServerPlugin(resolver.resolve('./runtime/html-validate/nitro.plugin'))
-      if (isFeatureDevtoolsEnabled(options, 'htmlValidate')) {
-        addServerPlugin(resolver.resolve('./runtime/html-validate/handlers/nitro-handlers.plugin'))
-      }
     }
 
     nuxt.hook('prepare:types', ({ references }) => {

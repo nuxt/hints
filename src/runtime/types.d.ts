@@ -1,10 +1,13 @@
 import type { VNode, Ref } from 'vue'
 import type { LCPMetricWithAttribution, INPMetricWithAttribution, CLSMetricWithAttribution } from 'web-vitals/attribution'
-import type { HydrationMismatchPayload, LocalHydrationMismatch } from './hydration/types'
+import type { LocalHydrationMismatch } from './hydration/types'
 import type { DirectImportInfo, LazyHydrationState } from './lazy-load/composables'
 import type { Features } from './core/types'
+import type { HintsClientFunctions } from './core/rpc-types'
 
 declare global {
+  var __nuxtHintsRpcBroadcast: HintsClientFunctions | undefined
+
   interface Window {
     __hints_TPC_start_time: number
     __hints_TPC_saveTime: (script: HTMLScriptElement, startTime?: number) => void
@@ -61,25 +64,6 @@ declare module '#app' {
       }[]>
       htmlValidateResult?: import('./html-validate/types').HtmlValidateReport
     }
-  }
-}
-
-declare module 'nitropack' {
-  interface NitroRuntimeHooks {
-    // Core hints hooks
-    'hints:sse:setup': (context: import('./core/server/types').HintsSseContext) => void
-
-    // html-validate hooks
-    'hints:html-validate:report': (report: import('./html-validate/types').HtmlValidateReport) => void
-    'hints:html-validate:deleted': (id: string) => void
-
-    // Hydration hooks
-    'hints:hydration:mismatch': (payload: HydrationMismatchPayload) => void
-    'hints:hydration:cleared': (payload: { id: string[] }) => void
-
-    // Lazy-load hooks
-    'hints:lazy-load:report': (payload: import('./lazy-load/schema').ComponentLazyLoadData) => void
-    'hints:lazy-load:cleared': (payload: { id: string }) => void
   }
 }
 
