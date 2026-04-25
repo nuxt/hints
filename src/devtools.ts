@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs'
 import type { Nuxt } from '@nuxt/schema'
 import { addDevServerHandler, type Resolver } from '@nuxt/kit'
 import { proxyRequest, eventHandler } from 'h3'
+import { joinURL } from 'ufo'
 import type { HintsClientFunctions, HintsServerFunctions } from './runtime/core/rpc-types'
 import { RPC_NAMESPACE } from './runtime/core/rpc-types'
 import {
@@ -49,7 +50,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
     category: 'analyze',
     view: {
       type: 'iframe',
-      src: DEVTOOLS_UI_ROUTE,
+      src: joinURL(nuxt.options.app?.baseURL || '/', DEVTOOLS_UI_ROUTE),
     },
   }, nuxt)
 
