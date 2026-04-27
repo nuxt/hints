@@ -23,13 +23,13 @@ importers:
         specifier: ^3.4.2
         version: 3.4.2
       defu:
-        specifier: ^6.1.4
+        specifier: ^6.1.7
         version: 6.1.7
       devalue:
         specifier: ^5.7.1
         version: 5.7.1
       h3:
-        specifier: ^1.15.10
+        specifier: ^1.15.11
         version: 1.15.11
       html-validate:
         specifier: ^10.13.1
