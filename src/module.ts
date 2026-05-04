@@ -8,7 +8,7 @@ import { isFeatureDevtoolsEnabled, isFeatureEnabled } from './features'
 // Module options TypeScript interface definition
 export interface ModuleOptions {
   devtools: boolean
-  features: Features
+  features: Partial<Features>
 }
 
 const moduleName = '@nuxt/hints'
