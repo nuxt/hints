@@ -68,7 +68,7 @@
     "@types/node": "^24.12.2",
     "@vue/test-utils": "^2.4.10",
     "changelogen": "^0.6.2",
-    "diff": "^8.0.4",
+    "diff": "^9.0.0",
     "eslint": "^10.3.0",
     "get-port-please": "^3.2.0",
     "happy-dom": "^20.9.0",
