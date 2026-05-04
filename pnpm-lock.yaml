@@ -17,7 +17,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(magicast@0.5.2)(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(terser@5.46.2)(yaml@2.8.4))
       '@nuxt/kit':
-        specifier: ^4.4.2
+        specifier: ^4.4.4
         version: 4.4.4(magicast@0.5.2)
       consola:
         specifier: ^3.4.2
@@ -90,7 +90,7 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(@nuxt/cli@3.35.1(@nuxt/schema@4.4.4)(cac@6.7.14)(magicast@0.5.2))(@vue/compiler-core@3.5.33)(esbuild@0.28.0)(sass@1.99.0)(typescript@5.9.3)(vue@3.5.33(typescript@5.9.3))
       '@nuxt/schema':
-        specifier: ^4.4.2
+        specifier: ^4.4.4
         version: 4.4.4
       '@nuxt/test-utils':
         specifier: ^4.0.3
