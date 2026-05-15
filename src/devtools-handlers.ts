@@ -20,6 +20,7 @@ import {
   postHandler as htmlValidatePost,
   deleteHandler as htmlValidateDelete,
 } from './runtime/html-validate/api-handlers'
+import { addDevServerHandler } from '@nuxt/kit'
 
 export {
   getHydrationMismatches,
@@ -30,8 +31,10 @@ export {
   clearHtmlValidateReport,
 }
 
-export function createHintsRouter() {
-  const router = createRouter()
+function createHintsRouter() {
+  const router = createRouter({
+    preemptive: true
+  })
 
   router.get('/hydration', hydrationGet)
   router.post('/hydration', hydrationPost)
@@ -46,4 +49,13 @@ export function createHintsRouter() {
   router.delete('/html-validate/:id', htmlValidateDelete)
 
   return router
+}
+
+export function registerDevServerHandlers() {
+  const router = createHintsRouter()
+
+  addDevServerHandler({
+    route: '/__nuxt_hints',
+    handler: router.handler,
+  })
 }
