@@ -15,7 +15,7 @@ function wrapBroadcast(rpc: HintsClientFunctions): HintsClientFunctions {
           }
           return result
         }
-        catch(error) {
+        catch (error) {
           console.debug(error)
         }
       }
