@@ -7,7 +7,7 @@ import { joinURL } from 'ufo'
 import type { HintsClientFunctions, HintsServerFunctions } from './runtime/core/rpc-types'
 import { RPC_NAMESPACE } from './runtime/core/rpc-types'
 import {
-   getHydrationMismatches,
+  getHydrationMismatches,
   clearHydrationMismatches,
   getLazyLoadHints,
   clearLazyLoadHint,
