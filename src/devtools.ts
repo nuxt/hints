@@ -7,13 +7,13 @@ import { joinURL } from 'ufo'
 import type { HintsClientFunctions, HintsServerFunctions } from './runtime/core/rpc-types'
 import { RPC_NAMESPACE } from './runtime/core/rpc-types'
 import {
-  createHintsRouter,
   getHydrationMismatches,
   clearHydrationMismatches,
   getLazyLoadHints,
   clearLazyLoadHint,
   getHtmlValidateReports,
   clearHtmlValidateReport,
+  registerDevServerHandlers,
 } from './devtools-handlers'
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-hints'
@@ -54,10 +54,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
     },
   }, nuxt)
 
-  addDevServerHandler({
-    route: '/__nuxt_hints',
-    handler: createHintsRouter().handler,
-  })
+  registerDevServerHandlers()
 
   onDevToolsInitialized(() => {
     const rpc = extendServerRpc<HintsClientFunctions, HintsServerFunctions>(RPC_NAMESPACE, {
