@@ -15,6 +15,27 @@ describe('normalizeHTMLForComparison', () => {
     expect(normalizeHTMLForComparison(pre)).toBe(normalizeHTMLForComparison(post))
   })
 
+  it('ignores trailing style semicolons', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+    const pre = '<div style="color:red;">'
+    const post = '<div style="color:red">'
+
+    expect(normalizeHTMLForComparison(pre)).toBe(normalizeHTMLForComparison(post))
+  })
+
+  it('keeps html without style attributes unchanged', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+    const html = '<div class="example">content</div>'
+
+    expect(normalizeHTMLForComparison(html)).toBe(html)
+  })
+
+  it('handles empty style attributes', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+
+    expect(normalizeHTMLForComparison('<div style="">')).toBe('<div style="">')
+  })
+
   it('keeps real style value differences visible', async () => {
     const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
     const pre = '<div style="--demo-gap:0px;">'
