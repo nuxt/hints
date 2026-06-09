@@ -34,3 +34,53 @@ export function formatHTML(html: string | undefined): string {
 
   return formatted.trim()
 }
+
+export function normalizeHTMLForComparison(html: string): string {
+  return html.replace(/\sstyle=(["'])(.*?)\1/gs, (_, quote: string, style: string) => {
+    return ` style=${quote}${normalizeStyleAttribute(style)}${quote}`
+  })
+}
+
+function normalizeStyleAttribute(style: string): string {
+  return style
+    .split(';')
+    .map(declaration => declaration.trim())
+    .filter(Boolean)
+    .map((declaration) => {
+      const separatorIndex = declaration.indexOf(':')
+      if (separatorIndex === -1) {
+        return declaration
+      }
+
+      const property = declaration.slice(0, separatorIndex).trim()
+      const value = normalizeStyleValue(declaration.slice(separatorIndex + 1).trim())
+      return `${property}:${value}`
+    })
+    .join(';')
+}
+
+function normalizeStyleValue(value: string): string {
+  let normalized = ''
+  let quote: string | undefined
+
+  for (let index = 0; index < value.length; index++) {
+    const char = value[index]
+    const previous = value[index - 1]
+
+    if ((char === '"' || char === '\'') && previous !== '\\') {
+      quote = quote === char ? undefined : quote ?? char
+    }
+
+    if (!quote && char === ',') {
+      normalized += char
+      while (/\s/.test(value[index + 1] ?? '')) {
+        index++
+      }
+      continue
+    }
+
+    normalized += char
+  }
+
+  return normalized
+}

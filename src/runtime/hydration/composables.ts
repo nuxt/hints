@@ -1,6 +1,6 @@
 import { getCurrentInstance, inject, markRaw, onMounted } from 'vue'
 import { useNuxtApp } from '#imports'
-import { HYDRATION_ROUTE, formatHTML, logger } from './utils'
+import { HYDRATION_ROUTE, formatHTML, logger, normalizeHTMLForComparison } from './utils'
 import type { HydrationMismatchPayload } from './types'
 import { clientOnlySymbol } from '#app/components/client-only'
 import { isFeatureDevtoolsEnabled } from '../core/features'
@@ -30,7 +30,7 @@ export function useHydrationCheck() {
 
   onMounted(() => {
     const htmlPostHydration = formatHTML(instance.vnode.el?.outerHTML)
-    if (htmlPreHydration !== htmlPostHydration) {
+    if (normalizeHTMLForComparison(htmlPreHydration) !== normalizeHTMLForComparison(htmlPostHydration)) {
       const componentName = instance.type.name ?? instance.type.displayName ?? instance.type.__name
       const fileLocation = instance.type.__file ?? 'unknown'
       const body = {
