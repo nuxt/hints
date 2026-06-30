@@ -36,6 +36,9 @@ export const postHandler = defineEventHandler(async (event) => {
   }
   storeHtmlValidateReport(body)
   setResponseStatus(event, 201)
+  // Return a value so h3 terminates instead of passing the request through to
+  // the host SSR renderer (which would log a Vue Router "No match" warning).
+  return null
 })
 
 export const deleteHandler = defineEventHandler(async (event) => {
@@ -45,4 +48,6 @@ export const deleteHandler = defineEventHandler(async (event) => {
   }
   clearHtmlValidateReport(id)
   setResponseStatus(event, 204)
+  // See postHandler: return a value so h3 does not pass the request through.
+  return null
 })
