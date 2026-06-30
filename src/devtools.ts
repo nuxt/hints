@@ -56,7 +56,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
         // SPA document/navigation → serve the entry HTML with the base
         // rewritten. (sirv on its own would serve the unrewritten `index.html`
         // for the mount root, which is the bug this avoids.)
-        const path = (req.url || '/').split('?')[0]
+        const path = (req.url || '/').split('?')[0] || '/'
         const isAsset = path !== '/' && /\.[a-z0-9]+$/i.test(path)
         if (isAsset) {
           return serveAssets(req, res, next)
