@@ -38,6 +38,11 @@ export const postHandler = defineEventHandler(async (event) => {
     getRPC()?.onLazyLoadReport(parsed)
   }
   setResponseStatus(event, 201)
+  // Return a body so h3 terminates the request here. A bare `setResponseStatus`
+  // with no return value leaves the handler returning `undefined`, which h3
+  // treats as pass-through middleware — the request then continues to the host
+  // SSR renderer and triggers a `[Vue Router warn]: No match found` warning.
+  return null
 })
 
 export const deleteHandler = defineEventHandler(async (event) => {
@@ -54,4 +59,6 @@ export const deleteHandler = defineEventHandler(async (event) => {
   lazyLoadData.push(...next)
   getRPC()?.onLazyLoadCleared(id)
   setResponseStatus(event, 204)
+  // See postHandler: return a value so h3 does not pass the request through.
+  return null
 })

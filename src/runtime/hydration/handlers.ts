@@ -49,6 +49,9 @@ export const deleteHandler = defineEventHandler(async (event) => {
   }
   clearHydrationMismatches(body.id)
   setResponseStatus(event, 204)
+  // Return a value so h3 terminates instead of passing the request through to
+  // the host SSR renderer (which would log a Vue Router "No match" warning).
+  return null
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
