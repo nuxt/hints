@@ -8,15 +8,20 @@ const pageTitle = computed(() => {
 
 <template>
   <header
+    sticky
+    top-0
+    z-10
     flex
     px-4
     border="b base"
+    w-full
     h-49px
     items-center
     font-semibold
     text-neutral-800
     dark:text-white
     gap-1
+    n-bg-base
     n-border-base
   >
     <NuxtLink
