@@ -8,7 +8,7 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
-    "nuxt": "^4.4.8",
+    "nuxt": "workspace:^",
     "@nuxt/hints": "workspace:^"
   }
 }
