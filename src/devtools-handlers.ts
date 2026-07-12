@@ -31,7 +31,6 @@ export {
 }
 
 export function createHintsRouter() {
-
   const router = createRouter({ preemptive: true })
 
   router.get('/hydration', hydrationGet)
