@@ -31,7 +31,7 @@ const DEFAULT_RULES: RuleConfig = {
   'no-inline-style': 'off',
 }
 
-export default <NitroAppPlugin> function (nitro) {
+export default <NitroAppPlugin>function (nitro) {
   const opts: ConfigData = defu({
     extends: DEFAULT_EXTENDS,
     rules: DEFAULT_RULES,
@@ -43,24 +43,30 @@ export default <NitroAppPlugin> function (nitro) {
 
   nitro.hooks.hook('render:response', async (response, { event }) => {
     if (typeof response.body === 'string' && (response.headers?.['Content-Type'] || response.headers?.['content-type'])?.includes('html')) {
-      const formattedBody = await format(response.body, { plugins: [html], parser: 'html' })
-      const results = await validator.validateString(formattedBody)
+      try {
+        const formattedBody = await format(response.body, { plugins: [html], parser: 'html' })
+        const results = await validator.validateString(formattedBody)
 
-      if (response.body && results.errorCount > 0) {
-        const id = randomUUID()
-        const data: HtmlValidateReport = {
-          id,
-          path: event.path,
-          html: formattedBody,
-          results: results.results,
+        if (response.body && results.errorCount > 0) {
+          const id = randomUUID()
+          const data: HtmlValidateReport = {
+            id,
+            path: event.path,
+            html: formattedBody,
+            results: results.results,
+          }
+          response.body = addBeforeBodyEndTag(
+            response.body,
+            `<script id="hints-html-validate" type="application/json">${stringify(data)}</script>`,
+          )
+          nitro.hooks.callHook(HTML_VALIDATE_REPORT_HOOK, data).catch((error) => {
+            nitro.captureError(error instanceof Error ? error : new Error(String(error)), { event })
+          })
         }
-        response.body = addBeforeBodyEndTag(
-          response.body,
-          `<script id="hints-html-validate" type="application/json">${stringify(data)}</script>`,
-        )
-        nitro.hooks.callHook(HTML_VALIDATE_REPORT_HOOK, data).catch((error) => {
-          nitro.captureError(error instanceof Error ? error : new Error(String(error)), { event })
-        })
+      } catch (error) {
+        // https://github.com/nuxt/hints/issues/360
+        // html validate can throw errors for some html
+        console.warn('HTML Validate error:', error instanceof Error ? error.message : String(error))
       }
     }
   })
