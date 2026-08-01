@@ -31,7 +31,7 @@ const DEFAULT_RULES: RuleConfig = {
   'no-inline-style': 'off',
 }
 
-export default <NitroAppPlugin>function (nitro) {
+export default <NitroAppPlugin> function (nitro) {
   const opts: ConfigData = defu({
     extends: DEFAULT_EXTENDS,
     rules: DEFAULT_RULES,
@@ -63,7 +63,8 @@ export default <NitroAppPlugin>function (nitro) {
             nitro.captureError(error instanceof Error ? error : new Error(String(error)), { event })
           })
         }
-      } catch (error) {
+      }
+      catch (error) {
         // https://github.com/nuxt/hints/issues/360
         // html validate can throw errors for some html
         console.warn('HTML Validate error:', error instanceof Error ? error.message : String(error))
