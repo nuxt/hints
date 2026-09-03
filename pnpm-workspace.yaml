@@ -1,8 +1,8 @@
 overrides:
   nuxt: ^4.4.8
-  '@nuxt/kit': ^4.4.8
-  '@nuxt/schema': ^4.4.8
-  '@nuxt/vite-builder': ^4.4.8
+  '@nuxt/kit': ^4.5.2
+  '@nuxt/schema': ^4.5.2
+  '@nuxt/vite-builder': ^4.5.2
   '@nuxt/nitro-server': ^4.4.8
   vue: ^3.5.39
 
