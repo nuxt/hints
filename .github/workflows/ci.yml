@@ -20,7 +20,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
-          node-version: 24
+          node-version: 24.20.0
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm dev:prepare
