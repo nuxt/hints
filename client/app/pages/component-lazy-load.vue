@@ -20,7 +20,7 @@ const entries = computed(() =>
 
 async function dismiss(id: string) {
   nuxtApp.$lazyLoadHints.value = nuxtApp.$lazyLoadHints.value.filter((e: ComponentLazyLoadData) => e.id !== id)
-  $fetch(new URL(`${LAZY_LOAD_ROUTE}/${id}`, window.location.origin).href, { method: 'DELETE' })
+  $fetch(useHostHintsUrl(`${LAZY_LOAD_ROUTE}/${id}`), { method: 'DELETE' })
 }
 </script>
 

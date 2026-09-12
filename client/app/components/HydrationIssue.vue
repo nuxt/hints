@@ -68,7 +68,7 @@ function copy(text: string) {
 }
 
 function removeSelf() {
-  fetch(HYDRATION_ROUTE, {
+  fetch(useHostHintsUrl(HYDRATION_ROUTE), {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
 import type { CLSMetricWithAttribution, INPMetricWithAttribution, LCPMetricWithAttribution } from 'web-vitals/attribution'
 import { computed, onScopeDispose, ref } from 'vue'
+import { joinURL } from 'ufo'
 
 export function useHostThirdPartyScripts() {
   const client = useDevtoolsClient().value
@@ -58,4 +59,9 @@ export function useHostNuxt() {
   }
 
   return client.host.nuxt
+}
+
+export function useHostHintsUrl(route: string) {
+  const baseURL = useHostNuxt().$config.app.baseURL
+  return new URL(joinURL(baseURL, route), window.location.origin).href
 }
