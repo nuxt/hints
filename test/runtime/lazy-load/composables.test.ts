@@ -93,6 +93,22 @@ describe('lazy-load composables', () => {
         rendered: true,
       })
     })
+
+    it('should replace a rendered component when the same name comes from a different source', () => {
+      useLazyComponentTracking([
+        { componentName: 'Foo', importSource: './a/Foo.vue', importedBy: 'page.vue', rendered: true },
+      ])
+      const state = useLazyComponentTracking([
+        { componentName: 'Foo', importSource: './b/Foo.vue', importedBy: 'layout.vue', rendered: false },
+      ])
+
+      expect(state.directImports.get('Foo')).toEqual({
+        componentName: 'Foo',
+        importSource: './b/Foo.vue',
+        importedBy: 'layout.vue',
+        rendered: false,
+      })
+    })
   })
 
   describe('__wrapMainComponent', () => {

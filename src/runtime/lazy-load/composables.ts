@@ -20,7 +20,9 @@ export function useLazyComponentTracking(components: DirectImportInfo[] = []) {
   const state = nuxtApp.payload.__hints.lazyHydrationState
 
   for (const comp of components) {
-    if (state.directImports.get(comp.componentName)?.rendered) continue
+    const existing = state.directImports.get(comp.componentName)
+    // a later importer of the same component must not reset its rendered state
+    if (existing?.rendered && existing.importSource === comp.importSource) continue
     state.directImports.set(comp.componentName, comp)
   }
 
