@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest'
 import type { Plugin } from 'vite'
-import type { HookFnMap, ObjectHook, UnpluginBuildContext, UnpluginContext } from 'unplugin'
+import type { ObjectHook, UnpluginBuildContext, UnpluginContext } from 'unplugin'
+import { parseSync, Visitor } from 'oxc-parser'
 import { LazyLoadHintPlugin } from '../../../src/plugins/lazy-load'
 import { useNuxt } from '@nuxt/kit'
 
@@ -27,48 +28,78 @@ const unpluginCtx: UnpluginBuildContext & UnpluginContext = {
   error: vi.fn(),
   warn: vi.fn(),
 }
+
+function moduleScopeCode(code: string): string {
+  const { program } = parseSync('out.ts', code)
+  const ranges: [number, number][] = program.body
+    .filter(node => node.type === 'ImportDeclaration')
+    .map(node => [node.start, node.end])
+  const collect = (node: { start: number, end: number }) => {
+    ranges.push([node.start, node.end])
+  }
+  new Visitor({
+    FunctionExpression: collect,
+    ArrowFunctionExpression: collect,
+    FunctionDeclaration: collect,
+    Literal: collect,
+  }).visit(program)
+
+  let masked = code
+  for (const [start, end] of ranges) {
+    masked = masked.slice(0, start) + ' '.repeat(end - start) + masked.slice(end)
+  }
+  return masked
+}
+
+function scriptSetup(...imports: string[]): string {
+  return [
+    `import { defineComponent as _defineComponent } from 'vue'`,
+    ...imports,
+    `const _sfc_main = _defineComponent({`,
+    `  setup(__props) {`,
+    `    return {}`,
+    `  }`,
+    `})`,
+    `export default _sfc_main`,
+  ].join('\n')
+}
+
 describe('LazyLoadHintPlugin', () => {
   describe('default imports', () => {
-    it('should wrap a default import from a .vue file', async () => {
-      const code = `import MyComp from './MyComp.vue'\nexport default { components: { MyComp } }`
+    it('should keep the import untouched and wrap it inside setup', async () => {
+      const code = scriptSetup(`import MyComp from './MyComp.vue'`)
       const result = await transform(code, '/src/Parent.vue')
-      expect(result.code).toContain('import __original_MyComp from \'./MyComp.vue\'')
+      expect(result.code).toContain(`import MyComp from './MyComp.vue'`)
+      expect(result.code).not.toContain('__original_')
       expect(result.code).toContain(
-        `const MyComp = __wrapImportedComponent(__original_MyComp, 'MyComp', './MyComp.vue'`,
+        `__wrapImportedComponent(MyComp, 'MyComp', './MyComp.vue', '/src/Parent.vue');`,
       )
     })
 
     it('should handle multiple default imports from different .vue files', async () => {
-      const code = [
+      const code = scriptSetup(
         `import CompA from './CompA.vue'`,
         `import CompB from './CompB.vue'`,
-        `export default { components: { CompA, CompB } }`,
-      ].join('\n')
+      )
       const result = await transform(code, '/src/Parent.vue')
-      expect(result.code).toContain('import __original_CompA from \'./CompA.vue\'')
-      expect(result.code).toContain('import __original_CompB from \'./CompB.vue\'')
-      expect(result.code).toContain(`__wrapImportedComponent(__original_CompA, 'CompA'`)
-      expect(result.code).toContain(`__wrapImportedComponent(__original_CompB, 'CompB'`)
+      expect(result.code).toContain(`__wrapImportedComponent(CompA, 'CompA'`)
+      expect(result.code).toContain(`__wrapImportedComponent(CompB, 'CompB'`)
     })
   })
 
   describe('named imports', () => {
     it('should wrap a named import from a .vue file', async () => {
-      const code = `import { MyComp } from './MyComp.vue'\nexport default { components: { MyComp } }`
+      const code = scriptSetup(`import { MyComp } from './MyComp.vue'`)
       const result = await transform(code, '/src/Parent.vue')
-      expect(result.code).toContain('import { MyComp as __original_MyComp } from \'./MyComp.vue\'')
-      expect(result.code).toContain(
-        `const MyComp = __wrapImportedComponent(__original_MyComp, 'MyComp', './MyComp.vue'`,
-      )
+      expect(result.code).toContain(`import { MyComp } from './MyComp.vue'`)
+      expect(result.code).toContain(`__wrapImportedComponent(MyComp, 'MyComp', './MyComp.vue'`)
     })
 
     it('should wrap an aliased named import from a .vue file', async () => {
-      const code = `import { default as AliasComp } from './MyComp.vue'\nexport default { components: { AliasComp } }`
+      const code = scriptSetup(`import { default as AliasComp } from './MyComp.vue'`)
       const result = await transform(code, '/src/Parent.vue')
-      expect(result.code).toContain('__original_AliasComp')
-      expect(result.code).toContain(
-        `__wrapImportedComponent(__original_AliasComp, 'AliasComp', './MyComp.vue'`,
-      )
+      expect(result.code).toContain(`import { default as AliasComp } from './MyComp.vue'`)
+      expect(result.code).toContain(`__wrapImportedComponent(AliasComp, 'AliasComp', './MyComp.vue'`)
     })
   })
 
@@ -84,6 +115,14 @@ describe('LazyLoadHintPlugin', () => {
       expect(result.code).toContain('export default _sfc_main_wrapped')
       expect(result.code).toContain(`componentName: 'ChildComp'`)
       expect(result.code).toContain(`importSource: './ChildComp.vue'`)
+      expect(result.code).toMatchInlineSnapshot(`
+        "import { __wrapImportedComponent, __wrapMainComponent } from "@nuxt/hints/runtime/lazy-load/composables";
+        import { useLazyComponentTracking } from "@nuxt/hints/runtime/lazy-load/composables";
+        import ChildComp from './ChildComp.vue'
+        const _sfc_main = {}
+        const _sfc_main_wrapped = __wrapMainComponent(_sfc_main, [{ componentName: 'ChildComp', importSource: './ChildComp.vue', importedBy: '/src/Parent.vue', rendered: false }]);
+        export default _sfc_main_wrapped"
+      `)
     })
   })
 
@@ -100,6 +139,22 @@ describe('LazyLoadHintPlugin', () => {
       expect(result).toBeUndefined()
     })
 
+    it('should return undefined when there is no setup to inject into', async () => {
+      const code = `import MyComp from './MyComp.vue'\nexport default { components: { MyComp } }`
+      const result = await transform(code, '/src/Parent.vue')
+      expect(result).toBeUndefined()
+    })
+
+    it('should not inject into an arrow setup without a block body', async () => {
+      const code = [
+        `import { defineComponent } from 'vue'`,
+        `import MyComp from './MyComp.vue'`,
+        `export default defineComponent({ setup: () => ({ MyComp }) })`,
+      ].join('\n')
+      const result = await transform(code, '/src/Parent.ts')
+      expect(result).toBeUndefined()
+    })
+
     // https://github.com/nuxt/hints/issues/262
     it('should not transform Vite glob-generated imports (__glob_N_N pattern)', async () => {
       const code = [
@@ -113,28 +168,24 @@ describe('LazyLoadHintPlugin', () => {
     })
 
     it('should only wrap non-glob imports when mixed with glob-generated imports', async () => {
-      const code = [
+      const code = scriptSetup(
         `import { default as __glob_0_0 } from './components/A.vue'`,
         `import MyComp from './MyComp.vue'`,
-        `export default { components: { MyComp } }`,
-      ].join('\n')
+      )
       const result = await transform(code, '/src/Parent.vue')
       expect(result.code).toContain(`import { default as __glob_0_0 } from './components/A.vue'`)
-      expect(result.code).toContain('import __original_MyComp from \'./MyComp.vue\'')
-      expect(result.code).toContain(`__wrapImportedComponent(__original_MyComp, 'MyComp'`)
+      expect(result.code).not.toContain('__wrapImportedComponent(__glob_0_0')
+      expect(result.code).toContain(`__wrapImportedComponent(MyComp, 'MyComp'`)
     })
   })
 
   describe('nuxt auto-imported components (__nuxt prefix)', () => {
     it('should use file basename as componentName for __nuxt prefixed imports in _sfc_main', async () => {
-      const code = [
-        `import __nuxt_component_0 from './ChildComp.vue'`,
-        `const _sfc_main = {}`,
-        `export default _sfc_main`,
-      ].join('\n')
+      const code = scriptSetup(`import __nuxt_component_0 from './ChildComp.vue'`)
       const result = await transform(code, '/src/Parent.vue')
       expect(result.code).toContain(`componentName: 'ChildComp'`)
       expect(result.code).toContain(`importSource: './ChildComp.vue'`)
+      expect(result.code).toContain(`__wrapImportedComponent(__nuxt_component_0, 'ChildComp'`)
     })
 
     it('should use file basename as componentName for __nuxt prefixed imports in defineComponent setup', async () => {
@@ -178,18 +229,29 @@ describe('LazyLoadHintPlugin', () => {
 
       const { LazyLoadHintPlugin: PluginWithComponents } = await import('../../../src/plugins/lazy-load')
       const p = PluginWithComponents.vite() as Plugin
-      const t = (p.transform as ObjectHook<HookFnMap['transform'], 'code' | 'id'>).handler
+      const t = (p.transform as ObjectHook<any, any>).handler
 
-      const code = `import MyWidget from './MyWidget.vue'\nexport default { components: { MyWidget } }`
+      const code = scriptSetup(`import MyWidget from './MyWidget.vue'`)
       const result = await t.call(unpluginCtx, code, '/src/Parent.vue') as unknown as { code: string }
       expect(result.code).toContain(
-        `__wrapImportedComponent(__original_MyWidget, 'MyWidgetPascal', './MyWidget.vue'`,
+        `__wrapImportedComponent(MyWidget, 'MyWidgetPascal', './MyWidget.vue'`,
       )
     })
   })
 
-  describe('TDZ safety (wrapper placement)', () => {
-    it('should place wrapper immediately after its import when createClientOnly references it later', async () => {
+  // https://github.com/nuxt/hints/issues/388
+  describe('circular imports (TDZ safety)', () => {
+    it('should never read an imported component binding at module scope', async () => {
+      const code = scriptSetup(`import TreeNode from './_TreeNode.vue'`)
+      const result = await transform(code, '/src/_TreeChildren.vue')
+
+      expect(result.code).toContain(`import TreeNode from './_TreeNode.vue'`)
+      expect(result.code).toContain(`__wrapImportedComponent(TreeNode, 'TreeNode', './_TreeNode.vue', '/src/_TreeChildren.vue');`)
+      // the binding may only be read inside functions, which run after the import cycle has resolved
+      expect(moduleScopeCode(result.code)).not.toMatch(/\bTreeNode\b/)
+    })
+
+    it('should keep module-level usages of the import pointing at the original binding', async () => {
       const code = [
         `import __nuxt_component_0_client from './MyComp.client.vue'`,
         `import { createClientOnly } from '#app/components/client-only'`,
@@ -198,79 +260,14 @@ describe('LazyLoadHintPlugin', () => {
         `export default _sfc_main`,
       ].join('\n')
       const result = await transform(code, '/src/Page.vue')
-      const lines = result.code.split('\n')
-
-      const importLine = lines.findIndex((l: string) => l.includes('__original___nuxt_component_0_client') && l.startsWith('import'))
-      const wrapperLine = lines.findIndex((l: string) => l.includes('const __nuxt_component_0_client = __wrapImportedComponent('))
-      const createClientOnlyLine = lines.findIndex((l: string) => l.includes('createClientOnly(__nuxt_component_0_client)'))
-
-      expect(importLine).toBeGreaterThanOrEqual(0)
-      expect(wrapperLine).toBeGreaterThanOrEqual(0)
-      expect(createClientOnlyLine).toBeGreaterThanOrEqual(0)
-      expect(wrapperLine).toBeGreaterThan(importLine)
-      expect(wrapperLine).toBeLessThan(createClientOnlyLine)
-    })
-
-    it('should place each wrapper after its own import with multiple components', async () => {
-      const code = [
-        `import CompA from './CompA.vue'`,
-        `const wrappedA = someWrapper(CompA)`,
-        `import CompB from './CompB.vue'`,
-        `const wrappedB = someWrapper(CompB)`,
-        `export default {}`,
-      ].join('\n')
-      const result = await transform(code, '/src/Page.vue')
-      const lines = result.code.split('\n')
-
-      const importALine = lines.findIndex((l: string) => l.includes('import __original_CompA'))
-      const wrapperALine = lines.findIndex((l: string) => l.includes('const CompA = __wrapImportedComponent(__original_CompA'))
-      const someWrapperALine = lines.findIndex((l: string) => l.includes('someWrapper(CompA)'))
-
-      const importBLine = lines.findIndex((l: string) => l.includes('import __original_CompB'))
-      const wrapperBLine = lines.findIndex((l: string) => l.includes('const CompB = __wrapImportedComponent(__original_CompB'))
-      const someWrapperBLine = lines.findIndex((l: string) => l.includes('someWrapper(CompB)'))
-
-      expect(wrapperALine).toBeGreaterThan(importALine)
-      expect(wrapperALine).toBeLessThan(someWrapperALine)
-      expect(wrapperBLine).toBeGreaterThan(importBLine)
-      expect(wrapperBLine).toBeLessThan(someWrapperBLine)
-    })
-
-    it('should handle .client.vue auto-imported component with createClientOnly', async () => {
-      const code = [
-        `import { createClientOnly } from '#app/components/client-only'`,
-        `import __nuxt_component_1_client from './ClientOnlyComp.client.vue'`,
-        `const __nuxt_component_1_client_wrapped = createClientOnly(__nuxt_component_1_client)`,
-        `const _sfc_main = {}`,
-        `export default _sfc_main`,
-      ].join('\n')
-      const result = await transform(code, '/src/Page.vue')
-
-      const wrapperIdx = result.code.indexOf('const __nuxt_component_1_client = __wrapImportedComponent(')
-      const createClientOnlyIdx = result.code.indexOf('createClientOnly(__nuxt_component_1_client)')
-      expect(wrapperIdx).toBeGreaterThan(-1)
-      expect(createClientOnlyIdx).toBeGreaterThan(-1)
-      expect(wrapperIdx).toBeLessThan(createClientOnlyIdx)
-    })
-
-    it('should not introduce TDZ when import is followed by immediate usage', async () => {
-      const code = [
-        `import Widget from './Widget.vue'`,
-        `const enhanced = Object.assign({}, Widget)`,
-        `export default enhanced`,
-      ].join('\n')
-      const result = await transform(code, '/src/Page.vue')
-
-      const wrapperIdx = result.code.indexOf('const Widget = __wrapImportedComponent(')
-      const usageIdx = result.code.indexOf('Object.assign({}, Widget)')
-      expect(wrapperIdx).toBeGreaterThan(-1)
-      expect(usageIdx).toBeGreaterThan(-1)
-      expect(wrapperIdx).toBeLessThan(usageIdx)
+      expect(result.code).toContain(`import __nuxt_component_0_client from './MyComp.client.vue'`)
+      expect(result.code).toContain('createClientOnly(__nuxt_component_0_client)')
+      expect(result.code).not.toContain('const __nuxt_component_0_client =')
     })
   })
 
   describe('defineComponent setup injection', () => {
-    it('should inject useLazyComponentTracking in defineComponent setup', async () => {
+    it('should inject useLazyComponentTracking and wrapping in defineComponent setup', async () => {
       const code = [
         `import { defineComponent } from 'vue'`,
         `import ChildComp from './ChildComp.vue'`,
@@ -287,11 +284,11 @@ describe('LazyLoadHintPlugin', () => {
         "import { __wrapImportedComponent, __wrapMainComponent } from "@nuxt/hints/runtime/lazy-load/composables";
         import { useLazyComponentTracking } from "@nuxt/hints/runtime/lazy-load/composables";
         import { defineComponent } from 'vue'
-        import __original_ChildComp from './ChildComp.vue'
-        const ChildComp = __wrapImportedComponent(__original_ChildComp, 'ChildComp', './ChildComp.vue', '/src/Parent.ts')
+        import ChildComp from './ChildComp.vue'
         export default defineComponent({
           setup() {
         const lazyHydrationState = useLazyComponentTracking([{ componentName: 'ChildComp', importSource: './ChildComp.vue', importedBy: '/src/Parent.ts', rendered: false }]);
+        __wrapImportedComponent(ChildComp, 'ChildComp', './ChildComp.vue', '/src/Parent.ts');
 
             return {}
           }
@@ -315,11 +312,11 @@ describe('LazyLoadHintPlugin', () => {
         "import { __wrapImportedComponent, __wrapMainComponent } from "@nuxt/hints/runtime/lazy-load/composables";
         import { useLazyComponentTracking } from "@nuxt/hints/runtime/lazy-load/composables";
         import { defineComponent } from 'vue'
-        import __original_ChildComp from './ChildComp.vue'
-        const ChildComp = __wrapImportedComponent(__original_ChildComp, 'ChildComp', './ChildComp.vue', '/src/Parent.ts')
+        import ChildComp from './ChildComp.vue'
         export default defineComponent({
           setup: () => {
         const lazyHydrationState = useLazyComponentTracking([{ componentName: 'ChildComp', importSource: './ChildComp.vue', importedBy: '/src/Parent.ts', rendered: false }]);
+        __wrapImportedComponent(ChildComp, 'ChildComp', './ChildComp.vue', '/src/Parent.ts');
 
             return {}
           }

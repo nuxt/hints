@@ -24,7 +24,7 @@ const html = computedAsync(() => {
 
 async function dismiss() {
   emit('dismiss', props.report.id)
-  $fetch(new URL(`${HTML_VALIDATE_ROUTE}/${props.report.id}`, window.location.origin).href, { method: 'DELETE' })
+  $fetch(`${HTML_VALIDATE_ROUTE}/${props.report.id}`, { baseURL: useHostBaseURL(), method: 'DELETE' })
 }
 
 onMounted(() => {

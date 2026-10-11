@@ -1,9 +1,10 @@
+import type { ComponentOptions } from 'vue'
 import NuxtIsland from '#app/components/nuxt-island'
 import { useNuxtApp } from '#imports'
 import { logger } from '../../logger'
 
-const originalSetup = NuxtIsland.setup!
-const HintsNuxtIsland = Object.assign(<typeof NuxtIsland>{}, NuxtIsland, <typeof NuxtIsland>{
+const originalSetup = (NuxtIsland as unknown as ComponentOptions).setup!
+const HintsNuxtIsland: typeof NuxtIsland = Object.assign({}, NuxtIsland, {
   setup(props, ctx) {
     if (useNuxtApp().ssrContext?.islandContext) {
       logger.warn(
@@ -12,6 +13,6 @@ const HintsNuxtIsland = Object.assign(<typeof NuxtIsland>{}, NuxtIsland, <typeof
     }
     return originalSetup(props, ctx)
   },
-})
+} satisfies ComponentOptions)
 
 export default HintsNuxtIsland

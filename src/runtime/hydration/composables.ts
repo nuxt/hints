@@ -40,7 +40,7 @@ export function useHydrationCheck() {
         fileLocation,
       }
       if (isFeatureDevtoolsEnabled('hydration')) {
-        $fetch<HydrationMismatchPayload>(new URL(HYDRATION_ROUTE, window.location.origin).href, {
+        $fetch<HydrationMismatchPayload>(HYDRATION_ROUTE, {
           method: 'POST',
           body,
         }).then((payload) => {
