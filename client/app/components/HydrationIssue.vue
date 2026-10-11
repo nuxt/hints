@@ -5,6 +5,7 @@ import { transformerNotationDiff } from '@shikijs/transformers'
 import type { HydrationMismatchPayload, LocalHydrationMismatch } from '../../../src/runtime/hydration/types'
 import { HYDRATION_ROUTE } from '../utils/routes'
 import { transformerRenderHtmlFold, attachFoldToggleListener } from 'shiki-transformer-fold'
+import { useHostBaseURL } from '../composables/host'
 
 const props = defineProps<{
   issue: Issue
@@ -68,12 +69,10 @@ function copy(text: string) {
 }
 
 function removeSelf() {
-  fetch(HYDRATION_ROUTE, {
+  $fetch(HYDRATION_ROUTE, {
+    baseURL: useHostBaseURL(),
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id: [props.issue.id] }),
+    body: { id: [props.issue.id] },
   })
 }
 
