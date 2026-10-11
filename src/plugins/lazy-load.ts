@@ -8,6 +8,14 @@ import { findDefineComponentCalls } from './utils'
 import { useNuxt } from '@nuxt/kit'
 import type { Component } from '@nuxt/schema'
 
+interface DirectComponentImport {
+  name: string
+  source: string
+  start: number
+  end: number
+  specifier: ImportDefaultSpecifier | ImportSpecifier
+}
+
 const INCLUDE_FILES = /\.(vue|tsx?|jsx?)$/
 // Exclude node_moduels as users can have control over it
 const EXCLUDE_NODE_MODULES = /node_modules/
@@ -41,13 +49,7 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           (node): node is ImportDeclaration => node.type === 'ImportDeclaration',
         )
 
-        const directComponentImports: {
-          name: string
-          source: string
-          start: number
-          end: number
-          specifier: ImportDefaultSpecifier | ImportSpecifier
-        }[] = []
+        const directComponentImports: DirectComponentImport[] = []
 
         for (const importDecl of imports) {
           const source = importDecl.source.value
@@ -78,6 +80,30 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           return
         }
 
+        const importsInfo = genImportsInfo(directComponentImports, id, nuxtComponents)
+        // Imported bindings are only read inside setup, after the whole module graph has evaluated,
+        // so circular component imports never hit the TDZ (https://github.com/nuxt/hints/issues/388)
+        const wrapStatements = genWrapStatements(directComponentImports, id, nuxtComponents)
+
+        if (code.includes('_sfc_main')) {
+          m.replace(
+            'export default _sfc_main',
+            `const _sfc_main_wrapped = __wrapMainComponent(_sfc_main, [${importsInfo}]);\nexport default _sfc_main_wrapped`,
+          )
+        }
+
+        const components = findDefineComponentCalls(program)
+
+        if (components && components.length > 0) {
+          for (const comp of components) {
+            injectUseLazyComponentTrackingInComponentSetup(comp, m, importsInfo, wrapStatements)
+          }
+        }
+
+        if (!m.hasChanged()) {
+          return
+        }
+
         // Inject the tracking wrapper import
         m.prepend(genImport(
           '@nuxt/hints/runtime/lazy-load/composables',
@@ -87,66 +113,9 @@ export const LazyLoadHintPlugin = createUnplugin(() => {
           ['useLazyComponentTracking'],
         ) + '\n')
 
-        // Rename original imports by modifying the import specifiers
-        for (const imp of directComponentImports) {
-          const specifier = imp.specifier
-          const localName = specifier.local.name
-          const newName = `__original_${localName}`
-
-          if (specifier.type === 'ImportDefaultSpecifier') {
-            // For default imports: `import X from` → `import __original_X from`
-            m.overwrite(
-              specifier.local.start,
-              specifier.local.end,
-              newName,
-            )
-          }
-          else if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier' && specifier.imported.name !== specifier.local.name) {
-            // For aliased imports: `import { X as Y }` or `import { default as X }` → `import { X as __original_Y }` or `import { default as __original_X }`
-            m.overwrite(
-              specifier.local.start,
-              specifier.local.end,
-              newName,
-            )
-          }
-          else {
-            // For named imports: `import { X }` → `import { X as __original_X }`
-            m.overwrite(
-              specifier.local.start,
-              specifier.local.end,
-              `${localName} as ${newName}`,
-            )
-          }
-        }
-
-        // Inject useLazyComponentTracking in main component setup if applicable
-        if (code.includes('_sfc_main')) {
-          const wrappedComponents = directComponentImports.map((imp) => {
-            const componentName = resolveComponentName(imp, nuxtComponents)
-            return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
-          }).join(', ')
-          m.replace('export default _sfc_main', `const _sfc_main_wrapped = __wrapMainComponent(_sfc_main, [${wrappedComponents}]);\nexport default _sfc_main_wrapped`)
-        }
-        const components = findDefineComponentCalls(program)
-
-        if (components && components.length > 0) {
-          for (const comp of components) {
-            injectUseLazyComponentTrackingInComponentSetup(comp, m, directComponentImports, id, nuxtComponents)
-          }
-        }
-
-        for (const imp of directComponentImports) {
-          const originalName = `__original_${imp.name}`
-          const resolvedName = resolveComponentName(imp, nuxtComponents)
-          const wrapperStatement = `\nconst ${imp.name} = __wrapImportedComponent(${originalName}, '${resolvedName}', '${imp.source}', '${normalizePath(id)}')`
-          m.appendRight(imp.end, wrapperStatement)
-        }
-
-        if (m.hasChanged()) {
-          return {
-            code: m.toString(),
-            map: m.generateMap({ hires: true }),
-          }
+        return {
+          code: m.toString(),
+          map: m.generateMap({ hires: true }),
         }
       },
     },
@@ -166,35 +135,40 @@ function resolveComponentName(
   return imp.name.startsWith('__nuxt') ? parse(imp.source).name : imp.name
 }
 
-function injectUseLazyComponentTrackingInComponentSetup(node: CallExpression, magicString: MagicString, directComponentImports: {
-  name: string
-  source: string
-  start: number
-  end: number
-  specifier: ImportDefaultSpecifier | ImportSpecifier
-}[], id: string, nuxtComponents: Component[]) {
-  if (node.arguments.length === 1) {
-    const arg = node.arguments[0]
-    if (arg?.type === 'ObjectExpression') {
-      const properties = arg.properties
-      const setupProp = properties.find(prop =>
-        prop.type === 'Property'
-        && prop.key.type === 'Identifier'
-        && prop.key.name === 'setup',
-      )
-      if (setupProp && setupProp.type === 'Property') {
-        const setupFunc = setupProp.value
-        if (setupFunc.type === 'FunctionExpression' || setupFunc.type === 'ArrowFunctionExpression') {
-          // Inject useLazyComponentTracking call at the start of the setup function body
-          const insertPos = (setupFunc.body?.start ?? 0) + 1 // after {
-          const componentsArray = directComponentImports.map((imp) => {
-            const componentName = resolveComponentName(imp, nuxtComponents)
-            return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
-          }).join(', ')
-          const injectionCode = `\nconst lazyHydrationState = useLazyComponentTracking([${componentsArray}]);\n`
-          magicString.appendLeft(insertPos, injectionCode)
-        }
-      }
-    }
-  }
+function genImportsInfo(directComponentImports: DirectComponentImport[], id: string, nuxtComponents: Component[]): string {
+  return directComponentImports.map((imp) => {
+    const componentName = resolveComponentName(imp, nuxtComponents)
+    return `{ componentName: '${componentName}', importSource: '${imp.source}', importedBy: '${normalizePath(id)}', rendered: false }`
+  }).join(', ')
+}
+
+function genWrapStatements(directComponentImports: DirectComponentImport[], id: string, nuxtComponents: Component[]): string {
+  return directComponentImports.map((imp) => {
+    const componentName = resolveComponentName(imp, nuxtComponents)
+    return `__wrapImportedComponent(${imp.name}, '${componentName}', '${imp.source}', '${normalizePath(id)}');`
+  }).join('\n')
+}
+
+function injectUseLazyComponentTrackingInComponentSetup(node: CallExpression, magicString: MagicString, importsInfo: string, wrapStatements: string) {
+  if (node.arguments.length !== 1) return
+
+  const arg = node.arguments[0]
+  if (arg?.type !== 'ObjectExpression') return
+
+  const setupProp = arg.properties.find(prop =>
+    prop.type === 'Property'
+    && prop.key.type === 'Identifier'
+    && prop.key.name === 'setup',
+  )
+  if (!setupProp || setupProp.type !== 'Property') return
+
+  const setupFunc = setupProp.value
+  if (setupFunc.type !== 'FunctionExpression' && setupFunc.type !== 'ArrowFunctionExpression') return
+  // `setup: () => ({})` has no block to inject into
+  if (setupFunc.body?.type !== 'BlockStatement') return
+
+  // Inject tracking and wrapping at the start of the setup function body
+  const insertPos = setupFunc.body.start + 1 // after {
+  const injectionCode = `\nconst lazyHydrationState = useLazyComponentTracking([${importsInfo}]);\n${wrapStatements}\n`
+  magicString.appendLeft(insertPos, injectionCode)
 }

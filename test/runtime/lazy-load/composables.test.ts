@@ -1,5 +1,5 @@
 import { useNuxtApp } from '#imports'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
   useLazyComponentTracking,
   __wrapMainComponent,
@@ -65,7 +65,7 @@ describe('lazy-load composables', () => {
       expect(state.directImports.has('B')).toBe(true)
     })
 
-    it('should overwrite duplicate component names', () => {
+    it('should overwrite duplicate component names that have not rendered yet', () => {
       useLazyComponentTracking([
         { componentName: 'Foo', importSource: './Foo.vue', importedBy: 'page.vue', rendered: false },
       ])
@@ -75,6 +75,39 @@ describe('lazy-load composables', () => {
 
       expect(state.directImports.size).toBe(1)
       expect(state.directImports.get('Foo')!.importSource).toBe('./FooV2.vue')
+    })
+
+    // #388
+    it('should not reset a rendered component when a later importer registers it', () => {
+      useLazyComponentTracking([
+        { componentName: 'TreeNode', importSource: './_TreeNode.vue', importedBy: 'index.vue', rendered: true },
+      ])
+      const state = useLazyComponentTracking([
+        { componentName: 'TreeNode', importSource: './_TreeNode.vue', importedBy: '_TreeChildren.vue', rendered: false },
+      ])
+
+      expect(state.directImports.get('TreeNode')).toEqual({
+        componentName: 'TreeNode',
+        importSource: './_TreeNode.vue',
+        importedBy: 'index.vue',
+        rendered: true,
+      })
+    })
+
+    it('should replace a rendered component when the same name comes from a different source', () => {
+      useLazyComponentTracking([
+        { componentName: 'Foo', importSource: './a/Foo.vue', importedBy: 'page.vue', rendered: true },
+      ])
+      const state = useLazyComponentTracking([
+        { componentName: 'Foo', importSource: './b/Foo.vue', importedBy: 'layout.vue', rendered: false },
+      ])
+
+      expect(state.directImports.get('Foo')).toEqual({
+        componentName: 'Foo',
+        importSource: './b/Foo.vue',
+        importedBy: 'layout.vue',
+        rendered: false,
+      })
     })
   })
 
@@ -180,6 +213,35 @@ describe('lazy-load composables', () => {
 
       const result = wrapped.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
       expect(result).toBeUndefined()
+    })
+
+    it('should ignore values that are not components', () => {
+      expect(__wrapImportedComponent(undefined as unknown as DefineComponent, 'Comp', './Comp.vue', 'page.vue')).toBeUndefined()
+      expect(__wrapImportedComponent(null as unknown as DefineComponent, 'Comp', './Comp.vue', 'page.vue')).toBeNull()
+      expect(__wrapImportedComponent('x' as unknown as DefineComponent, 'Comp', './Comp.vue', 'page.vue')).toBe('x')
+    })
+
+    it('should only wrap once per importer when called from every setup', () => {
+      const originalSetup = vi.fn()
+      const comp = makeComponent(originalSetup)
+
+      __wrapImportedComponent(comp, 'Comp', './Comp.vue', 'page.vue')
+      const setupAfterFirstWrap = comp.setup
+      __wrapImportedComponent(comp, 'Comp', './Comp.vue', 'page.vue')
+
+      expect(comp.setup).toBe(setupAfterFirstWrap)
+      comp.setup!({}, { attrs: {}, slots: {}, emit: () => {}, expose: () => {} })
+      expect(originalSetup).toHaveBeenCalledTimes(1)
+    })
+
+    it('should wrap again for a different importer', () => {
+      const comp = makeComponent()
+
+      __wrapImportedComponent(comp, 'Comp', './Comp.vue', 'page.vue')
+      const setupAfterFirstWrap = comp.setup
+      __wrapImportedComponent(comp, 'Comp', './Comp.vue', 'layout.vue')
+
+      expect(comp.setup).not.toBe(setupAfterFirstWrap)
     })
   })
 })
