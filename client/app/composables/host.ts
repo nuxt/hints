@@ -50,6 +50,10 @@ export function useHostHydration() {
   return { hydration: host.payload.__hints.hydration }
 }
 
+export function useHostBaseURL() {
+  return useHostNuxt().$config.app.baseURL
+}
+
 export function useHostNuxt() {
   const client = useDevtoolsClient().value
 

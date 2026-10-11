@@ -1,4 +1,5 @@
 {
   "private": true,
-  "name": "nuxt-hints-devtools"
+  "name": "nuxt-hints-devtools",
+  "type": "module"
 }

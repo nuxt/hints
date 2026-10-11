@@ -2,6 +2,7 @@
 import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
 import type { ComponentLazyLoadData, DirectImportInfo } from '../../../src/runtime/lazy-load/schema'
 import { LAZY_LOAD_ROUTE } from '../utils/routes'
+import { useHostBaseURL } from '../composables/host'
 
 definePageMeta({
   title: 'Component Lazy Load',
@@ -20,7 +21,7 @@ const entries = computed(() =>
 
 async function dismiss(id: string) {
   nuxtApp.$lazyLoadHints.value = nuxtApp.$lazyLoadHints.value.filter((e: ComponentLazyLoadData) => e.id !== id)
-  $fetch(new URL(`${LAZY_LOAD_ROUTE}/${id}`, window.location.origin).href, { method: 'DELETE' })
+  $fetch(`${LAZY_LOAD_ROUTE}/${id}`, { baseURL: useHostBaseURL(), method: 'DELETE' })
 }
 </script>
 
