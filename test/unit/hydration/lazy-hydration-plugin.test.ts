@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest'
 import type { Plugin } from 'vite'
-import type { HookFnMap, ObjectHook, UnpluginBuildContext, UnpluginContext } from 'unplugin'
+import type { ObjectHook, UnpluginBuildContext, UnpluginContext } from 'unplugin'
 import { LazyLoadHintPlugin } from '../../../src/plugins/lazy-load'
 import { useNuxt } from '@nuxt/kit'
 
@@ -178,7 +178,7 @@ describe('LazyLoadHintPlugin', () => {
 
       const { LazyLoadHintPlugin: PluginWithComponents } = await import('../../../src/plugins/lazy-load')
       const p = PluginWithComponents.vite() as Plugin
-      const t = (p.transform as ObjectHook<HookFnMap['transform'], 'code' | 'id'>).handler
+      const t = (p.transform as ObjectHook<any, any>).handler
 
       const code = `import MyWidget from './MyWidget.vue'\nexport default { components: { MyWidget } }`
       const result = await t.call(unpluginCtx, code, '/src/Parent.vue') as unknown as { code: string }
