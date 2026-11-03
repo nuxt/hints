@@ -35,7 +35,7 @@
     "cleanup": "rimraf **/node_modules **/dist **/.output **/.nuxt --glob"
   },
   "dependencies": {
-    "@nuxt/devtools-kit": "^3.4.3",
+    "@nuxt/devtools-kit": "^4.1.0",
     "@nuxt/kit": "^4.6.1",
     "consola": "^3.4.2",
     "defu": "^6.1.7",
