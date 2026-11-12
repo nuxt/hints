@@ -36,6 +36,30 @@ describe('normalizeHTMLForComparison', () => {
     expect(normalizeHTMLForComparison('<div style="">')).toBe('<div style="">')
   })
 
+  it('ignores an empty class attribute', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+    const pre = '<div>\n  content\n</div>'
+    const post = '<div class="">\n  content\n</div>'
+
+    expect(normalizeHTMLForComparison(pre)).toBe(normalizeHTMLForComparison(post))
+  })
+
+  it('keeps real class differences visible', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+    const pre = '<div class="">'
+    const post = '<div class="active">'
+
+    expect(normalizeHTMLForComparison(pre)).not.toBe(normalizeHTMLForComparison(post))
+  })
+
+  it('keeps class="" in text content', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+    const pre = '<div>text</div>'
+    const post = '<div>text class=""</div>'
+
+    expect(normalizeHTMLForComparison(pre)).not.toBe(normalizeHTMLForComparison(post))
+  })
+
   it('keeps real style value differences visible', async () => {
     const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
     const pre = '<div style="--demo-gap:0px;">'
