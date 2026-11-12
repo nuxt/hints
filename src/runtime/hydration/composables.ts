@@ -49,6 +49,8 @@ export function useHydrationCheck() {
             instance: markRaw(instance),
             vnode: markRaw(vnodePrehydration),
           })
+        }).catch((error) => {
+          logger.warn('[hydration] Failed to report hydration mismatch', error)
         })
       }
       logger.warn(`[hydration] Component ${componentName} at ${fileLocation} seems to have different html pre and post-hydration. Please make sure you don't have any hydration issue.`)
