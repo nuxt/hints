@@ -52,6 +52,14 @@ describe('normalizeHTMLForComparison', () => {
     expect(normalizeHTMLForComparison(pre)).not.toBe(normalizeHTMLForComparison(post))
   })
 
+  it('keeps class="" in text content', async () => {
+    const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
+    const pre = '<div>text</div>'
+    const post = '<div>text class=""</div>'
+
+    expect(normalizeHTMLForComparison(pre)).not.toBe(normalizeHTMLForComparison(post))
+  })
+
   it('keeps real style value differences visible', async () => {
     const { normalizeHTMLForComparison } = await import('../../../src/runtime/hydration/utils')
     const pre = '<div style="--demo-gap:0px;">'

@@ -38,7 +38,7 @@ export function formatHTML(html: string | undefined): string {
 export function normalizeHTMLForComparison(html: string): string {
   return html
     // Vue can set an empty class during hydration that SSR never renders.
-    .replace(/\sclass=""/g, '')
+    .replace(/<[a-z][^>]*>/gi, tag => tag.replace(/\sclass=""/g, ''))
     .replace(/\sstyle=(["'])(.*?)\1/gs, (_, quote: string, style: string) => {
       return ` style=${quote}${normalizeStyleAttribute(style)}${quote}`
     })
