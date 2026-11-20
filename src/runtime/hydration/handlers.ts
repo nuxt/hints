@@ -58,7 +58,7 @@ function assertPayload(body: any): asserts body is Omit<HydrationMismatchPayload
     || typeof body !== 'object'
     || (body.htmlPreHydration !== undefined && typeof body.htmlPreHydration !== 'string')
     || (body.htmlPostHydration !== undefined && typeof body.htmlPostHydration !== 'string')
-    || typeof body.componentName !== 'string'
+    || (body.componentName !== undefined && typeof body.componentName !== 'string')
     || typeof body.fileLocation !== 'string'
   ) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })

@@ -86,6 +86,25 @@ describe('hints router', () => {
     expect(hydrationMismatches).toHaveLength(1)
   })
 
+  it('POST /hydration accepts a component without a name', async () => {
+    // Template-only SFCs have no name, displayName or __name
+    const res = await post('/hydration', {
+      htmlPreHydration: '<div>1</div>',
+      htmlPostHydration: '<div>2</div>',
+      fileLocation: 'pages/repro.vue',
+    })
+
+    expect(res.status).toBe(201)
+    expect(hydrationMismatches).toHaveLength(1)
+  })
+
+  it('POST /hydration responds 400 on invalid payload', async () => {
+    const res = await post('/hydration', { componentName: 1, fileLocation: 'pages/repro.vue' })
+
+    expect(res.status).toBe(400)
+    expect(hydrationMismatches).toHaveLength(0)
+  })
+
   it('POST /html-validate responds 201', async () => {
     const res = await post('/html-validate', { id: 'report-1' })
 
