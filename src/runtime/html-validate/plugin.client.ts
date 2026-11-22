@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from '#imports'
+import type { ObjectPlugin, Plugin } from 'nuxt/app'
 import { parse } from 'devalue'
 import type { HtmlValidateReport } from './types'
 import { logger } from './utils'
@@ -31,4 +32,4 @@ export default defineNuxtPlugin({
       })
     }
   },
-})
+}) as Plugin & ObjectPlugin

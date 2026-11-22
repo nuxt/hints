@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, shallowRef, useNuxtApp } from '#imports'
+import type { ObjectPlugin, Plugin } from 'nuxt/app'
 import { defu } from 'defu'
 import { logger } from './utils'
 import { getFeatureOptions } from '../core/features'
@@ -133,7 +134,7 @@ export default defineNuxtPlugin({
       logger.info(`Dynamically added third-party script detected: ${script.src}`)
     }
   },
-})
+}) as Plugin & ObjectPlugin
 
 function isScript(node: Node): node is HTMLScriptElement {
   return node.nodeName === 'SCRIPT'

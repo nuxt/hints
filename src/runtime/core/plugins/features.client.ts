@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from '#imports'
+import type { ObjectPlugin, Plugin } from 'nuxt/app'
 // @ts-expect-error virtual file
 import { features } from '#shared/hints-config'
 
@@ -15,4 +16,4 @@ export default defineNuxtPlugin({
       },
     })
   },
-})
+}) as Plugin & ObjectPlugin
