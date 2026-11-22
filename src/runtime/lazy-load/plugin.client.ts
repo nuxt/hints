@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, useNuxtApp, useRoute } from '#imports'
+import type { ObjectPlugin, Plugin } from 'nuxt/app'
 import { defu } from 'defu'
 import type { DirectImportInfo, ComponentLazyLoadState, ComponentLazyLoadData } from './schema'
 import { useLazyComponentTracking } from './composables'
@@ -30,7 +31,7 @@ export default defineNuxtPlugin({
       })
     }
   },
-})
+}) as Plugin & ObjectPlugin
 
 function checkAndReport(state: ComponentLazyLoadState) {
   if (state.hasReported) return

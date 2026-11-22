@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import type { ObjectPlugin, Plugin } from 'nuxt/app'
 import { onINP, onLCP, onCLS } from 'web-vitals/attribution'
 import { defu } from 'defu'
 import { shallowRef } from 'vue'
@@ -193,7 +194,7 @@ export default defineNuxtPlugin({
       }
     })
   },
-})
+}) as Plugin & ObjectPlugin
 
 const IMAGE_FORMATS = ['avif', 'jpg', 'jpeg', 'png', 'webp']
 

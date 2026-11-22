@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import type { ObjectPlugin, Plugin } from 'nuxt/app'
 import { defu } from 'defu'
 
 export default defineNuxtPlugin({
@@ -9,4 +10,4 @@ export default defineNuxtPlugin({
       hydration: [],
     })
   },
-})
+}) as Plugin & ObjectPlugin
