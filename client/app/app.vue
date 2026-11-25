@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { useDevtoolsClient, onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
-import type { HintsClientFunctions, HintsServerFunctions } from '../../src/runtime/core/rpc-types'
-import { RPC_NAMESPACE } from '../../src/runtime/core/rpc-types'
-import type { HydrationMismatchPayload, LocalHydrationMismatch } from '../../src/runtime/hydration/types'
+import type { HydrationMismatchResponse, HydrationMismatchPayload, LocalHydrationMismatch } from '../../src/runtime/hydration/types'
 import type { ComponentLazyLoadData } from '../../src/runtime/lazy-load/schema'
 import { ComponentLazyLoadDataSchema } from '../../src/runtime/lazy-load/schema'
 import type { HtmlValidateReport } from '../../src/runtime/html-validate/types'
+import { CLIENT_RPC_NAMES, SERVER_RPC_NAMES } from '../../src/runtime/core/rpc-types'
+import { useDevtoolsHost, useHintsRpc, type HintsRpc, type HostClient } from './composables/devtools'
 import { parse } from 'valibot'
 
-const client = useDevtoolsClient()
+const host = useDevtoolsHost()
+const rpc = useHintsRpc()
+const connected = computed(() => Boolean(rpc.value && host.value))
 
 const hydrationMismatches = ref<(HydrationMismatchPayload | LocalHydrationMismatch)[]>([])
 const lazyLoadHints = ref<ComponentLazyLoadData[]>([])
@@ -19,7 +20,15 @@ nuxtApp.provide('hydrationMismatches', hydrationMismatches)
 nuxtApp.provide('lazyLoadHints', lazyLoadHints)
 nuxtApp.provide('htmlValidateReports', htmlValidateReports)
 
-onDevtoolsClientConnected((client) => {
+// one-shot: `immediate` can fire synchronously, before a `stop` handle exists
+let isSetUp = false
+watch(connected, (isConnected) => {
+  if (isSetUp || !isConnected || !rpc.value || !host.value) return
+  isSetUp = true
+  setup(rpc.value, host.value)
+}, { immediate: true })
+
+function setup(rpc: HintsRpc, host: HostClient) {
   const hydrationTombstones = new Set<string>()
   const lazyLoadTombstones = new Set<string>()
   const htmlValidateTombstones = new Set<string>()
@@ -59,19 +68,30 @@ onDevtoolsClientConnected((client) => {
     }
   }
 
-  const rpc = client.devtools.extendClientRpc<HintsServerFunctions, HintsClientFunctions>(RPC_NAMESPACE, {
-    onHydrationMismatch(mismatch: HydrationMismatchPayload) {
+  // Broadcasts from the Nuxt process, registered as `nuxt-hints:on-*` client events
+  rpc.register({
+    name: CLIENT_RPC_NAMES.onHydrationMismatch,
+    type: 'event',
+    handler(mismatch: HydrationMismatchPayload) {
       if (!hydrationInitialSyncDone) {
         bufferedHydrationMismatches.push(mismatch)
         return
       }
       applyHydrationMismatch(mismatch)
     },
-    onHydrationCleared(ids: string[]) {
+  })
+  rpc.register({
+    name: CLIENT_RPC_NAMES.onHydrationCleared,
+    type: 'event',
+    handler(ids: string[]) {
       ids.forEach(id => hydrationTombstones.add(id))
       hydrationMismatches.value = hydrationMismatches.value.filter(m => !ids.includes(m.id))
     },
-    onLazyLoadReport(data: ComponentLazyLoadData) {
+  })
+  rpc.register({
+    name: CLIENT_RPC_NAMES.onLazyLoadReport,
+    type: 'event',
+    handler(data: ComponentLazyLoadData) {
       try {
         const validated = parse(ComponentLazyLoadDataSchema, data)
         if (!lazyLoadInitialSyncDone) {
@@ -84,18 +104,30 @@ onDevtoolsClientConnected((client) => {
         console.warn('[hints] Ignoring malformed lazy-load report', data)
       }
     },
-    onLazyLoadCleared(id: string) {
+  })
+  rpc.register({
+    name: CLIENT_RPC_NAMES.onLazyLoadCleared,
+    type: 'event',
+    handler(id: string) {
       lazyLoadTombstones.add(id)
       lazyLoadHints.value = lazyLoadHints.value.filter(entry => entry.id !== id)
     },
-    onHtmlValidateReport(report: HtmlValidateReport) {
+  })
+  rpc.register({
+    name: CLIENT_RPC_NAMES.onHtmlValidateReport,
+    type: 'event',
+    handler(report: HtmlValidateReport) {
       if (!htmlValidateInitialSyncDone) {
         bufferedHtmlValidateReports.push(report)
         return
       }
       applyHtmlValidateReport(report)
     },
-    onHtmlValidateDeleted(id: string) {
+  })
+  rpc.register({
+    name: CLIENT_RPC_NAMES.onHtmlValidateDeleted,
+    type: 'event',
+    handler(id: string) {
       htmlValidateTombstones.add(id)
       htmlValidateReports.value = htmlValidateReports.value.filter(report => report.id !== id)
     },
@@ -103,11 +135,11 @@ onDevtoolsClientConnected((client) => {
 
   // Hydration: seed from host payload and fetch from server via RPC
   if (useHintsFeature('hydration')) {
-    if (client.host?.nuxt?.payload?.__hints?.hydration) {
-      hydrationMismatches.value = client.host.nuxt.payload.__hints.hydration
+    if (host.nuxt?.payload?.__hints?.hydration) {
+      hydrationMismatches.value = host.nuxt.payload.__hints.hydration
         .filter(mismatch => !hydrationTombstones.has(mismatch.id))
     }
-    rpc.getHydrationMismatches().then((data) => {
+    rpc.call(SERVER_RPC_NAMES.getHydrationMismatches).then((data: HydrationMismatchResponse) => {
       data.mismatches
         .filter(mismatch => !hydrationTombstones.has(mismatch.id))
         .forEach(mismatch => applyHydrationMismatch(mismatch))
@@ -122,7 +154,7 @@ onDevtoolsClientConnected((client) => {
 
   // Lazy load: fetch from server via RPC
   if (useHintsFeature('lazyLoad')) {
-    rpc.getLazyLoadHints().then((data) => {
+    rpc.call(SERVER_RPC_NAMES.getLazyLoadHints).then((data: ComponentLazyLoadData[] | undefined) => {
       ;(data ?? [])
         .filter(entry => !lazyLoadTombstones.has(entry.id))
         .forEach(entry => applyLazyLoadHint(entry))
@@ -137,7 +169,7 @@ onDevtoolsClientConnected((client) => {
 
   // HTML validate: fetch from server via RPC
   if (useHintsFeature('htmlValidate')) {
-    rpc.getHtmlValidateReports().then((data) => {
+    rpc.call(SERVER_RPC_NAMES.getHtmlValidateReports).then((data: HtmlValidateReport[] | undefined) => {
       ;(data ?? [])
         .filter(report => !htmlValidateTombstones.has(report.id))
         .forEach(report => applyHtmlValidateReport(report))
@@ -149,12 +181,12 @@ onDevtoolsClientConnected((client) => {
       bufferedHtmlValidateReports.length = 0
     })
   }
-})
+}
 </script>
 
 <template>
   <div>
-    <NuxtLayout v-if="client">
+    <NuxtLayout v-if="connected">
       <NuxtPage />
     </NuxtLayout>
     <NLoading v-else />

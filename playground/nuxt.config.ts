@@ -6,8 +6,6 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       include: [
-        '@vue/devtools-core',
-        '@vue/devtools-kit',
         'vite-plugin-vue-tracer/client/overlay',
         'vite-plugin-vue-tracer/client/record',
         'web-vitals/attribution',

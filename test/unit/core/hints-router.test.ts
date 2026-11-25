@@ -1,26 +1,22 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { createApp, eventHandler, toWebHandler } from 'h3'
-import { createHintsRouter } from '../../../src/devtools-handlers'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { createHintsHandler } from '../../../src/devtools-handlers'
 import { lazyLoadData } from '../../../src/runtime/lazy-load/handlers'
 import { hydrationMismatches } from '../../../src/runtime/hydration/handlers'
 import { htmlValidateReports } from '../../../src/runtime/html-validate/api-handlers'
 import type { ComponentLazyLoadData } from '../../../src/runtime/lazy-load/schema'
 
-const renderer = vi.fn(() => 'rendered by nuxt')
+const handle = createHintsHandler()
 
-function createTestHandler() {
-  const app = createApp()
-  app.use(createHintsRouter())
-  app.use(eventHandler(renderer))
-  return toWebHandler(app)
+function request(path: string, init?: RequestInit) {
+  return handle(new Request(`http://localhost/__nuxt_hints${path}`, init), path)
 }
 
 function post(path: string, body: unknown) {
-  return createTestHandler()(new Request(`http://localhost${path}`, {
+  return request(path, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
-  }))
+  })
 }
 
 const lazyLoadPayload: ComponentLazyLoadData = {
@@ -40,19 +36,17 @@ const lazyLoadPayload: ComponentLazyLoadData = {
   },
 }
 
-describe('hints router', () => {
+describe('hints handler', () => {
   beforeEach(() => {
     lazyLoadData.length = 0
     hydrationMismatches.length = 0
     htmlValidateReports.length = 0
-    renderer.mockClear()
   })
 
-  it('POST /lazy-load responds 201 without falling through to the renderer', async () => {
+  it('POST /lazy-load responds 201', async () => {
     const res = await post('/lazy-load', lazyLoadPayload)
 
     expect(res.status).toBe(201)
-    expect(renderer).not.toHaveBeenCalled()
     expect(lazyLoadData).toHaveLength(1)
   })
 
@@ -60,30 +54,66 @@ describe('hints router', () => {
     const res = await post('/lazy-load', { id: 'broken' })
 
     expect(res.status).toBe(400)
-    expect(renderer).not.toHaveBeenCalled()
+    expect(await res.json()).toMatchObject({ error: 'Validation failed' })
+  })
+
+  it('GET /lazy-load returns the stored hints as JSON', async () => {
+    lazyLoadData.push(lazyLoadPayload)
+
+    const res = await request('/lazy-load')
+
+    expect(res.status).toBe(200)
+    expect(res.headers.get('content-type')).toContain('application/json')
+    expect(await res.json()).toEqual([lazyLoadPayload])
   })
 
   it('DELETE /lazy-load/:id responds 204', async () => {
     lazyLoadData.push(lazyLoadPayload)
 
-    const res = await createTestHandler()(
-      new Request('http://localhost/lazy-load/test-id', { method: 'DELETE' }),
-    )
+    const res = await request('/lazy-load/test-id', { method: 'DELETE' })
 
     expect(res.status).toBe(204)
-    expect(renderer).not.toHaveBeenCalled()
     expect(lazyLoadData).toHaveLength(0)
   })
 
-  it('POST /hydration responds 201', async () => {
+  it('DELETE /lazy-load/:id responds 404 for an unknown id', async () => {
+    const res = await request('/lazy-load/missing', { method: 'DELETE' })
+
+    expect(res.status).toBe(404)
+  })
+
+  it('POST /hydration responds 201 with the stored payload', async () => {
     const res = await post('/hydration', {
       componentName: 'Foo',
       fileLocation: 'components/Foo.vue',
     })
 
     expect(res.status).toBe(201)
-    expect(renderer).not.toHaveBeenCalled()
     expect(hydrationMismatches).toHaveLength(1)
+    expect(await res.json()).toMatchObject({ id: hydrationMismatches[0]!.id, componentName: 'Foo' })
+  })
+
+  it('POST /hydration responds 400 on invalid payload', async () => {
+    const res = await post('/hydration', { componentName: 42 })
+
+    expect(res.status).toBe(400)
+    expect(hydrationMismatches).toHaveLength(0)
+  })
+
+  it('DELETE /hydration clears the given ids', async () => {
+    hydrationMismatches.push(
+      { id: 'a', componentName: 'A', fileLocation: 'a.vue', htmlPreHydration: '', htmlPostHydration: '' },
+      { id: 'b', componentName: 'B', fileLocation: 'b.vue', htmlPreHydration: '', htmlPostHydration: '' },
+    )
+
+    const res = await request('/hydration', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: ['a'] }),
+    })
+
+    expect(res.status).toBe(204)
+    expect(hydrationMismatches.map(m => m.id)).toEqual(['b'])
   })
 
   it('POST /hydration accepts a component without a name', async () => {
@@ -109,15 +139,18 @@ describe('hints router', () => {
     const res = await post('/html-validate', { id: 'report-1' })
 
     expect(res.status).toBe(201)
-    expect(renderer).not.toHaveBeenCalled()
     expect(htmlValidateReports).toHaveLength(1)
   })
 
-  it('unknown routes respond 404 from the router', async () => {
-    const res = await createTestHandler()(
-      new Request('http://localhost/unknown', { method: 'GET' }),
-    )
+  it('unknown routes respond 404 instead of falling through', async () => {
+    const res = await request('/unknown')
 
     expect(res.status).toBe(404)
+  })
+
+  it('unsupported methods respond 405', async () => {
+    const res = await request('/hydration', { method: 'PUT' })
+
+    expect(res.status).toBe(405)
   })
 })

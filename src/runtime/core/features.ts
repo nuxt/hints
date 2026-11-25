@@ -1,5 +1,5 @@
 // @ts-expect-error virtual file
-import { features } from '#shared/hints-config'
+import { features, apiRoute } from '#shared/hints-config'
 import type { FeaturesName } from './types'
 import type { FeatureOptionsMap } from '../feature-options'
 
@@ -21,4 +21,8 @@ export function getFeatureOptions<K extends keyof FeatureOptionsMap>(feature: K)
     return val.options as FeatureOptionsMap[K]
   }
   return undefined
+}
+
+export function getHintsApiRoute(): string {
+  return apiRoute as string
 }

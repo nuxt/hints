@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import plugin from '../../../src/runtime/html-validate/nitro.plugin'
-import { htmlValidateReports } from '../../../src/runtime/html-validate/api-handlers'
+import plugin, { renderHTMLDocument } from '../../../src/runtime/html-validate/nitro.plugin'
 
 const reportResults = [
   {
@@ -22,16 +21,20 @@ const reportResults = [
   },
 ]
 
-const rpcMock = vi.hoisted(() => ({
-  onHtmlValidateReport: vi.fn(),
-  onHtmlValidateDeleted: vi.fn(),
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+const hookHandlers = vi.hoisted(() => new Map<string, Function>())
+
+vi.mock('nuxt/server', () => ({
+  useServerHooks: () => ({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    hook: (name: string, handler: Function) => {
+      hookHandlers.set(name, handler)
+      return () => hookHandlers.delete(name)
+    },
+  }),
 }))
 
-vi.mock('../../../src/runtime/core/rpc', () => ({
-  getRPC: () => rpcMock,
-}))
-
-vi.mock('crypto', () => ({
+vi.mock('node:crypto', () => ({
   randomUUID: () => 'report-1',
 }))
 
@@ -47,91 +50,113 @@ vi.mock('prettier/parser-html', () => ({
   default: {},
 }))
 
+const validateString = vi.hoisted(() => vi.fn(async () => ({
+  errorCount: 1,
+  results: reportResults,
+})))
+
 vi.mock('html-validate', () => ({
   HtmlValidate: class {
-    async validateString() {
-      return {
-        errorCount: 1,
-        results: reportResults,
-      }
-    }
+    validateString = validateString
   },
 }))
 
 vi.mock('../../../src/runtime/core/features', () => ({
   getFeatureOptions: () => undefined,
+  getHintsApiRoute: () => '/__nuxt_hints',
 }))
 
-vi.mock('../../../src/runtime/html-validate/utils', () => ({
-  addBeforeBodyEndTag: (body: string, tag: string) => body.replace('</body>', `${tag}</body>`),
-}))
+const fetchMock = vi.hoisted(() => vi.fn(async () => new Response(null, { status: 201 })))
+
+function createHtmlContext() {
+  return {
+    htmlAttrs: [] as string[],
+    head: ['<title>demo</title>'],
+    bodyAttrs: [] as string[],
+    bodyPrepend: [] as string[],
+    body: ['<div id="__nuxt"></div>'],
+    bodyAppend: [] as string[],
+  }
+}
 
 describe('html-validate nitro plugin', () => {
   beforeEach(() => {
-    htmlValidateReports.length = 0
-    rpcMock.onHtmlValidateReport.mockClear()
-    rpcMock.onHtmlValidateDeleted.mockClear()
-    vi.stubGlobal('fetch', vi.fn())
+    hookHandlers.clear()
+    fetchMock.mockClear()
+    validateString.mockClear()
+    vi.stubGlobal('fetch', fetchMock)
   })
 
-  it('dispatches reports through a nitro hook without a loopback fetch', async () => {
-    // eslint-disable-next-line  @typescript-eslint/no-unsafe-function-type
-    const hookHandlers = new Map<string, Function>()
-    // eslint-disable-next-line  @typescript-eslint/no-unsafe-function-type
-    const hook = vi.fn((name: string, handler: Function) => {
-      hookHandlers.set(name, handler)
+  it('renders the document the same way Nuxt does', () => {
+    const html = renderHTMLDocument({
+      htmlAttrs: ['lang="en"'],
+      head: ['<title>a</title>'],
+      bodyAttrs: ['class="dark"'],
+      bodyPrepend: ['<!--pre-->'],
+      body: ['<div id="__nuxt"></div>'],
+      bodyAppend: ['<script>1</script>'],
     })
-    const callHook = vi.fn(async (name: string, payload: unknown) => {
-      const handler = hookHandlers.get(name)
-      await handler?.(payload)
-    })
-    const captureError = vi.fn()
+    expect(html).toBe('<!DOCTYPE html><html lang="en"><head><title>a</title></head><body class="dark"><!--pre--><div id="__nuxt"></div><script>1</script></body></html>')
+  })
 
-    plugin({
-      captureError,
-      hooks: {
-        hook,
-        callHook,
-      },
-    } as never)
+  it('validates the rendered page on render:html and reports to the dev-server API', async () => {
+    plugin()
 
-    const renderResponse = hookHandlers.get('render:response')
-    const reportHook = hookHandlers.get('hints:html-validate:report')
+    const renderHtml = hookHandlers.get('render:html')
+    expect(renderHtml).toBeTypeOf('function')
 
-    expect(renderResponse).toBeTypeOf('function')
-    expect(reportHook).toBeTypeOf('function')
+    const htmlContext = createHtmlContext()
+    const event = { url: new URL('http://localhost/demo'), req: new Request('http://localhost/demo') }
 
-    const event = {
-      path: '/demo',
-      context: {},
-    }
-    const response = {
-      body: '<html><body></body></html>',
-      headers: {
-        'content-type': 'text/html',
-      },
-    }
+    await renderHtml?.(htmlContext, { event })
 
-    await renderResponse?.(response, { event })
-
-    expect(response.body).toContain('hints-html-validate')
-    expect(globalThis.fetch).not.toHaveBeenCalled()
-    expect(htmlValidateReports).toHaveLength(1)
-    expect(htmlValidateReports[0]).toMatchObject({
+    expect(validateString).toHaveBeenCalledWith(renderHTMLDocument({ ...htmlContext, bodyAppend: [] }))
+    expect(htmlContext.bodyAppend.join('')).toContain('<script id="hints-html-validate" type="application/json">{"id":"report-1"}</script>')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [URL, RequestInit]
+    expect(url.href).toBe('http://localhost/__nuxt_hints/html-validate')
+    expect(init.method).toBe('POST')
+    expect(JSON.parse(init.body as string)).toMatchObject({
       id: 'report-1',
       path: '/demo',
-      html: '<html><body></body></html>',
       results: reportResults,
     })
-    expect(callHook).toHaveBeenCalledTimes(1)
-    expect(callHook).toHaveBeenCalledWith('hints:html-validate:report', expect.objectContaining({ id: 'report-1' }))
-    expect(rpcMock.onHtmlValidateReport).toHaveBeenCalledTimes(1)
-    expect(rpcMock.onHtmlValidateReport).toHaveBeenCalledWith(expect.objectContaining({ id: 'report-1' }))
-    expect(captureError).not.toHaveBeenCalled()
+  })
 
-    await reportHook?.(htmlValidateReports[0])
+  it('reports from an h3 v1 event (Nuxt 4.6) using the Host header', async () => {
+    plugin()
+    const htmlContext = createHtmlContext()
+    // h3 v1 aliases `req` to the Node request, whose `url` is relative
+    const nodeReq = { url: '/demo', headers: { host: 'localhost:3000' } }
+    const event = { path: '/demo', req: nodeReq, node: { req: nodeReq }, headers: new Headers({ host: 'localhost:3000' }) }
 
-    expect(htmlValidateReports).toHaveLength(1)
-    expect(rpcMock.onHtmlValidateReport).toHaveBeenCalledTimes(1)
+    await hookHandlers.get('render:html')?.(htmlContext, { event })
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const [url] = fetchMock.mock.calls[0] as unknown as [URL]
+    expect(url.href).toBe('http://localhost:3000/__nuxt_hints/html-validate')
+    expect(JSON.parse((fetchMock.mock.calls[0] as unknown as [URL, RequestInit])[1].body as string)).toMatchObject({ path: '/demo' })
+  })
+
+  it('skips streamed renders', async () => {
+    plugin()
+    const htmlContext = createHtmlContext()
+
+    await hookHandlers.get('render:html')?.(htmlContext, { event: { url: new URL('http://localhost/demo') }, streaming: true })
+
+    expect(validateString).not.toHaveBeenCalled()
+    expect(htmlContext.bodyAppend).toHaveLength(0)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('does not inject anything when the page is valid', async () => {
+    validateString.mockResolvedValueOnce({ errorCount: 0, results: [] })
+    plugin()
+    const htmlContext = createHtmlContext()
+
+    await hookHandlers.get('render:html')?.(htmlContext, { event: { url: new URL('http://localhost/ok') } })
+
+    expect(htmlContext.bodyAppend).toHaveLength(0)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

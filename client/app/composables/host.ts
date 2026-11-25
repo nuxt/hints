@@ -1,17 +1,13 @@
-import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
+import { useDevtoolsHost } from './devtools'
 import type { CLSMetricWithAttribution, INPMetricWithAttribution, LCPMetricWithAttribution } from 'web-vitals/attribution'
 import { computed, onScopeDispose, ref } from 'vue'
 
 export function useHostThirdPartyScripts() {
-  const client = useDevtoolsClient().value
-
-  if (!client) {
-    throw new Error('`useHostThirdPartyScripts` must be used when the devtools client is connected')
-  }
+  const hostNuxt = useHostNuxt()
 
   return {
-    scripts: client.host.nuxt.payload.__hints.thirdPartyScripts,
-    isUsingNuxtScripts: Boolean(client.host.nuxt.$scripts),
+    scripts: hostNuxt.payload.__hints.thirdPartyScripts,
+    isUsingNuxtScripts: Boolean(hostNuxt.$scripts),
   }
 }
 
@@ -55,11 +51,11 @@ export function useHostBaseURL() {
 }
 
 export function useHostNuxt() {
-  const client = useDevtoolsClient().value
+  const host = useDevtoolsHost().value
 
-  if (!client?.host?.nuxt) {
+  if (!host?.nuxt) {
     throw new Error('`useHostNuxt` must be used when the devtools client is connected to a host app')
   }
 
-  return client.host.nuxt
+  return host.nuxt
 }

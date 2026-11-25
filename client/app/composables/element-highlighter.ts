@@ -1,19 +1,9 @@
-import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
+import { useDevtoolsHost, useHostWindow } from './devtools'
 import { openElementSourceComponent } from './vue-tracer'
 
 let overlay: HTMLDivElement | null = null
 
-// Get the parent window where the actual app is running
-function getTargetWindow() {
-  try {
-    // The devtools client iframe structure is: parent -> devtools iframe -> client iframe
-    // We need to access the parent window (the actual app window)
-    return window.parent?.parent || window.parent || window
-  }
-  catch {
-    return window
-  }
-}
+const getTargetWindow = useHostWindow
 
 function createOverlay() {
   if (overlay)
@@ -44,7 +34,7 @@ function removeOverlay() {
 }
 
 export function useElementHighlighter() {
-  const client = useDevtoolsClient()
+  const host = useDevtoolsHost()
 
   const highlightElement = (element: HTMLElement | undefined) => {
     if (!element) {
@@ -74,8 +64,7 @@ export function useElementHighlighter() {
     if (!element)
       return
 
-    const clientValue = client.value
-    if (!clientValue)
+    if (!host.value)
       return
 
     // Use devtools inspector to open element in editor

@@ -1,15 +1,7 @@
-overrides:
-  nuxt: ^4.6.1
-  '@nuxt/kit': ^4.6.1
-  '@nuxt/schema': ^4.6.4
-  '@nuxt/vite-builder': ^4.6.1
-  '@nuxt/nitro-server': ^4.6.1
-  vue: ^3.5.46
-
+allowBuilds:
+  '@parcel/watcher': set this to true or false
+  esbuild: set this to true or false
 ignoredBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
   - unrs-resolver
-
-patchedDependencies:
-  '@nuxt/test-utils': patches/@nuxt__test-utils.patch

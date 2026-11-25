@@ -1,7 +1,7 @@
-import type { NitroApp } from 'nitropack/types'
+import { useServerHooks } from 'nuxt/server'
 
-export default function (nitroApp: NitroApp) {
-  nitroApp.hooks.hook('render:html', ({ head }) => {
+export default function thirdPartyScriptsPlugin() {
+  useServerHooks().hook('render:html', ({ head }) => {
     head.unshift(`
 <script>
 window.__hints_TPC_start_time = Date.now();

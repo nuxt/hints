@@ -1,5 +1,5 @@
 import { getCurrentInstance, inject, markRaw, onMounted } from 'vue'
-import { useNuxtApp } from '#imports'
+import { $fetch, useNuxtApp } from '#imports'
 import { HYDRATION_ROUTE, formatHTML, logger, normalizeHTMLForComparison } from './utils'
 import type { HydrationMismatchPayload } from './types'
 import { clientOnlySymbol } from '#app/components/client-only'

@@ -1,9 +1,11 @@
-import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addServerPlugin, addTemplate } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addBuildPlugin, addComponent, addNitroPlugin, addTemplate } from '@nuxt/kit'
 import { setupDevToolsUI } from './devtools'
 import { InjectHydrationPlugin } from './plugins/hydration'
 import { LazyLoadHintPlugin } from './plugins/lazy-load'
 import type { Features } from './runtime/core/types'
 import { isFeatureDevtoolsEnabled, isFeatureEnabled } from './features'
+import { HINTS_ROUTE } from './runtime/core/server/types'
+import { joinURL } from 'ufo'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -17,6 +19,10 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: moduleName,
     configKey: 'hints',
+    compatibility: {
+      // `nuxt/server` hooks and per-server-API dev handlers
+      nuxt: '>=4.6.0',
+    },
   },
   defaults: {
     devtools: true,
@@ -32,12 +38,12 @@ export default defineNuxtModule<ModuleOptions>({
     if (!nuxt.options.dev) {
       return
     }
-    nuxt.options.nitro.experimental = nuxt.options.nitro.experimental || {}
-    nuxt.options.nitro.experimental.websocket = true
-
     const resolver = createResolver(import.meta.url)
 
-    const hintsConfigContent = `export const features = ${JSON.stringify(options.features)}`
+    const hintsConfigContent = [
+      `export const features = ${JSON.stringify(options.features)}`,
+      `export const apiRoute = ${JSON.stringify(joinURL(nuxt.options.app.baseURL, HINTS_ROUTE))}`,
+    ].join('\n')
     const hintsConfig = addTemplate({
       filename: 'hints-config.mjs',
       getContents: () => hintsConfigContent,
@@ -79,14 +85,14 @@ export default defineNuxtModule<ModuleOptions>({
     if (isFeatureEnabled(options, 'thirdPartyScripts')) {
       addPlugin(resolver.resolve('./runtime/third-party-scripts/plugin.client'))
       if (isFeatureDevtoolsEnabled(options, 'thirdPartyScripts')) {
-        addServerPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
+        addNitroPlugin(resolver.resolve('./runtime/third-party-scripts/nitro.plugin'))
       }
     }
 
     // html-validate
     if (isFeatureEnabled(options, 'htmlValidate')) {
       addPlugin(resolver.resolve('./runtime/html-validate/plugin.client'))
-      addServerPlugin(resolver.resolve('./runtime/html-validate/nitro.plugin'))
+      addNitroPlugin(resolver.resolve('./runtime/html-validate/nitro.plugin'))
     }
 
     nuxt.hook('prepare:types', ({ references }) => {
