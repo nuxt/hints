@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@nuxt/devtools-kit": "^3.4.4",
-    "@nuxt/kit": "^4.6.1",
+    "@nuxt/kit": "^4.7.0",
     "consola": "^3.4.2",
     "defu": "^6.1.7",
     "devalue": "^5.9.4",
@@ -62,7 +62,7 @@
     "@nuxt/hints": "workspace:^",
     "@nuxt/icon": "^2.6.3",
     "@nuxt/module-builder": "^1.0.4",
-    "@nuxt/schema": "^4.6.1",
+    "@nuxt/schema": "^4.7.0",
     "@nuxt/test-utils": "^4.4.0",
     "@shikijs/transformers": "^4.6.0",
     "@types/node": "^24.19.2",
