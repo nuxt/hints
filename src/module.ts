@@ -40,13 +40,13 @@ export default defineNuxtModule<ModuleOptions>({
     }
     const resolver = createResolver(import.meta.url)
 
-    const hintsConfigContent = [
-      `export const features = ${JSON.stringify(options.features)}`,
-      `export const apiRoute = ${JSON.stringify(joinURL(nuxt.options.app.baseURL, HINTS_ROUTE))}`,
-    ].join('\n')
     const hintsConfig = addTemplate({
       filename: 'hints-config.mjs',
-      getContents: () => hintsConfigContent,
+      getContents: () => [
+        `export const features = ${JSON.stringify(options.features)}`,
+        `export const apiRoute = ${JSON.stringify(joinURL(nuxt.options.app.baseURL, HINTS_ROUTE))}`,
+        `export const devServerOrigin = ${JSON.stringify(options.devtools ? getDevServerOrigin(nuxt.options.devServer.url) : null)}`,
+      ].join('\n'),
       write: true,
     })
 
@@ -109,3 +109,16 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.build.transpile.push(moduleName)
   },
 })
+
+/** Origin the Nitro server reaches the dev server on; a wildcard bind address is not connectable everywhere (Windows). */
+function getDevServerOrigin(url: string | undefined): string | null {
+  if (!url) return null
+  try {
+    const parsed = new URL(url)
+    if (parsed.hostname === '0.0.0.0' || parsed.hostname === '[::]') parsed.hostname = 'localhost'
+    return parsed.origin
+  }
+  catch {
+    return null
+  }
+}

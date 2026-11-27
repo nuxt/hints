@@ -61,9 +61,12 @@ vi.mock('html-validate', () => ({
   },
 }))
 
+const devServerOrigin = vi.hoisted(() => ({ value: 'http://localhost:3000' as string | null }))
+
 vi.mock('../../../src/runtime/core/features', () => ({
   getFeatureOptions: () => undefined,
   getHintsApiRoute: () => '/__nuxt_hints',
+  getDevServerOrigin: () => devServerOrigin.value,
 }))
 
 const fetchMock = vi.hoisted(() => vi.fn(async () => new Response(null, { status: 201 })))
@@ -84,6 +87,7 @@ describe('html-validate nitro plugin', () => {
     hookHandlers.clear()
     fetchMock.mockClear()
     validateString.mockClear()
+    devServerOrigin.value = 'http://localhost:3000'
     vi.stubGlobal('fetch', fetchMock)
   })
 
@@ -114,7 +118,7 @@ describe('html-validate nitro plugin', () => {
     expect(htmlContext.bodyAppend.join('')).toContain('<script id="hints-html-validate" type="application/json">{"id":"report-1"}</script>')
     expect(fetchMock).toHaveBeenCalledTimes(1)
     const [url, init] = fetchMock.mock.calls[0] as unknown as [URL, RequestInit]
-    expect(url.href).toBe('http://localhost/__nuxt_hints/html-validate')
+    expect(url.href).toBe('http://localhost:3000/__nuxt_hints/html-validate')
     expect(init.method).toBe('POST')
     expect(JSON.parse(init.body as string)).toMatchObject({
       id: 'report-1',
@@ -123,19 +127,31 @@ describe('html-validate nitro plugin', () => {
     })
   })
 
-  it('reports from an h3 v1 event (Nuxt 4.6) using the Host header', async () => {
+  it('never derives the report destination from request headers', async () => {
     plugin()
     const htmlContext = createHtmlContext()
-    // h3 v1 aliases `req` to the Node request, whose `url` is relative
-    const nodeReq = { url: '/demo', headers: { host: 'localhost:3000' } }
-    const event = { path: '/demo', req: nodeReq, node: { req: nodeReq }, headers: new Headers({ host: 'localhost:3000' }) }
+    const headers = { 'host': 'evil.example', 'x-forwarded-proto': 'http://collector.example/' }
+    const nodeReq = { url: '/demo', headers }
+    const event = { path: '/demo', req: nodeReq, node: { req: nodeReq }, headers: new Headers(headers) }
 
     await hookHandlers.get('render:html')?.(htmlContext, { event })
 
     expect(fetchMock).toHaveBeenCalledTimes(1)
-    const [url] = fetchMock.mock.calls[0] as unknown as [URL]
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [URL, RequestInit]
     expect(url.href).toBe('http://localhost:3000/__nuxt_hints/html-validate')
-    expect(JSON.parse((fetchMock.mock.calls[0] as unknown as [URL, RequestInit])[1].body as string)).toMatchObject({ path: '/demo' })
+    expect(JSON.parse(init.body as string)).toMatchObject({ path: '/demo' })
+  })
+
+  it('does not post a report when the Hints API is not registered (devtools off)', async () => {
+    devServerOrigin.value = null
+    plugin()
+    const htmlContext = createHtmlContext()
+
+    await hookHandlers.get('render:html')?.(htmlContext, { event: { url: new URL('http://localhost/demo') } })
+
+    // the page still carries the report for the browser overlay
+    expect(htmlContext.bodyAppend.join('')).toContain('hints-html-validate')
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('skips streamed renders', async () => {

@@ -4,7 +4,10 @@ import { getDevToolsRpcClient } from '@vitejs/devtools-kit/client'
 import { computed, shallowRef } from 'vue'
 import { RPC_NAMESPACE } from '../../../src/runtime/core/rpc-types'
 
-export type HintsRpc = ReturnType<DevToolsRpcClient['scope']> extends infer S ? S extends { rpc: infer R } ? R : never : never
+function scopedRpc(client: DevToolsRpcClient) {
+  return client.scope(RPC_NAMESPACE).rpc
+}
+export type HintsRpc = ReturnType<typeof scopedRpc>
 export type HostClient = NuxtDevtoolsHostClient
 
 const kit = shallowRef<DevToolsRpcClient>()
@@ -70,7 +73,7 @@ export function useDevtoolsHost() {
 /** The Hints RPC scope: `call('get-hydration-mismatches')`, `register(...)`. */
 export function useHintsRpc() {
   start()
-  return computed<HintsRpc | undefined>(() => kit.value?.scope(RPC_NAMESPACE).rpc)
+  return computed<HintsRpc | undefined>(() => kit.value && scopedRpc(kit.value))
 }
 
 /** The window the user's app runs in, for overlays and measurements. */

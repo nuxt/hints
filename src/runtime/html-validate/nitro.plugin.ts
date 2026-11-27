@@ -5,7 +5,7 @@ import { stringify } from 'devalue'
 import type { HtmlValidateReport } from './types'
 import { format } from 'prettier/standalone'
 import html from 'prettier/parser-html'
-import { getFeatureOptions, getHintsApiRoute } from '../core/features'
+import { getDevServerOrigin, getFeatureOptions, getHintsApiRoute } from '../core/features'
 import { defu } from 'defu'
 
 const DEFAULT_EXTENDS = [
@@ -39,7 +39,6 @@ interface RenderHTMLContext {
 const joinTags = (tags: string[]) => tags.join('')
 const joinAttrs = (chunks: string[]) => (chunks.length ? ' ' + chunks.join(' ') : '')
 
-
 export function renderHTMLDocument(ctx: RenderHTMLContext) {
   return '<!DOCTYPE html>'
     + `<html${joinAttrs(ctx.htmlAttrs)}>`
@@ -48,37 +47,17 @@ export function renderHTMLDocument(ctx: RenderHTMLContext) {
     + '</html>'
 }
 
-function headerOf(headers: unknown, name: string): string | undefined {
-  if (!headers) return undefined
-  if (typeof (headers as Headers).get === 'function') return (headers as Headers).get(name) ?? undefined
-  const value = (headers as Record<string, string | string[] | undefined>)[name]
-  return Array.isArray(value) ? value[0] : value
-}
-
-function getRequestOrigin(event: unknown): string | undefined {
-  const e = event as {
-    url?: unknown
-    // web `Request` on h3 v2, Node `IncomingMessage` (relative `url`) on h3 v1
-    req?: { url?: unknown, headers?: unknown }
-    headers?: unknown
-    node?: { req?: { headers?: unknown } }
-  }
-  if (e.url instanceof URL) return e.url.origin
-  if (typeof e.req?.url === 'string' && /^https?:\/\//.test(e.req.url)) return new URL(e.req.url).origin
-  const headers = e.headers ?? e.req?.headers ?? e.node?.req?.headers
-  const host = headerOf(headers, 'host')
-  if (!host) return undefined
-  return `${headerOf(headers, 'x-forwarded-proto') ?? 'http'}://${host}`
-}
-
-async function reportToDevServer(event: unknown, data: HtmlValidateReport) {
-  const origin = getRequestOrigin(event)
+async function reportToDevServer(data: HtmlValidateReport) {
+  // configured by the module, never derived from request headers
+  // null when DevTools is off
+  const origin = getDevServerOrigin()
   if (!origin) return
   try {
     await fetch(new URL(`${getHintsApiRoute()}/html-validate`, origin), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data),
+      signal: AbortSignal.timeout(5000),
     })
   }
   catch (error) {
@@ -117,7 +96,7 @@ export default function htmlValidatePlugin() {
           results: results.results,
         }
         htmlContext.bodyAppend.push(`<script id="hints-html-validate" type="application/json">${stringify(data)}</script>`)
-        await reportToDevServer(event, data)
+        await reportToDevServer(data)
       }
     }
     catch (error) {

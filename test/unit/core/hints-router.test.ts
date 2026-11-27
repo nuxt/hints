@@ -82,6 +82,15 @@ describe('hints handler', () => {
     expect(res.status).toBe(404)
   })
 
+  it('DELETE /lazy-load/:id/extra responds 404 and deletes nothing', async () => {
+    lazyLoadData.push(lazyLoadPayload)
+
+    const res = await request('/lazy-load/test-id/extra', { method: 'DELETE' })
+
+    expect(res.status).toBe(404)
+    expect(lazyLoadData).toHaveLength(1)
+  })
+
   it('POST /hydration responds 201 with the stored payload', async () => {
     const res = await post('/hydration', {
       componentName: 'Foo',
