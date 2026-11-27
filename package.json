@@ -65,7 +65,7 @@
     "@nuxt/schema": "^4.6.1",
     "@nuxt/test-utils": "^4.4.0",
     "@shikijs/transformers": "^4.6.0",
-    "@types/node": "^24.19.2",
+    "@types/node": "^26.6.11",
     "@vue/test-utils": "^2.6.0",
     "changelogen": "^0.6.2",
     "diff": "^9.0.0",
