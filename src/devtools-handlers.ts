@@ -59,9 +59,10 @@ const routes: Record<string, Partial<Record<Method, RouteHandler>>> = {
  */
 export function createHintsHandler(): HintsRequestHandler {
   return async (request, path) => {
-    const [resource = '', id] = path.replace(/^\/+/, '').split('/')
+    const [resource = '', id, ...rest] = path.replace(/^\/+/, '').split('/')
     const route = routes[resource]
-    if (!route) {
+    // only `/resource` and `/resource/:id` exist
+    if (!route || rest.length > 0) {
       return errorResponse(404, 'Not Found')
     }
     const handler = route[request.method.toUpperCase() as Method]
