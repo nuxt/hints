@@ -52,6 +52,8 @@ jobs:
             -e "s#^  '@nuxt/nitro-server': .*#  '@nuxt/nitro-server': npm:@nuxt/nitro-server-nightly@5x#" \
             pnpm-workspace.yaml
           cat pnpm-workspace.yaml
+          # fail loudly if the overrides block drifted and nothing was substituted
+          test "$(grep -c -- '-nightly@5x' pnpm-workspace.yaml)" -eq 5
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm dev:prepare
       - run: pnpm prepack
