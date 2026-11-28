@@ -69,7 +69,7 @@
 
     <n-tip
       v-if="total > 0 && !isUsingNuxtScripts"
-      n="yellow6"
+      type="warning"
     >
       Third-party scripts detected. Consider using @nuxt/scripts for best-practice loading and management.
     </n-tip>

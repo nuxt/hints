@@ -1,6 +1,6 @@
-import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { HydrationMismatchPayload } from './types'
 import { getRPC } from '../core/rpc'
+import { errorResponse, jsonResponse, readJsonBody } from '../core/server/types'
 
 export const hydrationMismatches: HydrationMismatchPayload[] = []
 
@@ -18,11 +18,15 @@ export function clearHydrationMismatches(ids: string[]) {
   getRPC()?.onHydrationCleared(ids)
 }
 
-export const getHandler = defineEventHandler(() => getHydrationMismatches())
+export function getHandler() {
+  return jsonResponse(getHydrationMismatches())
+}
 
-export const postHandler = defineEventHandler(async (event) => {
-  const body = await readBody<Omit<HydrationMismatchPayload, 'id'>>(event)
-  assertPayload(body)
+export async function postHandler(request: Request) {
+  const body = await readJsonBody<Omit<HydrationMismatchPayload, 'id'>>(request)
+  if (!isPayload(body)) {
+    return errorResponse(400, 'Invalid payload')
+  }
   const payload: HydrationMismatchPayload = {
     id: crypto.randomUUID(),
     htmlPreHydration: body.htmlPreHydration,
@@ -38,29 +42,23 @@ export const postHandler = defineEventHandler(async (event) => {
     }
   }
   getRPC()?.onHydrationMismatch(payload)
-  setResponseStatus(event, 201)
-  return payload
-})
+  return jsonResponse(payload, { status: 201 })
+}
 
-export const deleteHandler = defineEventHandler(async (event) => {
-  const body = await readBody<{ id: string[] }>(event)
+export async function deleteHandler(request: Request) {
+  const body = await readJsonBody<{ id: string[] }>(request)
   if (!body || !Array.isArray(body.id)) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
+    return errorResponse(400, 'Invalid payload')
   }
   clearHydrationMismatches(body.id)
-  setResponseStatus(event, 204)
-})
+  return new Response(null, { status: 204 })
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function assertPayload(body: any): asserts body is Omit<HydrationMismatchPayload, 'id'> {
-  if (
-    !body
-    || typeof body !== 'object'
-    || (body.htmlPreHydration !== undefined && typeof body.htmlPreHydration !== 'string')
-    || (body.htmlPostHydration !== undefined && typeof body.htmlPostHydration !== 'string')
-    || (body.componentName !== undefined && typeof body.componentName !== 'string')
-    || typeof body.fileLocation !== 'string'
-  ) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
-  }
+function isPayload(body: unknown): body is Omit<HydrationMismatchPayload, 'id'> {
+  if (!body || typeof body !== 'object') return false
+  const candidate = body as Record<string, unknown>
+  return (candidate.htmlPreHydration === undefined || typeof candidate.htmlPreHydration === 'string')
+    && (candidate.htmlPostHydration === undefined || typeof candidate.htmlPostHydration === 'string')
+    && (candidate.componentName === undefined || typeof candidate.componentName === 'string')
+    && typeof candidate.fileLocation === 'string'
 }

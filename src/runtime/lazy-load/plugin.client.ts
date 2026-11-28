@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useNuxtApp, useRoute } from '#imports'
+import { $fetch, defineNuxtPlugin, useNuxtApp, useRoute } from '#imports'
 import { defu } from 'defu'
 import type { DirectImportInfo, ComponentLazyLoadState, ComponentLazyLoadData } from './schema'
 import { useLazyComponentTracking } from './composables'

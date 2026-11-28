@@ -28,3 +28,34 @@ jobs:
       - run: pnpm test:types
       - run: pnpm lint
       - run: pnpm test
+
+  # Nuxt 5 is still a pre-release: this job tracks it and may fail without blocking merges.
+  nuxt-5:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      - uses: pnpm/action-setup@6e7bdbda5fe05107efc88b23b7ed00aa05f84ca0
+        name: Install pnpm
+      - name: Install Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 24.22.0
+          cache: 'pnpm'
+      - name: Point the workspace at the Nuxt 5 nightly
+        run: |
+          sed -i \
+            -e "s#^  nuxt: .*#  nuxt: npm:nuxt-nightly@5x#" \
+            -e "s#^  '@nuxt/kit': .*#  '@nuxt/kit': npm:@nuxt/kit-nightly@5x#" \
+            -e "s#^  '@nuxt/schema': .*#  '@nuxt/schema': npm:@nuxt/schema-nightly@5x#" \
+            -e "s#^  '@nuxt/vite-builder': .*#  '@nuxt/vite-builder': npm:@nuxt/vite-builder-nightly@5x#" \
+            -e "s#^  '@nuxt/nitro-server': .*#  '@nuxt/nitro-server': npm:@nuxt/nitro-server-nightly@5x#" \
+            pnpm-workspace.yaml
+          cat pnpm-workspace.yaml
+          # fail loudly if the overrides block drifted and nothing was substituted
+          test "$(grep -c -- '-nightly@5x' pnpm-workspace.yaml)" -eq 5
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm dev:prepare
+      - run: pnpm prepack
+      - run: pnpm test:types
+      - run: pnpm test

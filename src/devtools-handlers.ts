@@ -1,4 +1,5 @@
-import { createRouter } from 'h3'
+import type { HintsRequestHandler } from './runtime/core/server/types'
+import { errorResponse } from './runtime/core/server/types'
 import {
   getHydrationMismatches,
   clearHydrationMismatches,
@@ -30,20 +31,48 @@ export {
   clearHtmlValidateReport,
 }
 
-export function createHintsRouter() {
-  const router = createRouter({ preemptive: true })
+type Method = 'GET' | 'POST' | 'DELETE'
+type RouteHandler = (request: Request, id: string | undefined) => Response | Promise<Response>
 
-  router.get('/hydration', hydrationGet)
-  router.post('/hydration', hydrationPost)
-  router.delete('/hydration', hydrationDelete)
+const routes: Record<string, Partial<Record<Method, RouteHandler>>> = {
+  'hydration': {
+    GET: hydrationGet,
+    POST: hydrationPost,
+    DELETE: hydrationDelete,
+  },
+  'lazy-load': {
+    GET: lazyLoadGet,
+    POST: lazyLoadPost,
+    DELETE: lazyLoadDelete,
+  },
+  'html-validate': {
+    GET: htmlValidateGet,
+    POST: htmlValidatePost,
+    DELETE: htmlValidateDelete,
+  },
+}
 
-  router.get('/lazy-load', lazyLoadGet)
-  router.post('/lazy-load', lazyLoadPost)
-  router.delete('/lazy-load/:id', lazyLoadDelete)
-
-  router.get('/html-validate', htmlValidateGet)
-  router.post('/html-validate', htmlValidatePost)
-  router.delete('/html-validate/:id', htmlValidateDelete)
-
-  return router
+/**
+ * The Hints API, framework-neutral: `path` is relative to the mount route
+ * (`/hydration`, `/lazy-load/:id`, ...). Unknown paths and methods answer 404/405
+ * instead of falling through to the Nuxt renderer.
+ */
+export function createHintsHandler(): HintsRequestHandler {
+  return async (request, path) => {
+    const [resource = '', id, ...rest] = path.replace(/^\/+/, '').split('/')
+    const route = routes[resource]
+    // only `/resource` and `/resource/:id` exist
+    if (!route || rest.length > 0) {
+      return errorResponse(404, 'Not Found')
+    }
+    const method = request.method.toUpperCase() as Method
+    if (id && method !== 'DELETE') {
+      return errorResponse(404, 'Not Found')
+    }
+    const handler = route[method]
+    if (!handler) {
+      return errorResponse(405, 'Method Not Allowed')
+    }
+    return handler(request, id ? decodeURIComponent(id) : undefined)
+  }
 }

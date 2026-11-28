@@ -1,6 +1,6 @@
-import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { HtmlValidateReport } from './types'
 import { getRPC } from '../core/rpc'
+import { errorResponse, jsonResponse, readJsonBody } from '../core/server/types'
 
 export const htmlValidateReports: HtmlValidateReport[] = []
 
@@ -8,10 +8,8 @@ export function storeHtmlValidateReport(report: HtmlValidateReport) {
   if (htmlValidateReports.some(existing => existing.id === report.id)) {
     return false
   }
-
   htmlValidateReports.push(report)
   getRPC()?.onHtmlValidateReport(report)
-
   return true
 }
 
@@ -27,22 +25,23 @@ export function clearHtmlValidateReport(id: string) {
   getRPC()?.onHtmlValidateDeleted(id)
 }
 
-export const getHandler = defineEventHandler(() => getHtmlValidateReports())
+export function getHandler() {
+  return jsonResponse(getHtmlValidateReports())
+}
 
-export const postHandler = defineEventHandler(async (event) => {
-  const body = await readBody<HtmlValidateReport>(event)
+export async function postHandler(request: Request) {
+  const body = await readJsonBody<HtmlValidateReport>(request)
   if (!body || typeof body.id !== 'string') {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid payload' })
+    return errorResponse(400, 'Invalid payload')
   }
   storeHtmlValidateReport(body)
-  setResponseStatus(event, 201)
-})
+  return new Response(null, { status: 201 })
+}
 
-export const deleteHandler = defineEventHandler(async (event) => {
-  const id = event.context.params?.id
-  if (typeof id !== 'string') {
-    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+export function deleteHandler(_request: Request, id: string | undefined) {
+  if (typeof id !== 'string' || !id) {
+    return errorResponse(404, 'Not Found')
   }
   clearHtmlValidateReport(id)
-  setResponseStatus(event, 204)
-})
+  return new Response(null, { status: 204 })
+}

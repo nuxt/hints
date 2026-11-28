@@ -1,8 +1,8 @@
-import { createError, defineEventHandler, readBody, setResponseStatus } from 'h3'
 import type { ComponentLazyLoadData } from './schema'
 import { ComponentLazyLoadDataSchema } from './schema'
 import { parse, ValiError } from 'valibot'
 import { getRPC } from '../core/rpc'
+import { errorResponse, jsonResponse, readJsonBody } from '../core/server/types'
 
 export const lazyLoadData: ComponentLazyLoadData[] = []
 
@@ -17,18 +17,19 @@ export function clearLazyLoadHint(id: string) {
   getRPC()?.onLazyLoadCleared(id)
 }
 
-export const getHandler = defineEventHandler(() => getLazyLoadHints())
+export function getHandler() {
+  return jsonResponse(getLazyLoadHints())
+}
 
-export const postHandler = defineEventHandler(async (event) => {
-  const body = await readBody(event)
+export async function postHandler(request: Request) {
+  const body = await readJsonBody(request)
   let parsed: ComponentLazyLoadData
   try {
     parsed = parse(ComponentLazyLoadDataSchema, body)
   }
   catch (error) {
     if (error instanceof ValiError) {
-      setResponseStatus(event, 400)
-      return { error: 'Validation failed', message: error.message }
+      return jsonResponse({ error: 'Validation failed', message: error.message }, { status: 400 })
     }
     throw error
   }
@@ -37,21 +38,17 @@ export const postHandler = defineEventHandler(async (event) => {
     lazyLoadData.push(parsed)
     getRPC()?.onLazyLoadReport(parsed)
   }
-  setResponseStatus(event, 201)
-})
+  return new Response(null, { status: 201 })
+}
 
-export const deleteHandler = defineEventHandler(async (event) => {
-  const id = event.context.params?.id
+export function deleteHandler(_request: Request, id: string | undefined) {
   if (!id) {
-    throw createError({ statusCode: 400, message: 'ID is required' })
+    return errorResponse(400, 'ID is required')
   }
   const hasEntry = lazyLoadData.some(item => item.id === id)
   if (!hasEntry) {
-    throw createError({ statusCode: 404, message: 'Entry not found' })
+    return errorResponse(404, 'Entry not found')
   }
-  const next = lazyLoadData.filter(item => item.id !== id)
-  lazyLoadData.length = 0
-  lazyLoadData.push(...next)
-  getRPC()?.onLazyLoadCleared(id)
-  setResponseStatus(event, 204)
-})
+  clearLazyLoadHint(id)
+  return new Response(null, { status: 204 })
+}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDevtoolsClient } from '@nuxt/devtools-kit/iframe-client'
+import { openInEditor } from '../composables/devtools'
 import type { ComponentLazyLoadData, DirectImportInfo } from '../../../src/runtime/lazy-load/schema'
 import { LAZY_LOAD_ROUTE } from '../utils/routes'
 import { useHostBaseURL } from '../composables/host'
@@ -11,7 +11,6 @@ definePageMeta({
 })
 
 const nuxtApp = useNuxtApp()
-const devtoolsClient = useDevtoolsClient()
 
 const entries = computed(() =>
   nuxtApp.$lazyLoadHints.value.filter(
@@ -87,7 +86,7 @@ async function dismiss(id: string) {
                   type="button"
                   title="open in editor"
                   class="cursor-pointer text-inherit underline bg-transparent border-0 p-0"
-                  @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importSource)"
+                  @click="openInEditor(imp.importSource)"
                 >
                   {{ imp.importSource }}
                 </button>
@@ -97,7 +96,7 @@ async function dismiss(id: string) {
                   type="button"
                   title="open in editor"
                   class="cursor-pointer text-inherit underline bg-transparent border-0 p-0"
-                  @click="devtoolsClient?.devtools.rpc.openInEditor(imp.importedBy)"
+                  @click="openInEditor(imp.importedBy)"
                 >
                   {{ imp.importedBy }}
                 </button>
