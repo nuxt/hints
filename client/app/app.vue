@@ -207,6 +207,6 @@ function setup(rpc: HintsRpc, host: HostClient) {
     <NuxtLayout v-else-if="connected">
       <NuxtPage />
     </NuxtLayout>
-    <NLoading v-else />
+    <Loading v-else />
   </div>
 </template>

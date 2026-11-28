@@ -25,12 +25,12 @@ function getColorClassBySeverity(severity: number): string {
 <template>
   <tr class="border-b border-neutral-100 dark:border-neutral-800 last:border-b-0">
     <td class="py-2">
-      <n-tip
+      <Tip
         size="small"
         :class="getColorClassBySeverity(message.severity)"
       >
         {{ SEVERITY_MAP[message.severity] || 'Unknown' }}
-      </n-tip>
+      </Tip>
     </td>
     <td class="py-2">
       <code class="text-xs bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">

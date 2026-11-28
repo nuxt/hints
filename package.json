@@ -63,8 +63,8 @@
     }
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.30",
     "@nuxt/devtools": "^4.1.0",
-    "@nuxt/devtools-ui-kit": "^4.1.0",
     "@nuxt/eslint": "^1.17.0",
     "@nuxt/hints": "workspace:^",
     "@nuxt/icon": "^2.6.3",
@@ -73,6 +73,7 @@
     "@nuxt/test-utils": "^4.4.0",
     "@shikijs/transformers": "^4.6.0",
     "@types/node": "^24.19.2",
+    "@unocss/nuxt": "^66.13.0",
     "@vue/test-utils": "^2.6.0",
     "changelogen": "^0.6.2",
     "diff": "^9.0.0",
@@ -86,6 +87,7 @@
     "shiki": "^4.6.0",
     "shiki-transformer-fold": "^0.2.0",
     "typescript": "^5.9.3",
+    "unocss": "^66.13.0",
     "vitest": "^4.1.12"
   },
   "packageManager": "pnpm@12.23.0+sha512.02da94ffaf133f46074322afe552f90d40b5f71ae259aefbccdacc5085b1d617e98d65e0131f5748b9b67445978ee5055d7d59a473f1eef0d504854fefcd5975"

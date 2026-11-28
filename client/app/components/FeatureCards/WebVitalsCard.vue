@@ -7,7 +7,7 @@ const { allMetrics } = useHostWebVitals()
     to="/web-vitals"
     class="block"
   >
-    <n-card
+    <Card
       class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500"
     >
       <div class="flex items-center gap-3 min-w-0">
@@ -24,11 +24,11 @@ const { allMetrics } = useHostWebVitals()
           </div>
         </div>
       </div>
-      <n-badge
+      <Badge
         v-if="allMetrics.length"
       >
         {{ allMetrics.length }} issues
-      </n-badge>
-    </n-card>
+      </Badge>
+    </Card>
   </NuxtLink>
 </template>

@@ -1,0 +1,68 @@
+:root {
+  --nui-c-context: 125, 125, 125;
+}
+
+html {
+  background-color: #fff;
+}
+
+html.dark {
+  background-color: #151515;
+  color: #fff;
+  color-scheme: dark;
+}
+
+::selection {
+  background: #8884;
+}
+
+.shiki .line {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+
+.shiki.diff .line > span {
+  filter: saturate(0.75);
+  opacity: 0.75;
+}
+
+.shiki.diff .line-added,
+.shiki.diff .line-removed {
+  scroll-margin: 5em;
+}
+
+.shiki.diff .line-added > span,
+.shiki.diff .line-removed > span {
+  opacity: 1 !important;
+  position: inherit;
+  scroll-margin: 20px;
+  z-index: 100;
+}
+
+.shiki.diff .line-added > span {
+  color: #218c3b !important;
+}
+
+.shiki.diff .line-removed > span {
+  color: #d15547 !important;
+}
+
+.shiki .line-added::after,
+.shiki .line-removed::after {
+  bottom: 0;
+  content: "";
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.shiki .line-added::after {
+  background-color: #43885420;
+}
+
+.shiki .line-removed::after {
+  background-color: #8f4c3926;
+}

@@ -6,7 +6,7 @@ const resolver = createResolver(import.meta.url)
 export default defineNuxtConfig({
   appId: 'nuxt-hints-iframe',
   modules: [
-    '@nuxt/devtools-ui-kit',
+    '@unocss/nuxt',
     '@nuxt/icon',
   ],
 
@@ -45,5 +45,9 @@ export default defineNuxtConfig({
       })
     },
   },
-  unocss: {},
+  css: ['~/assets/styles.css'],
+
+  unocss: {
+    preflight: true,
+  },
 })

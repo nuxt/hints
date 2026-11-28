@@ -51,15 +51,15 @@ const displayItems = computed<AllItem[]>(() => {
   >
     <header class="overflow-x-auto grid gap-4 grid-cols-4">
       <!-- All metrics button -->
-      <n-card
+      <Card
         class="p-2 flex flex-col justify-center gap-1 cursor-pointer"
         :class="[!selectedHeader ? 'border-neutral-500 dark:border-neutral-400 bg-neutral-50 dark:bg-neutral-800' : 'hover:border-neutral-400 dark:hover:border-neutral-500']"
         @click="selectedHeader = undefined"
       >
         <span class="text-lg font-bold">All</span>
         <span class="text-xs text-neutral-700 dark:text-neutral-300">Show all issues</span>
-      </n-card>
-      <n-card
+      </Card>
+      <Card
         v-for="header in headers"
         class="p-2 gap-1 flex flex-col justify-center cursor-pointer"
         :class="[selectedHeader === header.key ? 'border-neutral-500 dark:border-neutral-400 bg-neutral-50 dark:bg-neutral-800' : 'hover:border-neutral-400 dark:hover:border-neutral-500']"
@@ -77,7 +77,7 @@ const displayItems = computed<AllItem[]>(() => {
           {{ header.articleLink }}
           <icon name="lucide:arrow-up-right" />
         </a>
-      </n-card>
+      </Card>
     </header>
 
     <main

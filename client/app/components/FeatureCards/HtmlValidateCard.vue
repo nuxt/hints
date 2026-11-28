@@ -18,7 +18,7 @@ const errorCount = computed(() =>
     to="/html-validate"
     class="block"
   >
-    <n-card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
+    <Card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
       <div class="flex items-center gap-3 min-w-0">
         <Icon
           name="material-symbols:code"
@@ -33,14 +33,14 @@ const errorCount = computed(() =>
           </div>
         </div>
       </div>
-      <n-tip
+      <Tip
         v-if="errorCount"
         size="small"
         type="error"
         :bordered="false"
       >
         {{ errorCount }} errors
-      </n-tip>
-    </n-card>
+      </Tip>
+    </Card>
   </NuxtLink>
 </template>

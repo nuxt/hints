@@ -13,7 +13,7 @@ const lazyLoadCount = computed(() =>
     to="/component-lazy-load"
     class="block"
   >
-    <n-card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
+    <Card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
       <div class="flex items-center gap-3 min-w-0">
         <Icon
           name="material-symbols:speed"
@@ -28,14 +28,14 @@ const lazyLoadCount = computed(() =>
           </div>
         </div>
       </div>
-      <n-tip
+      <Tip
         v-if="lazyLoadCount"
         size="small"
         type="warning"
         :bordered="false"
       >
         {{ lazyLoadCount }} suggestions
-      </n-tip>
-    </n-card>
+      </Tip>
+    </Card>
   </NuxtLink>
 </template>
