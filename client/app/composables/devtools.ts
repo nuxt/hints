@@ -43,9 +43,7 @@ function start() {
   if (started || import.meta.server) return
   started = true
 
-  getDevToolsRpcClient({
-    
-  }).then((client) => {
+  getDevToolsRpcClient().then((client) => {
     kit.value = client
     status.value = client.status
     client.events.on('connection:status', (next) => {
