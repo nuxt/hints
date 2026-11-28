@@ -4,12 +4,18 @@ import type { ComponentLazyLoadData } from '../../src/runtime/lazy-load/schema'
 import { ComponentLazyLoadDataSchema } from '../../src/runtime/lazy-load/schema'
 import type { HtmlValidateReport } from '../../src/runtime/html-validate/types'
 import { CLIENT_RPC_NAMES, SERVER_RPC_NAMES } from '../../src/runtime/core/rpc-types'
-import { useDevtoolsHost, useHintsRpc, type HintsRpc, type HostClient } from './composables/devtools'
+import { useDevtoolsHost, useDevtoolsStatus, useHintsRpc, type HintsRpc, type HostClient } from './composables/devtools'
 import { parse } from 'valibot'
 
 const host = useDevtoolsHost()
 const rpc = useHintsRpc()
+const status = useDevtoolsStatus()
 const connected = computed(() => Boolean(rpc.value && host.value))
+const lost = computed(() => status.value === 'disconnected' || status.value === 'error' || status.value === 'unauthorized')
+
+function reload() {
+  window.location.reload()
+}
 
 const hydrationMismatches = ref<(HydrationMismatchPayload | LocalHydrationMismatch)[]>([])
 const lazyLoadHints = ref<ComponentLazyLoadData[]>([])
@@ -186,7 +192,19 @@ function setup(rpc: HintsRpc, host: HostClient) {
 
 <template>
   <div>
-    <NuxtLayout v-if="connected">
+    <div
+      v-if="lost"
+      class="n-panel-grids-center"
+    >
+      <div class="flex flex-col items-center gap-3 text-lg">
+        <div class="i-carbon-plug text-4xl op50" />
+        <span>Lost connection to the DevTools server ({{ status }})</span>
+        <Button @click="reload">
+          Reload
+        </Button>
+      </div>
+    </div>
+    <NuxtLayout v-else-if="connected">
       <NuxtPage />
     </NuxtLayout>
     <NLoading v-else />

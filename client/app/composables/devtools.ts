@@ -9,8 +9,10 @@ function scopedRpc(client: DevToolsRpcClient) {
 }
 export type HintsRpc = ReturnType<typeof scopedRpc>
 export type HostClient = NuxtDevtoolsHostClient
+export type ConnectionStatus = DevToolsRpcClient['status']
 
 const kit = shallowRef<DevToolsRpcClient>()
+const status = shallowRef<ConnectionStatus>('connecting')
 const host = shallowRef<NuxtDevtoolsHostClient>()
 let started = false
 
@@ -41,9 +43,16 @@ function start() {
   if (started || import.meta.server) return
   started = true
 
-  getDevToolsRpcClient().then((client) => {
+  getDevToolsRpcClient({
+    
+  }).then((client) => {
     kit.value = client
+    status.value = client.status
+    client.events.on('connection:status', (next) => {
+      status.value = next
+    })
   }).catch((error) => {
+    status.value = 'error'
     console.warn('[@nuxt/hints] Could not connect to the DevTools RPC', error)
   })
 
@@ -62,6 +71,12 @@ function start() {
 export function useDevtoolsKit() {
   start()
   return kit
+}
+
+/** The live connection status of the Vite DevTools RPC client. */
+export function useDevtoolsStatus() {
+  start()
+  return status
 }
 
 /** The Nuxt DevTools host client of the user's app, `undefined` until it is reachable. */
