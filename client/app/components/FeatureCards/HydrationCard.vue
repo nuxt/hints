@@ -8,7 +8,7 @@ const hydrationCount = computed(() => hydration.value.length)
     to="/hydration"
     class="block"
   >
-    <n-card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
+    <Card class="flex items-center justify-between p-4 hover:border-neutral-400 dark:hover:border-neutral-500">
       <div class="flex items-center gap-3 min-w-0">
         <Icon
           name="material-symbols:water-full"
@@ -23,14 +23,14 @@ const hydrationCount = computed(() => hydration.value.length)
           </div>
         </div>
       </div>
-      <n-tip
+      <Tip
         v-if="hydrationCount"
         size="small"
         type="error"
         :bordered="false"
       >
         {{ hydrationCount }} issues
-      </n-tip>
-    </n-card>
+      </Tip>
+    </Card>
   </NuxtLink>
 </template>

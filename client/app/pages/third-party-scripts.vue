@@ -5,7 +5,7 @@
     <div
       class="grid gap-3 md:grid-cols-5 grid-cols-2"
     >
-      <n-card p-3>
+      <Card p-3>
         <div
           class="text-xs text-neutral-500"
         >
@@ -16,8 +16,8 @@
         >
           {{ total }}
         </div>
-      </n-card>
-      <n-card p-3>
+      </Card>
+      <Card p-3>
         <div
           class="text-xs text-neutral-500"
         >
@@ -28,8 +28,8 @@
         >
           {{ loaded }}
         </div>
-      </n-card>
-      <n-card p-3>
+      </Card>
+      <Card p-3>
         <div
           class="text-xs text-neutral-500"
         >
@@ -40,8 +40,8 @@
         >
           {{ slowNetwork }}
         </div>
-      </n-card>
-      <n-card p-3>
+      </Card>
+      <Card p-3>
         <div
           class="text-xs text-neutral-500"
         >
@@ -52,8 +52,8 @@
         >
           {{ slowParse }}
         </div>
-      </n-card>
-      <n-card p-3>
+      </Card>
+      <Card p-3>
         <div
           class="text-xs text-neutral-500"
         >
@@ -64,20 +64,20 @@
         >
           {{ renderBlockingCount }}
         </div>
-      </n-card>
+      </Card>
     </div>
 
-    <n-tip
+    <Tip
       v-if="total > 0 && !isUsingNuxtScripts"
       type="warning"
     >
       Third-party scripts detected. Consider using @nuxt/scripts for best-practice loading and management.
-    </n-tip>
+    </Tip>
 
     <div
       class="grid gap-3 md:grid-cols-2"
     >
-      <n-card
+      <Card
         v-for="s in filtered"
         :key="s.url"
         p-3
@@ -105,84 +105,84 @@
           <div
             class="flex items-center gap-2 shrink-0"
           >
-            <n-tip
+            <Tip
               :type="s.loaded ? 'success' : 'warning'"
               size="small"
             >
               {{ s.loaded ? 'Loaded' : 'Pending' }}
-            </n-tip>
+            </Tip>
           </div>
         </div>
 
         <div
           class="mt-2 flex flex-wrap gap-2 text-[11px]"
         >
-          <n-tip
+          <Tip
             v-if="s.renderBlocking"
             type="error"
             size="small"
             title="In document head and not async/defer/module; blocks HTML parsing and delays first paint. Prefer defer or type=module."
           >
             render-blocking
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.isModule"
             size="small"
             title="Module scripts are deferred by default and don't block parsing; execution order differs from classic scripts."
           >
             module
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.async"
             size="small"
             title="Doesn't block parsing; executes as soon as it's downloaded. Order is not guaranteed."
           >
             async
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.defer"
             size="small"
             title="Doesn't block parsing; executes after document parsing, preserving script order."
           >
             defer
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.crossorigin"
             size="small"
             title="CORS mode for this script. Use 'anonymous' for cross-origin with SRI and better error reporting."
           >
             crossorigin={{ s.crossorigin }}
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-else
             type="warning"
             size="small"
             title="Cross-origin script without crossorigin. Add crossorigin='anonymous' for SRI and better error reporting."
           >
             missing crossorigin
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.integrity"
             size="small"
             title="Subresource Integrity: protects against CDN/script tampering."
           >
             sri
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.referrerPolicy"
             size="small"
             title="Referrer policy controls the Referer header for this request."
           >
             referrer={{ s.referrerPolicy }}
-          </n-tip>
-          <n-tip
+          </Tip>
+          <Tip
             v-if="s.https === false"
             type="error"
             size="small"
             title="Loaded over HTTP; use HTTPS to avoid mixed content and security risks."
           >
             insecure http
-          </n-tip>
+          </Tip>
         </div>
 
         <div
@@ -249,7 +249,7 @@
         <div
           class="mt-3 flex items-center gap-2"
         >
-          <n-button
+          <Button
             @click="logToConsole(s.element)"
           >
             <Icon
@@ -257,8 +257,8 @@
               class="text-lg"
             />
             <span class="ml-1">Log element</span>
-          </n-button>
-          <n-button
+          </Button>
+          <Button
             @click="copy(s.url)"
           >
             <Icon
@@ -266,9 +266,9 @@
               class="text-lg"
             />
             <span class="ml-1">Copy URL</span>
-          </n-button>
+          </Button>
         </div>
-      </n-card>
+      </Card>
     </div>
   </div>
 </template>

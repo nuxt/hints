@@ -33,13 +33,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <n-card class="p4 grid gap-3">
+  <Card class="p4 grid gap-3">
     <header class="flex items-center justify-between">
       <div class="min-w-0">
         <span class="text-sm font-semibold">{{ report.path || 'Unknown path' }}</span>
         <span class="text-xs text-neutral-400 ml-2">{{ report.results.length }} issues</span>
       </div>
-      <n-button
+      <Button
         title="Remove"
         size="small"
         quaternary
@@ -49,7 +49,7 @@ onMounted(() => {
           name="material-symbols:delete-outline"
           class="text-lg"
         />
-      </n-button>
+      </Button>
     </header>
 
     <div class="grid gap-4">
@@ -70,5 +70,5 @@ onMounted(() => {
         v-html="html"
       />
     </div>
-  </n-card>
+  </Card>
 </template>

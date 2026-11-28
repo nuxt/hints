@@ -30,20 +30,20 @@ async function dismiss(id: string) {
     gap-4
     p-4
   >
-    <n-tip type="info">
+    <Tip type="info">
       These components are statically imported but were not rendered during SSR or initial hydration. Consider using
       the <code>Lazy</code> prefix or <code>defineAsyncComponent</code> to reduce the initial bundle size.
-    </n-tip>
+    </Tip>
 
     <template v-if="entries.length > 0">
-      <n-card
+      <Card
         v-for="entry in entries"
         :key="entry.id"
         class="p4"
       >
         <header class="flex items-center justify-between">
           <span class="text-sm font-semibold">{{ entry.route }}</span>
-          <n-button
+          <Button
             title="Remove"
             size="small"
             quaternary
@@ -53,7 +53,7 @@ async function dismiss(id: string) {
               name="material-symbols:delete-outline"
               class="text-lg"
             />
-          </n-button>
+          </Button>
         </header>
         <table class="w-full text-sm">
           <thead>
@@ -104,7 +104,7 @@ async function dismiss(id: string) {
             </tr>
           </tbody>
         </table>
-      </n-card>
+      </Card>
     </template>
 
     <div

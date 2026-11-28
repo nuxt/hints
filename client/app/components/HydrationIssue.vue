@@ -82,7 +82,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <n-card
+  <Card
     p-4
     relative
     w-full
@@ -98,7 +98,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="flex gap-2">
-        <n-button
+        <Button
           v-if="element"
           size="small"
           quaternary
@@ -111,8 +111,8 @@ onMounted(() => {
             name="material-symbols:file-open-outline"
             class="text-lg"
           />
-        </n-button>
-        <n-button
+        </Button>
+        <Button
           size="small"
           quaternary
           @click="copy(fullPre)"
@@ -122,8 +122,8 @@ onMounted(() => {
             class="text-lg"
           />
           <span class="ml-1">Copy pre</span>
-        </n-button>
-        <n-button
+        </Button>
+        <Button
           size="small"
           quaternary
           @click="copy(fullPost)"
@@ -133,8 +133,8 @@ onMounted(() => {
             class="text-lg"
           />
           <span class="ml-1">Copy post</span>
-        </n-button>
-        <n-button
+        </Button>
+        <Button
           title="Remove"
           size="small"
           quaternary
@@ -144,7 +144,7 @@ onMounted(() => {
             name="material-symbols:delete-outline"
             class="text-lg"
           />
-        </n-button>
+        </Button>
       </div>
     </div>
 
@@ -152,7 +152,7 @@ onMounted(() => {
       class="w-full mt-3 overflow-auto rounded-lg"
       v-html="diffHtml"
     />
-  </n-card>
+  </Card>
 </template>
 
 <style lang="scss" scoped>

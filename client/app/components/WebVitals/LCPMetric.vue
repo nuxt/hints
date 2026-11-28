@@ -11,7 +11,7 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
 </script>
 
 <template>
-  <n-card p-2>
+  <Card p-2>
     <div
       flex
       flex-col
@@ -170,5 +170,5 @@ const formatTime = (time: number) => `${time.toFixed(0)}ms`
         ID: {{ metric.id }}
       </div>
     </div>
-  </n-card>
+  </Card>
 </template>
