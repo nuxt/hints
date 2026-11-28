@@ -65,7 +65,11 @@ export function createHintsHandler(): HintsRequestHandler {
     if (!route || rest.length > 0) {
       return errorResponse(404, 'Not Found')
     }
-    const handler = route[request.method.toUpperCase() as Method]
+    const method = request.method.toUpperCase() as Method
+    if (id && method !== 'DELETE') {
+      return errorResponse(404, 'Not Found')
+    }
+    const handler = route[method]
     if (!handler) {
       return errorResponse(405, 'Method Not Allowed')
     }
